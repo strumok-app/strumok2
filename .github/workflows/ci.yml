@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read Flutter version from .fvmrc
+        id: fvm
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ steps.fvm.outputs.version }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify generated code is up to date
+        run: |
+          flutter gen-l10n
+          dart run build_runner build -d
+          git diff --exit-code -- lib
+          test "$(cat untranslated-messages.json)" = "{}"
+
+      - name: Format
+        run: dart format --output=none --set-exit-if-changed lib test packages/content_suppliers_api/lib packages/content_suppliers_rust/lib/bundle.dart packages/content_suppliers_rust/lib/src packages/content_suppliers_rust/test
+
+      - name: Analyze
+        run: |
+          flutter analyze
+          (cd packages/content_suppliers_api && dart analyze)
+          (cd packages/content_suppliers_rust && dart analyze)
+
+      - name: Test
+        run: flutter test
+
+      - name: Verify FFI contract (spec-02)
+        working-directory: packages/content_suppliers_rust
+        run: |
+          grep -q "rustContentHash => -1122641696" lib/rust/frb_generated.dart
+          grep -q "codegenVersion => '2.12.0'" lib/rust/frb_generated.dart
+          grep -q "compatibleApiVersion = 4" lib/bundle.dart
+          echo "ac26e23fdd971a43388001d8f429b247073c95f2440f968cad1488a71013b69b  rust/src/api/mod.rs" | sha256sum -c
+          echo "0f707d099833a78908ca460023aca7025d5dd04e9e456bbfdab5d84556b0df9f  rust/src/models.rs" | sha256sum -c
+          echo "9695e81241b0e20478af5e9d7225e4be27f0f04de95ded96d3a61cd825cb4fd8  rust/src/frb_generated.rs" | sha256sum -c
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: FFI smoke test against the dummy supplier lib
+        working-directory: packages/content_suppliers_rust
+        run: |
+          (cd rust && cargo build --release)
+          dart test
+
+      - name: FFI smoke integration test (app registry, Linux)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgtk-3-dev xvfb
+          xvfb-run -a flutter test integration_test/ffi_smoke_test.dart -d linux \
+            --dart-define=FFI_SUPPLIER_LIB_NAME=content_suppliers_rust \
+            --dart-define=FFI_SUPPLIER_LIBS_DIR=packages/content_suppliers_rust/rust/target/release

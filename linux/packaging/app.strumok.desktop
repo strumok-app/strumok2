@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Strumok
+Name[uk]=Струмок
+Comment=Ad-free movies, series, anime and manga
+Comment[uk]=Фільми, серіали, аніме та манга без реклами
+Exec=strumok
+Icon=app.strumok
+Terminal=false
+Categories=AudioVideo;Video;Player;
+StartupWMClass=app.strumok

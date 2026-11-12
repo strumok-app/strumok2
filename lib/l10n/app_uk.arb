@@ -1,0 +1,358 @@
+{
+  "@@locale": "uk",
+  "commonRetry": "Повторити",
+  "@commonRetry": {
+    "description": "Generic retry button after a loading error"
+  },
+  "errorLoading": "Не вдалося завантажити",
+  "@errorLoading": {
+    "description": "Generic loading error"
+  },
+  "rowEmpty": "Тут поки нічого немає",
+  "@rowEmpty": {
+    "description": "A content row returned no items"
+  },
+  "rowLoadMore": "Завантажити ще",
+  "@rowLoadMore": {
+    "description": "TV: tile at the end of a row that loads the next page"
+  },
+  "homeEmpty": "Оберіть постачальників і канали рекомендацій у налаштуваннях",
+  "@homeEmpty": {
+    "description": "Home: no recommendation channels are enabled"
+  },
+  "homeConfigure": "Налаштувати",
+  "@homeConfigure": {
+    "description": "Home: opens supplier/recommendation settings"
+  },
+  "searchHint": "Пошук фільмів, серіалів, аніме, манги",
+  "@searchHint": {
+    "description": "Search field hint"
+  },
+  "searchClear": "Очистити",
+  "@searchClear": {
+    "description": "Clears the search field"
+  },
+  "searchFilters": "Фільтри",
+  "@searchFilters": {
+    "description": "Search filters button and dialog title"
+  },
+  "searchFilterLanguages": "Мови",
+  "@searchFilterLanguages": {
+    "description": "Search filter group: content languages"
+  },
+  "searchFilterTypes": "Типи",
+  "@searchFilterTypes": {
+    "description": "Search filter group: content types"
+  },
+  "searchFilterSuppliers": "Постачальники",
+  "@searchFilterSuppliers": {
+    "description": "Search filter group: suppliers"
+  },
+  "searchEnterQuery": "Введіть назву для пошуку",
+  "@searchEnterQuery": {
+    "description": "Search: nothing submitted yet"
+  },
+  "searchNoSuppliers": "Жоден постачальник не відповідає вибраним фільтрам",
+  "@searchNoSuppliers": {
+    "description": "Search: filters exclude every supplier"
+  },
+  "searchNothingFound": "Нічого не знайдено",
+  "@searchNothingFound": {
+    "description": "Search: all suppliers returned no results"
+  },
+  "searchRemoveFromHistory": "Видалити з історії",
+  "@searchRemoveFromHistory": {
+    "description": "Removes a query from search history"
+  },
+  "contentTypeMovie": "Фільми",
+  "@contentTypeMovie": {
+    "description": "Content type"
+  },
+  "contentTypeAnime": "Аніме",
+  "@contentTypeAnime": {
+    "description": "Content type"
+  },
+  "contentTypeCartoon": "Мультфільми",
+  "@contentTypeCartoon": {
+    "description": "Content type"
+  },
+  "contentTypeSeries": "Серіали",
+  "@contentTypeSeries": {
+    "description": "Content type"
+  },
+  "contentTypeManga": "Манга",
+  "@contentTypeManga": {
+    "description": "Content type"
+  },
+  "languageUk": "Українська",
+  "@languageUk": {
+    "description": "Language name"
+  },
+  "languageEn": "Англійська",
+  "@languageEn": {
+    "description": "Language name"
+  },
+  "languageJa": "Японська",
+  "@languageJa": {
+    "description": "Language name"
+  },
+  "detailsWatch": "Дивитися",
+  "@detailsWatch": {
+    "description": "Details: primary action for video"
+  },
+  "detailsRead": "Читати",
+  "@detailsRead": {
+    "description": "Details: primary action for manga"
+  },
+  "detailsMore": "Більше",
+  "@detailsMore": {
+    "description": "Expands a collapsed description"
+  },
+  "detailsLess": "Менше",
+  "@detailsLess": {
+    "description": "Collapses an expanded description"
+  },
+  "detailsEpisodes": "Епізоди",
+  "@detailsEpisodes": {
+    "description": "Details: video media items section"
+  },
+  "detailsChapters": "Розділи",
+  "@detailsChapters": {
+    "description": "Details: manga media items section"
+  },
+  "detailsSimilar": "Схоже",
+  "@detailsSimilar": {
+    "description": "Details: similar content row"
+  },
+  "detailsNotFound": "Контент не знайдено",
+  "@detailsNotFound": {
+    "description": "Details: supplier returned no content for this id"
+  },
+  "appTitle": "Струмок",
+  "@appTitle": {
+    "description": "Application name"
+  },
+  "navHome": "Головна",
+  "@navHome": {
+    "description": "Main navigation: Home page"
+  },
+  "navSearch": "Пошук",
+  "@navSearch": {
+    "description": "Main navigation: Search page"
+  },
+  "navCollection": "Колекція",
+  "@navCollection": {
+    "description": "Main navigation: user's collection (library) page"
+  },
+  "navSettings": "Налаштування",
+  "@navSettings": {
+    "description": "Settings page title and account menu entry"
+  },
+  "navDownloads": "Завантаження",
+  "@navDownloads": {
+    "description": "Downloads (offline items) page title and account menu entry"
+  },
+  "accountMenuTooltip": "Обліковий запис",
+  "@accountMenuTooltip": {
+    "description": "Tooltip of the account (avatar) menu button"
+  },
+  "accountNotSignedIn": "Ви не увійшли",
+  "@accountNotSignedIn": {
+    "description": "Account menu header when no user is signed in"
+  },
+  "detailsTitle": "Деталі",
+  "@detailsTitle": {
+    "description": "Content details page title"
+  },
+  "playerTitle": "Плеєр",
+  "@playerTitle": {
+    "description": "Video player page title"
+  },
+  "readerTitle": "Читалка",
+  "@readerTitle": {
+    "description": "Manga reader page title"
+  },
+  "settingsSuppliers": "Постачальники",
+  "@settingsSuppliers": {
+    "description": "Settings sub-page: content suppliers"
+  },
+  "pageNotImplemented": "Ця сторінка ще в розробці",
+  "@pageNotImplemented": {
+    "description": "Shown on pages whose content is not implemented yet"
+  },
+  "pageNotFound": "Сторінку не знайдено",
+  "@pageNotFound": {
+    "description": "Shown for unknown routes"
+  },
+  "goHome": "На головну",
+  "@goHome": {
+    "description": "Button that navigates to the Home page"
+  },
+  "settingsAppVersionSection": "Версія застосунку",
+  "@settingsAppVersionSection": {
+    "description": "Settings section: app version and self-update"
+  },
+  "settingsSuppliersBundleSection": "Бібліотека постачальників",
+  "@settingsSuppliersBundleSection": {
+    "description": "Settings section: installed content suppliers library (bundle)"
+  },
+  "settingsSuppliersSubtitle": "Порядок, увімкнення та канали рекомендацій",
+  "@settingsSuppliersSubtitle": {
+    "description": "Subtitle of the suppliers settings entry"
+  },
+  "updatesCurrentVersion": "Поточна версія: {version}",
+  "@updatesCurrentVersion": {
+    "description": "Currently running app version",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updatesLatestVersion": "Остання версія: {version}",
+  "@updatesLatestVersion": {
+    "description": "Latest published version",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updatesInstalledVersion": "Встановлена версія: {version}",
+  "@updatesInstalledVersion": {
+    "description": "Installed suppliers library version",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "updatesNotInstalled": "Не встановлено",
+  "@updatesNotInstalled": {
+    "description": "Suppliers library is not installed"
+  },
+  "updatesDevLibrary": "Локальна бібліотека розробника",
+  "@updatesDevLibrary": {
+    "description": "A local developer suppliers library is loaded instead of an installed one"
+  },
+  "updatesCheck": "Перевірити оновлення",
+  "@updatesCheck": {
+    "description": "Button: check for updates"
+  },
+  "updatesUpToDate": "Встановлено останню версію",
+  "@updatesUpToDate": {
+    "description": "No newer version available"
+  },
+  "updatesUpdate": "Оновити",
+  "@updatesUpdate": {
+    "description": "Button: install an update"
+  },
+  "updatesInstall": "Встановити",
+  "@updatesInstall": {
+    "description": "Button: install the suppliers library"
+  },
+  "updatesCancel": "Скасувати",
+  "@updatesCancel": {
+    "description": "Button: cancel a download"
+  },
+  "updatesRetry": "Повторити",
+  "@updatesRetry": {
+    "description": "Button: retry after an error"
+  },
+  "updatesDownloading": "Завантаження…",
+  "@updatesDownloading": {
+    "description": "Download in progress with unknown size"
+  },
+  "updatesProgress": "Завантаження: {percent}%",
+  "@updatesProgress": {
+    "description": "Download progress",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "updatesCheckFailed": "Не вдалося перевірити оновлення",
+  "@updatesCheckFailed": {
+    "description": "Error: update check failed"
+  },
+  "updatesNotConfigured": "Адресу перевірки оновлень не налаштовано",
+  "@updatesNotConfigured": {
+    "description": "Error: build has no update check URL"
+  },
+  "appUpdateAvailable": "Доступна нова версія {version}",
+  "@appUpdateAvailable": {
+    "description": "Notice: a newer app version is available",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "appUpdateFailed": "Не вдалося оновити застосунок",
+  "@appUpdateFailed": {
+    "description": "Error: app self-update failed"
+  },
+  "appUpdateNoAsset": "Для цієї платформи немає файлу оновлення",
+  "@appUpdateNoAsset": {
+    "description": "Error: release has no file for this platform"
+  },
+  "appUpdateOpenDownload": "Відкрити сторінку завантаження",
+  "@appUpdateOpenDownload": {
+    "description": "Linux: open the update download link in the browser"
+  },
+  "appUpdateReleaseNotes": "Що нового",
+  "@appUpdateReleaseNotes": {
+    "description": "Link to release notes"
+  },
+  "suppliersBundleUpdateAvailable": "Доступна нова бібліотека постачальників {version}",
+  "@suppliersBundleUpdateAvailable": {
+    "description": "Notice: a newer suppliers library is available",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "suppliersBundleAppUpdateRequired": "Бібліотека постачальників {version} потребує оновлення застосунку",
+  "@suppliersBundleAppUpdateRequired": {
+    "description": "The latest suppliers library is incompatible; the app must be updated first",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "suppliersBundleInstallFailed": "Не вдалося встановити бібліотеку постачальників",
+  "@suppliersBundleInstallFailed": {
+    "description": "Error: suppliers library download or load failed"
+  },
+  "suppliersBundleInstallTitle": "Потрібна бібліотека постачальників",
+  "@suppliersBundleInstallTitle": {
+    "description": "Startup install prompt title"
+  },
+  "suppliersBundleInstallMessage": "Щоб переглядати фільми, серіали, аніме та мангу, встановіть бібліотеку постачальників контенту.",
+  "@suppliersBundleInstallMessage": {
+    "description": "Startup install prompt message"
+  },
+  "suppliersEmpty": "Немає доступних постачальників",
+  "@suppliersEmpty": {
+    "description": "Suppliers settings: list is empty"
+  },
+  "suppliersEnabled": "Увімкнено",
+  "@suppliersEnabled": {
+    "description": "Suppliers settings: supplier enabled switch"
+  },
+  "suppliersMoveUp": "Перемістити вгору",
+  "@suppliersMoveUp": {
+    "description": "Suppliers settings: move supplier up"
+  },
+  "suppliersMoveDown": "Перемістити вниз",
+  "@suppliersMoveDown": {
+    "description": "Suppliers settings: move supplier down"
+  },
+  "suppliersChannels": "Канали рекомендацій",
+  "@suppliersChannels": {
+    "description": "Suppliers settings: recommendation channels"
+  }
+}

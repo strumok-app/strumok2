@@ -1,0 +1,266 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get commonRetry => 'Retry';
+
+  @override
+  String get errorLoading => 'Failed to load';
+
+  @override
+  String get rowEmpty => 'Nothing here yet';
+
+  @override
+  String get rowLoadMore => 'Load more';
+
+  @override
+  String get homeEmpty => 'Choose suppliers and recommendation channels in settings';
+
+  @override
+  String get homeConfigure => 'Configure';
+
+  @override
+  String get searchHint => 'Search movies, series, anime, manga';
+
+  @override
+  String get searchClear => 'Clear';
+
+  @override
+  String get searchFilters => 'Filters';
+
+  @override
+  String get searchFilterLanguages => 'Languages';
+
+  @override
+  String get searchFilterTypes => 'Types';
+
+  @override
+  String get searchFilterSuppliers => 'Suppliers';
+
+  @override
+  String get searchEnterQuery => 'Enter a title to search';
+
+  @override
+  String get searchNoSuppliers => 'No suppliers match the selected filters';
+
+  @override
+  String get searchNothingFound => 'Nothing found';
+
+  @override
+  String get searchRemoveFromHistory => 'Remove from history';
+
+  @override
+  String get contentTypeMovie => 'Movies';
+
+  @override
+  String get contentTypeAnime => 'Anime';
+
+  @override
+  String get contentTypeCartoon => 'Cartoons';
+
+  @override
+  String get contentTypeSeries => 'Series';
+
+  @override
+  String get contentTypeManga => 'Manga';
+
+  @override
+  String get languageUk => 'Ukrainian';
+
+  @override
+  String get languageEn => 'English';
+
+  @override
+  String get languageJa => 'Japanese';
+
+  @override
+  String get detailsWatch => 'Watch';
+
+  @override
+  String get detailsRead => 'Read';
+
+  @override
+  String get detailsMore => 'More';
+
+  @override
+  String get detailsLess => 'Less';
+
+  @override
+  String get detailsEpisodes => 'Episodes';
+
+  @override
+  String get detailsChapters => 'Chapters';
+
+  @override
+  String get detailsSimilar => 'Similar';
+
+  @override
+  String get detailsNotFound => 'Content not found';
+
+  @override
+  String get appTitle => 'Strumok';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navSearch => 'Search';
+
+  @override
+  String get navCollection => 'Collection';
+
+  @override
+  String get navSettings => 'Settings';
+
+  @override
+  String get navDownloads => 'Downloads';
+
+  @override
+  String get accountMenuTooltip => 'Account';
+
+  @override
+  String get accountNotSignedIn => 'Not signed in';
+
+  @override
+  String get detailsTitle => 'Details';
+
+  @override
+  String get playerTitle => 'Player';
+
+  @override
+  String get readerTitle => 'Reader';
+
+  @override
+  String get settingsSuppliers => 'Suppliers';
+
+  @override
+  String get pageNotImplemented => 'This page is not implemented yet';
+
+  @override
+  String get pageNotFound => 'Page not found';
+
+  @override
+  String get goHome => 'Go home';
+
+  @override
+  String get settingsAppVersionSection => 'App version';
+
+  @override
+  String get settingsSuppliersBundleSection => 'Suppliers library';
+
+  @override
+  String get settingsSuppliersSubtitle => 'Order, availability and recommendation channels';
+
+  @override
+  String updatesCurrentVersion(String version) {
+    return 'Current version: $version';
+  }
+
+  @override
+  String updatesLatestVersion(String version) {
+    return 'Latest version: $version';
+  }
+
+  @override
+  String updatesInstalledVersion(String version) {
+    return 'Installed version: $version';
+  }
+
+  @override
+  String get updatesNotInstalled => 'Not installed';
+
+  @override
+  String get updatesDevLibrary => 'Local developer library';
+
+  @override
+  String get updatesCheck => 'Check for updates';
+
+  @override
+  String get updatesUpToDate => 'Up to date';
+
+  @override
+  String get updatesUpdate => 'Update';
+
+  @override
+  String get updatesInstall => 'Install';
+
+  @override
+  String get updatesCancel => 'Cancel';
+
+  @override
+  String get updatesRetry => 'Retry';
+
+  @override
+  String get updatesDownloading => 'Downloading…';
+
+  @override
+  String updatesProgress(int percent) {
+    return 'Downloading: $percent%';
+  }
+
+  @override
+  String get updatesCheckFailed => 'Failed to check for updates';
+
+  @override
+  String get updatesNotConfigured => 'Update check URL is not configured';
+
+  @override
+  String appUpdateAvailable(String version) {
+    return 'New version $version is available';
+  }
+
+  @override
+  String get appUpdateFailed => 'App update failed';
+
+  @override
+  String get appUpdateNoAsset => 'No update file for this platform';
+
+  @override
+  String get appUpdateOpenDownload => 'Open download page';
+
+  @override
+  String get appUpdateReleaseNotes => 'Release notes';
+
+  @override
+  String suppliersBundleUpdateAvailable(String version) {
+    return 'New suppliers library $version is available';
+  }
+
+  @override
+  String suppliersBundleAppUpdateRequired(String version) {
+    return 'Suppliers library $version requires an app update';
+  }
+
+  @override
+  String get suppliersBundleInstallFailed => 'Failed to install the suppliers library';
+
+  @override
+  String get suppliersBundleInstallTitle => 'Suppliers library required';
+
+  @override
+  String get suppliersBundleInstallMessage =>
+      'Install the content suppliers library to browse movies, series, anime and manga.';
+
+  @override
+  String get suppliersEmpty => 'No suppliers available';
+
+  @override
+  String get suppliersEnabled => 'Enabled';
+
+  @override
+  String get suppliersMoveUp => 'Move up';
+
+  @override
+  String get suppliersMoveDown => 'Move down';
+
+  @override
+  String get suppliersChannels => 'Recommendation channels';
+}

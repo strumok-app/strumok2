@@ -1,0 +1,22 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - windows/**
+    - linux/**
+    - packages/**
+    - lib/core/l10n/**
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_print
+    - prefer_final_locals
+    - prefer_single_quotes
+    - unawaited_futures
+
+formatter:
+  page_width: 120

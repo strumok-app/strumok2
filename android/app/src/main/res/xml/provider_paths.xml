@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- APK self-update downloads (spec-11 §11.2). -->
+<paths>
+    <cache-path name="install" path="install/" />
+</paths>

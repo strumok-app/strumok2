@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder TV banner (320x180dp); replace with final artwork. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#3E4A12"
+        android:pathData="M0,0h320v180h-320z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#DCE7A8"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:pathData="M40,70 C80,40 120,100 160,70 S240,40 280,70" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#B5C46A"
+        android:strokeWidth="10"
+        android:strokeLineCap="round"
+        android:pathData="M40,110 C80,80 120,140 160,110 S240,80 280,110" />
+</vector>

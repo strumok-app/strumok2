@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Placeholder icon; replace with final artwork. -->
+  <rect width="256" height="256" rx="56" fill="#3E4A12"/>
+  <path d="M40 104c30-26 58 26 88 0s58 26 88 0" fill="none" stroke="#DCE7A8" stroke-width="16" stroke-linecap="round"/>
+  <path d="M40 152c30-26 58 26 88 0s58 26 88 0" fill="none" stroke="#B5C46A" stroke-width="16" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,8 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - lib/rust/**
+
+formatter:
+  page_width: 120

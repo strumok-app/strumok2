@@ -1,0 +1,23 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "strumok-v2",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "FORCE_TV_MODE=false",
+                "--dart-define-from-file",
+                "secrets.env"
+            ],
+            "env": {
+                "MDK_LOG": "0",
+                "MDK_LOG_STATUS": "0",
+                "RUST_LOG": "info"
+            }
+        },
+    ]
+}
