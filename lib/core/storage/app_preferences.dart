@@ -23,6 +23,11 @@ class AppPreferences {
   static const selectedContentType = 'selected_content_type';
   static const selectedContentSuppliers = 'selected_content_suppliers';
   static const searchHistory = 'search_history';
+  static const profiles = 'profiles';
+  static const activeProfileId = 'active_profile_id';
+  static const profileAskOnStartup = 'profile_ask_on_startup';
+
+  static String profileSearchHistory(String profileId) => '$searchHistory.$profileId';
   static const ffiUpdateLastCheck = 'ffi_update_last_check';
   static const ffiUpdateLatestInfo = 'ffi_update_latest_info';
   static const ffiUpdateNotifiedVersion = 'ffi_update_notified_version';

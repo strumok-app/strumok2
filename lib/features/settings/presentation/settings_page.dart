@@ -24,12 +24,23 @@ class SettingsPage extends StatelessWidget {
         const SizedBox(height: 24),
         SurfaceZone(
           padding: const EdgeInsets.all(4),
-          child: ListTile(
-            leading: const Icon(Icons.extension_outlined),
-            title: Text(l10n.settingsSuppliers),
-            subtitle: Text(l10n.settingsSuppliersSubtitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push(AppRoutes.settingsSuppliers),
+          child: Column(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.extension_outlined),
+                title: Text(l10n.settingsSuppliers),
+                subtitle: Text(l10n.settingsSuppliersSubtitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push(AppRoutes.settingsSuppliers),
+              ),
+              ListTile(
+                leading: const Icon(Icons.manage_accounts_outlined),
+                title: Text(l10n.profilesTitle),
+                subtitle: Text(l10n.settingsProfilesSubtitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push(AppRoutes.settingsProfiles),
+              ),
+            ],
           ),
         ),
       ],

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sembast/sembast_memory.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:strumok/core/network/http_client.dart';
@@ -13,6 +14,7 @@ import 'package:strumok/core/network/image_cache.dart';
 import 'package:strumok/core/platform/app_paths.dart';
 import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
+import 'package:strumok/features/collection/data/collection_repository.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 import 'package:strumok/features/suppliers/domain/ffi_bundle_info.dart';
 import 'package:strumok/features/updates/presentation/update_providers.dart';
@@ -193,5 +195,6 @@ Future<List<Override>> testOverrides({
     bundleDownloadKeyProvider.overrideWithValue('linux'),
     initialSupplierBundleProvider.overrideWithValue(bundle ?? defaultTestBundle),
     imageCacheManagerProvider.overrideWithValue(FakeCacheManager()),
+    collectionDatabaseFactoryProvider.overrideWithValue(newDatabaseFactoryMemory()),
   ];
 }

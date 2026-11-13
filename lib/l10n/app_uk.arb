@@ -1,5 +1,164 @@
 {
   "@@locale": "uk",
+  "commonCancel": "Скасувати",
+  "@commonCancel": {
+    "description": "Dialog cancel button"
+  },
+  "commonSave": "Зберегти",
+  "@commonSave": {
+    "description": "Dialog save button"
+  },
+  "homeContinue": "Продовжити",
+  "@homeContinue": {
+    "description": "Home row with in-progress (or watch later) collection items"
+  },
+  "mediaTypeVideo": "Відео",
+  "@mediaTypeVideo": {
+    "description": "Media type filter: video"
+  },
+  "mediaTypeManga": "Манга",
+  "@mediaTypeManga": {
+    "description": "Media type filter: manga"
+  },
+  "collectionEmpty": "Колекція порожня. Додавайте фільми, серіали та мангу зі сторінки деталей.",
+  "@collectionEmpty": {
+    "description": "Collection page: no items at all"
+  },
+  "collectionSearchHint": "Пошук у колекції",
+  "@collectionSearchHint": {
+    "description": "Collection title search hint"
+  },
+  "collectionStatusTitle": "Статус",
+  "@collectionStatusTitle": {
+    "description": "Collection status selector / filter title"
+  },
+  "collectionPriorityTitle": "Пріоритет",
+  "@collectionPriorityTitle": {
+    "description": "Collection priority selector title"
+  },
+  "collectionFilterMediaType": "Тип",
+  "@collectionFilterMediaType": {
+    "description": "Collection filter group: video or manga"
+  },
+  "collectionAdd": "Додати в колекцію",
+  "@collectionAdd": {
+    "description": "Details: item is not in the collection yet"
+  },
+  "collectionRemove": "Видалити з колекції",
+  "@collectionRemove": {
+    "description": "Removes the item from the collection"
+  },
+  "collectionStatusNone": "Не в колекції",
+  "@collectionStatusNone": {
+    "description": "Collection status: none"
+  },
+  "collectionStatusInProgress": "В процесі",
+  "@collectionStatusInProgress": {
+    "description": "Collection status: watching/reading now"
+  },
+  "collectionStatusLater": "На потім",
+  "@collectionStatusLater": {
+    "description": "Collection status: watch/read later (legacy value 'latter')"
+  },
+  "collectionStatusOnHold": "Відкладено",
+  "@collectionStatusOnHold": {
+    "description": "Collection status: on hold"
+  },
+  "collectionStatusComplete": "Завершено",
+  "@collectionStatusComplete": {
+    "description": "Collection status: completed"
+  },
+  "collectionPriorityLow": "Низький",
+  "@collectionPriorityLow": {
+    "description": "Collection priority"
+  },
+  "collectionPriorityNormal": "Звичайний",
+  "@collectionPriorityNormal": {
+    "description": "Collection priority"
+  },
+  "collectionPriorityHigh": "Високий",
+  "@collectionPriorityHigh": {
+    "description": "Collection priority"
+  },
+  "collectionEpisode": "Серія {number}",
+  "@collectionEpisode": {
+    "description": "Current episode on a collection card",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionChapter": "Розділ {number}",
+  "@collectionChapter": {
+    "description": "Current chapter on a collection card",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "profilesTitle": "Профілі",
+  "@profilesTitle": {
+    "description": "Manage profiles page title / settings entry"
+  },
+  "profilesPickTitle": "Хто дивиться?",
+  "@profilesPickTitle": {
+    "description": "Profile picker title"
+  },
+  "profilesAdd": "Додати профіль",
+  "@profilesAdd": {
+    "description": "Creates a new profile"
+  },
+  "profilesEdit": "Редагувати профіль",
+  "@profilesEdit": {
+    "description": "Profile edit dialog title"
+  },
+  "profilesName": "Ім'я профілю",
+  "@profilesName": {
+    "description": "Profile name field hint"
+  },
+  "profilesColor": "Колір",
+  "@profilesColor": {
+    "description": "Profile avatar color"
+  },
+  "profilesDelete": "Видалити профіль",
+  "@profilesDelete": {
+    "description": "Deletes a profile"
+  },
+  "profilesDeleteConfirm": "Видалити профіль «{name}»? Його колекцію буде видалено з цього пристрою; дані в обліковому записі Google залишаться.",
+  "@profilesDeleteConfirm": {
+    "description": "Delete profile confirmation",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profilesActive": "Поточний профіль",
+  "@profilesActive": {
+    "description": "Marks the active profile"
+  },
+  "profilesSwitch": "Змінити профіль",
+  "@profilesSwitch": {
+    "description": "Opens the profile picker"
+  },
+  "profilesManage": "Керувати профілями",
+  "@profilesManage": {
+    "description": "Opens profile management"
+  },
+  "profilesAskOnStartup": "Питати профіль під час запуску",
+  "@profilesAskOnStartup": {
+    "description": "Setting: show the profile picker on startup"
+  },
+  "profilesAskOnStartupSubtitle": "Коли профілів декілька",
+  "@profilesAskOnStartupSubtitle": {
+    "description": "Setting subtitle"
+  },
+  "settingsProfilesSubtitle": "Окремі колекції для кожного члена родини",
+  "@settingsProfilesSubtitle": {
+    "description": "Settings entry subtitle for profiles"
+  },
   "commonRetry": "Повторити",
   "@commonRetry": {
     "description": "Generic retry button after a loading error"

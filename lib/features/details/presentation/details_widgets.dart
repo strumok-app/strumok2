@@ -5,6 +5,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
 import '../../../core/localization.dart';
+import '../../collection/domain/collection_item.dart';
+import '../../collection/presentation/collection_labels.dart';
+import '../../collection/presentation/collection_providers.dart';
+import '../../collection/presentation/collection_status_sheet.dart';
 import 'details_providers.dart';
 import 'media_items_sheet.dart';
 
@@ -48,10 +52,11 @@ class DetailsInfo extends StatelessWidget {
                 label: Text(isVideo ? l10n.detailsWatch : l10n.detailsRead),
               ),
               _MediaItemsButton(details: details),
+              _CollectionButton(details: details),
             ],
           ),
         ),
-        // SPEC: collection status/priority (M3) and downloads (M8) actions are added with their milestones.
+        // SPEC: download actions (M8) are added with their milestone.
         if (details.additionalInfo.isNotEmpty)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,6 +114,25 @@ class _ExpandableTextState extends State<ExpandableText> {
           ],
         );
       },
+    );
+  }
+}
+
+/// Shows the collection status (or "add") and opens the status/priority sheet.
+class _CollectionButton extends ConsumerWidget {
+  final ContentDetails details;
+
+  const _CollectionButton({required this.details});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final status = ref.watch(collectionItemProvider(details.supplier, details.id))?.status ?? CollectionStatus.none;
+    return FilledButton.tonalIcon(
+      key: const Key('collectionButton'),
+      onPressed: () => showCollectionStatusSheet(context, details),
+      icon: Icon(collectionStatusIcon(status)),
+      label: Text(status == CollectionStatus.none ? l10n.collectionAdd : l10n.collectionStatus(status)),
     );
   }
 }

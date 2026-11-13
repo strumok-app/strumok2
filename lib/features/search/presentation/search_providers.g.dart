@@ -57,10 +57,14 @@ abstract class _$SearchFiltersNotifier extends $Notifier<SearchFilters> {
   }
 }
 
+/// Per profile (spec-05 §5.2).
+
 @ProviderFor(SearchHistory)
 final searchHistoryProvider = SearchHistoryProvider._();
 
+/// Per profile (spec-05 §5.2).
 final class SearchHistoryProvider extends $NotifierProvider<SearchHistory, List<SearchHistoryEntry>> {
+  /// Per profile (spec-05 §5.2).
   SearchHistoryProvider._()
     : super(
         from: null,
@@ -85,7 +89,9 @@ final class SearchHistoryProvider extends $NotifierProvider<SearchHistory, List<
   }
 }
 
-String _$searchHistoryHash() => r'6d4965d7d96403e3507cd97d4703509deb371bc9';
+String _$searchHistoryHash() => r'3130b5a62784655b582ffa0a3af613f8ef60fe87';
+
+/// Per profile (spec-05 §5.2).
 
 abstract class _$SearchHistory extends $Notifier<List<SearchHistoryEntry>> {
   List<SearchHistoryEntry> build();
@@ -328,4 +334,4 @@ final class SearchNothingFoundProvider extends $FunctionalProvider<bool, bool, b
   }
 }
 
-String _$searchNothingFoundHash() => r'57de2076d8ad2b1cc8d2bf6b1632e6d403ec392a';
+String _$searchNothingFoundHash() => r'ed590412931d7ed08bd8a4ed97eac828ec824ab4';

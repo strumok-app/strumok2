@@ -7,18 +7,21 @@ import '../../../app/widgets/content_row.dart';
 import '../../../app/widgets/state_views.dart';
 import '../../../core/localization.dart';
 import '../../../core/platform/device_class.dart';
+import '../../collection/presentation/collection_items_row.dart';
+import '../../collection/presentation/collection_providers.dart';
 import 'home_providers.dart';
 
-// SPEC: the "Continue" row (spec-01 Home) needs the collection and arrives with M3; offline Home with M8.
+// SPEC: offline Home (downloaded content) arrives with M8.
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final rows = ref.watch(homeRowsProvider);
+    final continueItems = ref.watch(continueWatchingProvider);
     final isTv = ref.watch(deviceClassProvider) == DeviceClass.tv;
 
-    if (rows.isEmpty) {
+    if (rows.isEmpty && continueItems.isEmpty) {
       return EmptyStateView(
         icon: Icons.tune,
         message: context.l10n.homeEmpty,
@@ -30,10 +33,13 @@ class HomePage extends ConsumerWidget {
       );
     }
 
+    final offset = continueItems.isEmpty ? 0 : 1;
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 16),
-      itemCount: rows.length,
-      itemBuilder: (context, index) => _ChannelRow(row: rows[index], autofocusFirst: isTv && index == 0),
+      itemCount: rows.length + offset,
+      itemBuilder: (context, index) => index < offset
+          ? CollectionItemsRow(title: context.l10n.homeContinue, items: continueItems, autofocusFirst: isTv)
+          : _ChannelRow(row: rows[index - offset], autofocusFirst: isTv && index == 0),
     );
   }
 }

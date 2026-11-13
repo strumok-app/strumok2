@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/app.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 
 import 'test_overrides.dart';
@@ -13,13 +14,14 @@ Future<ProviderContainer> pumpApp(
   Size size = const Size(1280, 720),
   DeviceClass deviceClass = DeviceClass.desktop,
   SupplierBundleState? bundle,
+  AppPreferences? prefs,
   List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
-  final overrides = await testOverrides(deviceClass: deviceClass, bundle: bundle);
+  final overrides = await testOverrides(deviceClass: deviceClass, bundle: bundle, prefs: prefs);
   final container = ProviderContainer(overrides: [...overrides, ...extraOverrides]);
   addTearDown(container.dispose);
 

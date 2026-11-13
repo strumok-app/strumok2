@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/localization.dart';
+import '../../features/profiles/presentation/profile_avatar.dart';
+import '../../features/profiles/presentation/profiles_providers.dart';
 import '../../features/updates/presentation/update_providers.dart';
 import '../router.dart';
 import '../theme.dart';
 
-/// Account button opening [AccountDialog]: Settings, Downloads and (from M4) account actions.
+/// Active profile avatar opening [AccountDialog]: profiles, Settings, Downloads and (from M4) account actions.
 class AccountMenu extends ConsumerWidget {
   const AccountMenu({super.key});
 
@@ -17,7 +19,10 @@ class AccountMenu extends ConsumerWidget {
     return IconButton(
       key: const Key('accountMenuButton'),
       tooltip: context.l10n.accountMenuTooltip,
-      icon: Badge(isLabelVisible: hasUpdate, child: const Icon(Icons.account_circle_outlined)),
+      icon: Badge(
+        isLabelVisible: hasUpdate,
+        child: ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14),
+      ),
       onPressed: () => showDialog<void>(context: context, builder: (_) => const AccountDialog()),
     );
   }
@@ -31,6 +36,7 @@ class AccountDialog extends ConsumerWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final hasUpdate = ref.watch(hasUpdateNoticeProvider);
+    final profile = ref.watch(activeProfileProvider);
 
     void open(String route) {
       final router = GoRouter.of(context);
@@ -55,11 +61,25 @@ class AccountDialog extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                 child: SurfaceZone(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const CircleAvatar(child: Icon(Icons.person_outline)),
-                    title: Text(l10n.accountNotSignedIn),
+                  padding: const EdgeInsets.all(4),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: ProfileAvatar(profile: profile),
+                        title: Text(profile.name),
+                        subtitle: Text(l10n.accountNotSignedIn),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.switch_account_outlined),
+                        title: Text(l10n.profilesSwitch),
+                        onTap: () => open(AppRoutes.profiles),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.manage_accounts_outlined),
+                        title: Text(l10n.profilesManage),
+                        onTap: () => open(AppRoutes.settingsProfiles),
+                      ),
+                    ],
                   ),
                 ),
               ),

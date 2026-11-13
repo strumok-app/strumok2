@@ -92,6 +92,222 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('uk')];
 
+  /// Dialog cancel button
+  ///
+  /// In uk, this message translates to:
+  /// **'Скасувати'**
+  String get commonCancel;
+
+  /// Dialog save button
+  ///
+  /// In uk, this message translates to:
+  /// **'Зберегти'**
+  String get commonSave;
+
+  /// Home row with in-progress (or watch later) collection items
+  ///
+  /// In uk, this message translates to:
+  /// **'Продовжити'**
+  String get homeContinue;
+
+  /// Media type filter: video
+  ///
+  /// In uk, this message translates to:
+  /// **'Відео'**
+  String get mediaTypeVideo;
+
+  /// Media type filter: manga
+  ///
+  /// In uk, this message translates to:
+  /// **'Манга'**
+  String get mediaTypeManga;
+
+  /// Collection page: no items at all
+  ///
+  /// In uk, this message translates to:
+  /// **'Колекція порожня. Додавайте фільми, серіали та мангу зі сторінки деталей.'**
+  String get collectionEmpty;
+
+  /// Collection title search hint
+  ///
+  /// In uk, this message translates to:
+  /// **'Пошук у колекції'**
+  String get collectionSearchHint;
+
+  /// Collection status selector / filter title
+  ///
+  /// In uk, this message translates to:
+  /// **'Статус'**
+  String get collectionStatusTitle;
+
+  /// Collection priority selector title
+  ///
+  /// In uk, this message translates to:
+  /// **'Пріоритет'**
+  String get collectionPriorityTitle;
+
+  /// Collection filter group: video or manga
+  ///
+  /// In uk, this message translates to:
+  /// **'Тип'**
+  String get collectionFilterMediaType;
+
+  /// Details: item is not in the collection yet
+  ///
+  /// In uk, this message translates to:
+  /// **'Додати в колекцію'**
+  String get collectionAdd;
+
+  /// Removes the item from the collection
+  ///
+  /// In uk, this message translates to:
+  /// **'Видалити з колекції'**
+  String get collectionRemove;
+
+  /// Collection status: none
+  ///
+  /// In uk, this message translates to:
+  /// **'Не в колекції'**
+  String get collectionStatusNone;
+
+  /// Collection status: watching/reading now
+  ///
+  /// In uk, this message translates to:
+  /// **'В процесі'**
+  String get collectionStatusInProgress;
+
+  /// Collection status: watch/read later (legacy value 'latter')
+  ///
+  /// In uk, this message translates to:
+  /// **'На потім'**
+  String get collectionStatusLater;
+
+  /// Collection status: on hold
+  ///
+  /// In uk, this message translates to:
+  /// **'Відкладено'**
+  String get collectionStatusOnHold;
+
+  /// Collection status: completed
+  ///
+  /// In uk, this message translates to:
+  /// **'Завершено'**
+  String get collectionStatusComplete;
+
+  /// Collection priority
+  ///
+  /// In uk, this message translates to:
+  /// **'Низький'**
+  String get collectionPriorityLow;
+
+  /// Collection priority
+  ///
+  /// In uk, this message translates to:
+  /// **'Звичайний'**
+  String get collectionPriorityNormal;
+
+  /// Collection priority
+  ///
+  /// In uk, this message translates to:
+  /// **'Високий'**
+  String get collectionPriorityHigh;
+
+  /// Current episode on a collection card
+  ///
+  /// In uk, this message translates to:
+  /// **'Серія {number}'**
+  String collectionEpisode(int number);
+
+  /// Current chapter on a collection card
+  ///
+  /// In uk, this message translates to:
+  /// **'Розділ {number}'**
+  String collectionChapter(int number);
+
+  /// Manage profiles page title / settings entry
+  ///
+  /// In uk, this message translates to:
+  /// **'Профілі'**
+  String get profilesTitle;
+
+  /// Profile picker title
+  ///
+  /// In uk, this message translates to:
+  /// **'Хто дивиться?'**
+  String get profilesPickTitle;
+
+  /// Creates a new profile
+  ///
+  /// In uk, this message translates to:
+  /// **'Додати профіль'**
+  String get profilesAdd;
+
+  /// Profile edit dialog title
+  ///
+  /// In uk, this message translates to:
+  /// **'Редагувати профіль'**
+  String get profilesEdit;
+
+  /// Profile name field hint
+  ///
+  /// In uk, this message translates to:
+  /// **'Ім\'я профілю'**
+  String get profilesName;
+
+  /// Profile avatar color
+  ///
+  /// In uk, this message translates to:
+  /// **'Колір'**
+  String get profilesColor;
+
+  /// Deletes a profile
+  ///
+  /// In uk, this message translates to:
+  /// **'Видалити профіль'**
+  String get profilesDelete;
+
+  /// Delete profile confirmation
+  ///
+  /// In uk, this message translates to:
+  /// **'Видалити профіль «{name}»? Його колекцію буде видалено з цього пристрою; дані в обліковому записі Google залишаться.'**
+  String profilesDeleteConfirm(String name);
+
+  /// Marks the active profile
+  ///
+  /// In uk, this message translates to:
+  /// **'Поточний профіль'**
+  String get profilesActive;
+
+  /// Opens the profile picker
+  ///
+  /// In uk, this message translates to:
+  /// **'Змінити профіль'**
+  String get profilesSwitch;
+
+  /// Opens profile management
+  ///
+  /// In uk, this message translates to:
+  /// **'Керувати профілями'**
+  String get profilesManage;
+
+  /// Setting: show the profile picker on startup
+  ///
+  /// In uk, this message translates to:
+  /// **'Питати профіль під час запуску'**
+  String get profilesAskOnStartup;
+
+  /// Setting subtitle
+  ///
+  /// In uk, this message translates to:
+  /// **'Коли профілів декілька'**
+  String get profilesAskOnStartupSubtitle;
+
+  /// Settings entry subtitle for profiles
+  ///
+  /// In uk, this message translates to:
+  /// **'Окремі колекції для кожного члена родини'**
+  String get settingsProfilesSubtitle;
+
   /// Generic retry button after a loading error
   ///
   /// In uk, this message translates to:

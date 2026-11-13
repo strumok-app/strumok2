@@ -10,6 +10,120 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get commonCancel => 'Скасувати';
+
+  @override
+  String get commonSave => 'Зберегти';
+
+  @override
+  String get homeContinue => 'Продовжити';
+
+  @override
+  String get mediaTypeVideo => 'Відео';
+
+  @override
+  String get mediaTypeManga => 'Манга';
+
+  @override
+  String get collectionEmpty => 'Колекція порожня. Додавайте фільми, серіали та мангу зі сторінки деталей.';
+
+  @override
+  String get collectionSearchHint => 'Пошук у колекції';
+
+  @override
+  String get collectionStatusTitle => 'Статус';
+
+  @override
+  String get collectionPriorityTitle => 'Пріоритет';
+
+  @override
+  String get collectionFilterMediaType => 'Тип';
+
+  @override
+  String get collectionAdd => 'Додати в колекцію';
+
+  @override
+  String get collectionRemove => 'Видалити з колекції';
+
+  @override
+  String get collectionStatusNone => 'Не в колекції';
+
+  @override
+  String get collectionStatusInProgress => 'В процесі';
+
+  @override
+  String get collectionStatusLater => 'На потім';
+
+  @override
+  String get collectionStatusOnHold => 'Відкладено';
+
+  @override
+  String get collectionStatusComplete => 'Завершено';
+
+  @override
+  String get collectionPriorityLow => 'Низький';
+
+  @override
+  String get collectionPriorityNormal => 'Звичайний';
+
+  @override
+  String get collectionPriorityHigh => 'Високий';
+
+  @override
+  String collectionEpisode(int number) {
+    return 'Серія $number';
+  }
+
+  @override
+  String collectionChapter(int number) {
+    return 'Розділ $number';
+  }
+
+  @override
+  String get profilesTitle => 'Профілі';
+
+  @override
+  String get profilesPickTitle => 'Хто дивиться?';
+
+  @override
+  String get profilesAdd => 'Додати профіль';
+
+  @override
+  String get profilesEdit => 'Редагувати профіль';
+
+  @override
+  String get profilesName => 'Ім\'я профілю';
+
+  @override
+  String get profilesColor => 'Колір';
+
+  @override
+  String get profilesDelete => 'Видалити профіль';
+
+  @override
+  String profilesDeleteConfirm(String name) {
+    return 'Видалити профіль «$name»? Його колекцію буде видалено з цього пристрою; дані в обліковому записі Google залишаться.';
+  }
+
+  @override
+  String get profilesActive => 'Поточний профіль';
+
+  @override
+  String get profilesSwitch => 'Змінити профіль';
+
+  @override
+  String get profilesManage => 'Керувати профілями';
+
+  @override
+  String get profilesAskOnStartup => 'Питати профіль під час запуску';
+
+  @override
+  String get profilesAskOnStartupSubtitle => 'Коли профілів декілька';
+
+  @override
+  String get settingsProfilesSubtitle => 'Окремі колекції для кожного члена родини';
+
+  @override
   String get commonRetry => 'Повторити';
 
   @override

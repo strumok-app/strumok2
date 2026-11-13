@@ -10,6 +10,120 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonSave => 'Save';
+
+  @override
+  String get homeContinue => 'Continue';
+
+  @override
+  String get mediaTypeVideo => 'Video';
+
+  @override
+  String get mediaTypeManga => 'Manga';
+
+  @override
+  String get collectionEmpty => 'Your collection is empty. Add movies, series and manga from their details page.';
+
+  @override
+  String get collectionSearchHint => 'Search in collection';
+
+  @override
+  String get collectionStatusTitle => 'Status';
+
+  @override
+  String get collectionPriorityTitle => 'Priority';
+
+  @override
+  String get collectionFilterMediaType => 'Type';
+
+  @override
+  String get collectionAdd => 'Add to collection';
+
+  @override
+  String get collectionRemove => 'Remove from collection';
+
+  @override
+  String get collectionStatusNone => 'Not in collection';
+
+  @override
+  String get collectionStatusInProgress => 'In progress';
+
+  @override
+  String get collectionStatusLater => 'Later';
+
+  @override
+  String get collectionStatusOnHold => 'On hold';
+
+  @override
+  String get collectionStatusComplete => 'Completed';
+
+  @override
+  String get collectionPriorityLow => 'Low';
+
+  @override
+  String get collectionPriorityNormal => 'Normal';
+
+  @override
+  String get collectionPriorityHigh => 'High';
+
+  @override
+  String collectionEpisode(int number) {
+    return 'Episode $number';
+  }
+
+  @override
+  String collectionChapter(int number) {
+    return 'Chapter $number';
+  }
+
+  @override
+  String get profilesTitle => 'Profiles';
+
+  @override
+  String get profilesPickTitle => 'Who\'s watching?';
+
+  @override
+  String get profilesAdd => 'Add profile';
+
+  @override
+  String get profilesEdit => 'Edit profile';
+
+  @override
+  String get profilesName => 'Profile name';
+
+  @override
+  String get profilesColor => 'Color';
+
+  @override
+  String get profilesDelete => 'Delete profile';
+
+  @override
+  String profilesDeleteConfirm(String name) {
+    return 'Delete profile “$name”? Its collection is removed from this device; data in the Google account is kept.';
+  }
+
+  @override
+  String get profilesActive => 'Current profile';
+
+  @override
+  String get profilesSwitch => 'Switch profile';
+
+  @override
+  String get profilesManage => 'Manage profiles';
+
+  @override
+  String get profilesAskOnStartup => 'Ask for profile on startup';
+
+  @override
+  String get profilesAskOnStartupSubtitle => 'When there are several profiles';
+
+  @override
+  String get settingsProfilesSubtitle => 'Separate collections for each family member';
+
+  @override
   String get commonRetry => 'Retry';
 
   @override

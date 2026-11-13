@@ -10,6 +10,9 @@ import '../features/downloads/presentation/downloads_page.dart';
 import '../features/home/presentation/home_page.dart';
 import '../features/manga/presentation/manga_reader_page.dart';
 import '../features/player/presentation/player_page.dart';
+import '../features/profiles/presentation/manage_profiles_page.dart';
+import '../features/profiles/presentation/profile_picker_page.dart';
+import '../features/profiles/presentation/profiles_providers.dart';
 import '../features/search/presentation/search_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/suppliers_settings_page.dart';
@@ -26,6 +29,8 @@ abstract final class AppRoutes {
   static const collection = '/collection';
   static const settings = '/settings';
   static const settingsSuppliers = '/settings/suppliers';
+  static const settingsProfiles = '/settings/profiles';
+  static const profiles = '/profiles';
   static const downloads = '/downloads';
   static const install = '/install';
 
@@ -43,6 +48,7 @@ GoRouter router(Ref ref) {
   bool needsInstall() => !AppConfig.hasDevSupplierLib && ref.read(supplierRegistryProvider) is SupplierBundleMissing;
   final registryChanges = ValueNotifier(0);
   ref.listen(supplierRegistryProvider, (_, _) => registryChanges.value++);
+  ref.listen(profilePickPendingProvider, (_, _) => registryChanges.value++);
 
   final router = GoRouter(
     initialLocation: AppRoutes.home,
@@ -52,11 +58,16 @@ GoRouter router(Ref ref) {
       final install = needsInstall();
       if (install && !atInstall) return AppRoutes.install;
       if (!install && atInstall) return AppRoutes.home;
+      // Profile picker once per app run when there are several profiles (spec-05 §5.4).
+      if (!install && ref.read(profilePickPendingProvider) && state.matchedLocation != AppRoutes.profiles) {
+        return AppRoutes.profiles;
+      }
       return null;
     },
     errorBuilder: (context, state) => const _NotFoundPage(),
     routes: [
       GoRoute(path: AppRoutes.install, builder: (_, _) => const SupplierInstallPage()),
+      GoRoute(path: AppRoutes.profiles, builder: (_, _) => const ProfilePickerPage()),
       ShellRoute(
         builder: (context, state, child) => UpdateNoticeListener(
           child: AppShell(location: state.uri.path, child: child),
@@ -73,7 +84,10 @@ GoRouter router(Ref ref) {
           GoRoute(
             path: AppRoutes.settings,
             builder: (_, _) => const SettingsPage(),
-            routes: [GoRoute(path: 'suppliers', builder: (_, _) => const SuppliersSettingsPage())],
+            routes: [
+              GoRoute(path: 'suppliers', builder: (_, _) => const SuppliersSettingsPage()),
+              GoRoute(path: 'profiles', builder: (_, _) => const ManageProfilesPage()),
+            ],
           ),
           GoRoute(path: AppRoutes.downloads, builder: (_, _) => const DownloadsPage()),
         ],

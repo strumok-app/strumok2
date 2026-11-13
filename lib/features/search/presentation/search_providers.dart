@@ -8,6 +8,7 @@ import '../../../core/localization.dart';
 import '../../../core/paging/paged_items.dart';
 import '../../../core/riverpod/cache_for.dart';
 import '../../../core/storage/app_preferences.dart';
+import '../../profiles/presentation/profiles_providers.dart';
 import '../../suppliers/data/supplier_registry.dart';
 import '../../suppliers/presentation/supplier_configs.dart';
 import '../domain/search.dart';
@@ -64,11 +65,15 @@ class SearchFiltersNotifier extends _$SearchFiltersNotifier {
   }
 }
 
+/// Per profile (spec-05 §5.2).
 @Riverpod(keepAlive: true)
 class SearchHistory extends _$SearchHistory {
+  late String _key;
+
   @override
   List<SearchHistoryEntry> build() {
-    final raw = ref.read(appPreferencesProvider).getString(AppPreferences.searchHistory);
+    _key = AppPreferences.profileSearchHistory(ref.watch(activeProfileIdProvider));
+    final raw = ref.read(appPreferencesProvider).getString(_key);
     if (raw == null) return const [];
     try {
       final entries = [
@@ -90,9 +95,7 @@ class SearchHistory extends _$SearchHistory {
 
   Future<void> _save(List<SearchHistoryEntry> entries) async {
     state = entries;
-    await ref
-        .read(appPreferencesProvider)
-        .setString(AppPreferences.searchHistory, jsonEncode([for (final e in entries) e.toJson()]));
+    await ref.read(appPreferencesProvider).setString(_key, jsonEncode([for (final e in entries) e.toJson()]));
   }
 }
 

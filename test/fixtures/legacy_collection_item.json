@@ -1,0 +1,86 @@
+{
+    "uakinosome|film|123-titlehtml": {
+        "id": "some/film/123-title.html",
+        "supplier": "uakino",
+        "title": "Тіні забутих предків",
+        "image": "https://example.com/poster.jpg",
+        "mediaType": "video",
+        "currentItem": 3,
+        "currentSourceName": "Server 1 (UA)",
+        "currentSubtitleName": null,
+        "positions": {
+            "0": {
+                "position": 1310,
+                "length": 1325
+            },
+            "3": {
+                "position": 412,
+                "length": 1400
+            }
+        },
+        "status": "inProgress",
+        "priority": 2,
+        "lastSeen": 1731222222000
+    },
+    "mangadexabc": {
+        "id": "abc",
+        "supplier": "mangadex",
+        "title": "Berserk",
+        "image": "https://example.com/b.jpg",
+        "mediaType": "manga",
+        "currentItem": 0,
+        "currentSourceName": "UA scan",
+        "currentSubtitleName": null,
+        "positions": {
+            "0": {
+                "position": 12,
+                "length": 40
+            }
+        },
+        "status": "latter",
+        "priority": 1,
+        "lastSeen": 1731222000000
+    },
+    "uakinohold": {
+        "id": "hold",
+        "supplier": "uakino",
+        "title": "On hold",
+        "image": "",
+        "mediaType": "video",
+        "currentItem": 0,
+        "currentSourceName": null,
+        "currentSubtitleName": null,
+        "positions": {},
+        "status": "onHold",
+        "priority": 0,
+        "lastSeen": 1700000000000
+    },
+    "uakinodone": {
+        "id": "done",
+        "supplier": "uakino",
+        "title": "Done",
+        "image": "",
+        "mediaType": "video",
+        "currentItem": 9,
+        "currentSourceName": null,
+        "currentSubtitleName": "UA",
+        "positions": {},
+        "status": "complete",
+        "priority": 1,
+        "lastSeen": 1600000000000
+    },
+    "uakinonone": {
+        "id": "none",
+        "supplier": "uakino",
+        "title": "None",
+        "image": "",
+        "mediaType": "video",
+        "currentItem": 0,
+        "currentSourceName": null,
+        "currentSubtitleName": null,
+        "positions": {},
+        "status": "none",
+        "priority": 1,
+        "lastSeen": 1500000000000
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "id": "serial/42",
+    "supplier": "anitube",
+    "title": "Naruto",
+    "image": "https://example.com/n.jpg",
+    "currentItem": 2.0,
+    "positions": [
+        {
+            "position": 1300.0,
+            "length": 1420
+        },
+        null,
+        {
+            "position": 61,
+            "length": 1420.0
+        }
+    ],
+    "status": "inProgress",
+    "lastSeen": 1731222222000.0,
+    "someFutureField": true
+}

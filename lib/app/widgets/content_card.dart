@@ -13,7 +13,24 @@ class ContentCard extends StatefulWidget {
   final double width;
   final bool autofocus;
 
-  const ContentCard({super.key, required this.info, required this.width, this.autofocus = false});
+  /// Replaces the secondary title (e.g. "Episode 3").
+  final String? caption;
+
+  /// 0..1 progress bar under the poster.
+  final double? progress;
+
+  /// Small label over the poster (e.g. supplier name).
+  final String? badge;
+
+  const ContentCard({
+    super.key,
+    required this.info,
+    required this.width,
+    this.autofocus = false,
+    this.caption,
+    this.progress,
+    this.badge,
+  });
 
   @override
   State<ContentCard> createState() => _ContentCardState();
@@ -58,12 +75,42 @@ class _ContentCardState extends State<ContentCard> {
                           border: Border.all(color: theme.colorScheme.onSurface, width: 3),
                         )
                       : null,
-                  child: ClipRRect(borderRadius: radius, child: AppNetworkImage(info.image)),
+                  child: ClipRRect(
+                    borderRadius: radius,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        AppNetworkImage(info.image),
+                        if (widget.badge case final badge?)
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                              margin: const EdgeInsets.all(6),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.9),
+                                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                              ),
+                              child: Text(badge, style: theme.textTheme.labelSmall),
+                            ),
+                          ),
+                        if (widget.progress case final progress? when progress > 0)
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 4,
+                              borderRadius: BorderRadius.zero,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
               Text(info.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall),
-              if (info.secondaryTitle case final secondary? when secondary.isNotEmpty)
+              if (widget.caption ?? info.secondaryTitle case final secondary? when secondary.isNotEmpty)
                 Text(
                   secondary,
                   maxLines: 1,
