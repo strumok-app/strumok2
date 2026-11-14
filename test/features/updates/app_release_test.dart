@@ -7,6 +7,7 @@ const releaseJson = <String, Object?>{
   'name': 'v1.32.0',
   'html_url': 'https://example.com/releases/v1.32.0',
   'tag_name': 'v1.32.0',
+  'body': '## What\'s Changed\r\n* Faster startup\r\n',
   'assets': [
     {'name': 'app-release.apk', 'browser_download_url': 'https://example.com/app-release.apk', 'size': 1},
     {'name': 'strumok-linux.tar.gz', 'browser_download_url': 'https://example.com/strumok-linux.tar.gz'},
@@ -19,7 +20,8 @@ void main() {
     final release = AppRelease.tryParse(releaseJson)!;
     expect(release.version, const SemVer(1, 32, 0));
     expect(release.assets, hasLength(3));
-    expect(release.htmlUrl, 'https://example.com/releases/v1.32.0');
+    expect(release.notes, "## What's Changed\n* Faster startup");
+    expect(AppRelease.tryParse({...releaseJson, 'body': '  '})!.notes, isNull);
   });
 
   test('invalid metadata yields null', () {
@@ -46,6 +48,7 @@ void main() {
     final release = AppRelease.tryParse(releaseJson)!;
     final again = AppRelease.tryParse(release.toJson())!;
     expect(again.version, release.version);
+    expect(again.notes, release.notes);
     expect(again.assetFor(AppPlatform.windows)?.downloadUrl, 'https://example.com/StrumokSetup.exe');
   });
 }

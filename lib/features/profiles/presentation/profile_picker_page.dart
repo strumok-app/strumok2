@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
+import '../../../app/widgets/focus_highlight.dart';
 import '../../../core/localization.dart';
 import 'profile_avatar.dart';
 import 'profile_edit_dialog.dart';
@@ -91,7 +92,6 @@ class _PickerTileState extends State<_PickerTile> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return InkWell(
       autofocus: widget.autofocus,
       borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -108,14 +108,7 @@ class _PickerTileState extends State<_PickerTile> {
             child: Column(
               spacing: 12,
               children: [
-                DecoratedBox(
-                  position: DecorationPosition.foreground,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: _focused ? Border.all(color: colors.onSurface, width: 3) : null,
-                  ),
-                  child: widget.avatar,
-                ),
+                FocusRing(focused: _focused, child: widget.avatar),
                 Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
               ],
             ),

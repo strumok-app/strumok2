@@ -13,6 +13,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonCancel => 'Cancel';
 
   @override
+  String get commonClose => 'Close';
+
+  @override
   String get commonSave => 'Save';
 
   @override
@@ -193,9 +196,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEn => 'English';
 
   @override
-  String get languageJa => 'Japanese';
-
-  @override
   String get detailsWatch => 'Watch';
 
   @override
@@ -242,6 +242,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountNotSignedIn => 'Not signed in';
+
+  @override
+  String get accountSignInGoogle => 'Sign in with Google';
+
+  @override
+  String get accountSignInWithCode => 'Sign in with a code';
+
+  @override
+  String get accountConnectTv => 'Connect a TV';
+
+  @override
+  String get accountSignOut => 'Sign out';
+
+  @override
+  String get accountSignIn => 'Sign in';
+
+  @override
+  String get accountSignInBrowser => 'Continue signing in in your browser';
+
+  @override
+  String get accountSigningIn => 'Signing in…';
+
+  @override
+  String get accountSignInFailed => 'Could not sign in. Check your connection and try again.';
+
+  @override
+  String get accountSignInUnavailable => 'Sign-in is not available in this build';
+
+  @override
+  String accountAlreadyLinked(String name) {
+    return 'This account is already linked to profile “$name”.';
+  }
+
+  @override
+  String get accountSwitchToProfile => 'Switch to profile';
+
+  @override
+  String get accountSyncHint => 'The collection syncs with the Google account';
+
+  @override
+  String get pairingCodeTitle => 'Sign in with a code';
+
+  @override
+  String get pairingCodeInstruction =>
+      'On a phone or computer where you are signed in, open the account menu → “Connect a TV” and enter the code shown there.';
+
+  @override
+  String get pairingCodeLabel => 'Code';
+
+  @override
+  String get pairingCodeInvalid => 'Invalid or expired code';
+
+  @override
+  String get connectTvTitle => 'Connect a TV';
+
+  @override
+  String get connectTvInstruction => 'On the TV, open the account menu → “Sign in with a code” and enter this code.';
+
+  @override
+  String get connectTvFailed => 'Could not get a code';
 
   @override
   String get detailsTitle => 'Details';
@@ -342,6 +402,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appUpdateReleaseNotes => 'Release notes';
+
+  @override
+  String appUpdateReleaseNotesTitle(String version) {
+    return 'What\'s new in $version';
+  }
 
   @override
   String suppliersBundleUpdateAvailable(String version) {

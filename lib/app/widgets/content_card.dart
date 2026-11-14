@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../router.dart';
 import 'app_network_image.dart';
+import 'focus_highlight.dart';
 
 const posterAspectRatio = 2 / 3;
 
-/// Poster card opening the details page. On focus (TV/keyboard) it scales up, shows a ring and scrolls into view.
+/// Poster card opening the details page. On focus (TV/keyboard) it scales up, shows an outer ring and scrolls into view.
 class ContentCard extends StatefulWidget {
   final ContentInfo info;
   final double width;
@@ -68,13 +69,9 @@ class _ContentCardState extends State<ContentCard> {
             children: [
               AspectRatio(
                 aspectRatio: posterAspectRatio,
-                child: Container(
-                  foregroundDecoration: _focused
-                      ? BoxDecoration(
-                          borderRadius: radius,
-                          border: Border.all(color: theme.colorScheme.onSurface, width: 3),
-                        )
-                      : null,
+                child: FocusRing(
+                  focused: _focused,
+                  borderRadius: radius,
                   child: ClipRRect(
                     borderRadius: radius,
                     child: Stack(

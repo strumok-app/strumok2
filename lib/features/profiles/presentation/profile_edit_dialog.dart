@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../app/widgets/text_field_arrow_escape.dart';
 import '../../../core/localization.dart';
 import '../domain/profile.dart';
 
@@ -54,13 +55,16 @@ class _ProfileEditDialogState extends State<_ProfileEditDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 16,
           children: [
-            TextField(
-              key: const Key('profileNameField'),
+            TextFieldArrowEscape(
               controller: _name,
-              autofocus: true,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _save(),
-              decoration: InputDecoration(hintText: l10n.profilesName),
+              child: TextField(
+                key: const Key('profileNameField'),
+                controller: _name,
+                autofocus: true,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _save(),
+                decoration: InputDecoration(hintText: l10n.profilesName),
+              ),
             ),
             Text(l10n.profilesColor, style: Theme.of(context).textTheme.titleSmall),
             FocusTraversalGroup(

@@ -97,11 +97,11 @@ class FakeMediaItem implements ContentMediaItem {
   @override
   final String? section;
   @override
-  String? get image => null;
+  final String? image;
   @override
   Future<List<ContentMediaItemSource>> get sources async => const [];
 
-  const FakeMediaItem(this.number, this.title, {this.section});
+  const FakeMediaItem(this.number, this.title, {this.section, this.image});
 }
 
 class FakeDetails implements ContentDetails {

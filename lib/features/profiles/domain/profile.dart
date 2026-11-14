@@ -7,7 +7,7 @@ final class Profile {
   /// Avatar color (ARGB).
   final int colorSeed;
 
-  /// Set when linked to a Google account (M4).
+  /// Set when linked to a Google account; cached with name/photo for the picker (spec-05 §5.1).
   final String? firebaseUid;
   final String? accountName;
   final String? accountPhotoUrl;
@@ -42,6 +42,20 @@ final class Profile {
     'accountName': accountName,
     'accountPhotoUrl': accountPhotoUrl,
   };
+
+  bool get isLinked => firebaseUid != null;
+
+  Profile withAccount({required String uid, String? name, String? photoUrl}) => Profile(
+    id: id,
+    name: this.name,
+    colorSeed: colorSeed,
+    createdAt: createdAt,
+    firebaseUid: uid,
+    accountName: name,
+    accountPhotoUrl: photoUrl,
+  );
+
+  Profile withoutAccount() => Profile(id: id, name: name, colorSeed: colorSeed, createdAt: createdAt);
 
   Profile copyWith({String? name, int? colorSeed}) => Profile(
     id: id,

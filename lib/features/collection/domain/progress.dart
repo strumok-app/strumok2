@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:content_suppliers_api/content_suppliers_api.dart';
+
 import 'collection_item.dart';
 
 /// Write rules for playback/reading progress (spec-03 §3.3). Each returns the item to save, or null when
@@ -43,3 +47,24 @@ CollectionItem? updateMangaProgress(
 /// `priority` only applies to items in the collection.
 CollectionItem? updatePriority(CollectionItem item, CollectionPriority priority) =>
     item.status == CollectionStatus.none || item.priority == priority ? null : item.copyWith(priority: priority);
+
+/// Video tail treated as "watched" (resume rule, spec-06), capped at 10% of the length for short videos.
+const _videoCompletedTail = 60;
+
+/// Video: within the last 60 s; manga: the last page was reached. Unknown length is never completed.
+bool isMediaItemCompleted(MediaType type, MediaItemPosition position) {
+  final length = position.length;
+  if (length <= 0) return false;
+  return switch (type) {
+    MediaType.video => length - position.position <= min(_videoCompletedTail, max(1, length ~/ 10)),
+    MediaType.manga => position.position >= length - 1,
+  };
+}
+
+/// 0..1 for progress bars; null when the length is unknown. Manga pages are 0-based, so the last page is 1.
+double? mediaItemProgress(MediaType type, MediaItemPosition position) {
+  if (position.length <= 0) return null;
+  if (isMediaItemCompleted(type, position)) return 1;
+  final done = type == MediaType.manga ? position.position + 1 : position.position;
+  return (done / position.length).clamp(0, 1).toDouble();
+}

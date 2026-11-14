@@ -10,6 +10,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/localization.dart';
 import '../../../core/platform/app_paths.dart';
 import '../../../core/storage/app_preferences.dart';
+import '../../auth/domain/app_user.dart';
+import '../../auth/presentation/auth_providers.dart';
 import '../domain/profile.dart';
 
 part 'profiles_providers.g.dart';
@@ -62,6 +64,33 @@ class Profiles extends _$Profiles {
     await _persist(state);
   }
 
+  /// Links [id] to the signed-in [user]; a uid may be linked to one profile only (spec-05 §5.2).
+  Future<void> linkAccount(String id, AppUser user) async {
+    final owner = state.where((p) => p.id != id && p.firebaseUid == user.uid).firstOrNull;
+    if (owner != null) throw AccountAlreadyLinkedException(owner.id);
+    await _updateProfile(id, (p) => p.withAccount(uid: user.uid, name: _accountName(user), photoUrl: user.photoUrl));
+  }
+
+  Future<void> unlinkAccount(String id) => _updateProfile(id, (p) => p.withoutAccount());
+
+  /// Keeps cached account details current; a lost session (null user) unlinks the profile.
+  Future<void> syncAccount(String id, AppUser? user) async {
+    final profile = state.where((p) => p.id == id).firstOrNull;
+    if (profile == null || !profile.isLinked) return;
+    if (user == null) return unlinkAccount(id);
+    if (user.uid != profile.firebaseUid) return;
+    final name = _accountName(user);
+    if (name == profile.accountName && user.photoUrl == profile.accountPhotoUrl) return;
+    await _updateProfile(id, (p) => p.withAccount(uid: user.uid, name: name, photoUrl: user.photoUrl));
+  }
+
+  static String? _accountName(AppUser user) => user.displayName ?? user.email;
+
+  Future<void> _updateProfile(String id, Profile Function(Profile) update) async {
+    state = [for (final p in state) p.id == id ? update(p) : p];
+    await _persist(state);
+  }
+
   /// Removes the profile and its local data; Firebase data is never touched (spec-05 §5.4).
   /// The active profile cannot be deleted (switch first), nor the last one.
   Future<void> delete(String id) async {
@@ -75,6 +104,8 @@ class Profiles extends _$Profiles {
     ];
     await _persist(state);
     await _prefs.remove(AppPreferences.profileSearchHistory(id));
+    // Its own signed-in session and database cache (spec-05 §5.2).
+    await ref.read(profileFirebaseAppsProvider)?.delete(id);
     final dir = profileDirectory(ref.read(appPathsProvider), id);
     try {
       if (dir.existsSync()) await dir.delete(recursive: true);

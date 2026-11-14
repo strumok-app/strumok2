@@ -13,6 +13,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonCancel => 'Скасувати';
 
   @override
+  String get commonClose => 'Закрити';
+
+  @override
   String get commonSave => 'Зберегти';
 
   @override
@@ -193,9 +196,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get languageEn => 'Англійська';
 
   @override
-  String get languageJa => 'Японська';
-
-  @override
   String get detailsWatch => 'Дивитися';
 
   @override
@@ -242,6 +242,67 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get accountNotSignedIn => 'Ви не увійшли';
+
+  @override
+  String get accountSignInGoogle => 'Увійти через Google';
+
+  @override
+  String get accountSignInWithCode => 'Увійти за кодом';
+
+  @override
+  String get accountConnectTv => 'Підключити телевізор';
+
+  @override
+  String get accountSignOut => 'Вийти';
+
+  @override
+  String get accountSignIn => 'Увійти';
+
+  @override
+  String get accountSignInBrowser => 'Продовжіть вхід у браузері';
+
+  @override
+  String get accountSigningIn => 'Вхід…';
+
+  @override
+  String get accountSignInFailed => 'Не вдалося увійти. Перевірте з’єднання та спробуйте ще раз.';
+
+  @override
+  String get accountSignInUnavailable => 'Вхід недоступний у цій збірці застосунку';
+
+  @override
+  String accountAlreadyLinked(String name) {
+    return 'Цей обліковий запис уже прив’язаний до профілю «$name».';
+  }
+
+  @override
+  String get accountSwitchToProfile => 'Перейти до профілю';
+
+  @override
+  String get accountSyncHint => 'Колекція синхронізується з обліковим записом Google';
+
+  @override
+  String get pairingCodeTitle => 'Вхід за кодом';
+
+  @override
+  String get pairingCodeInstruction =>
+      'На телефоні чи комп’ютері, де ви вже увійшли, відкрийте меню облікового запису → «Підключити телевізор» і введіть показаний код.';
+
+  @override
+  String get pairingCodeLabel => 'Код';
+
+  @override
+  String get pairingCodeInvalid => 'Невірний або прострочений код';
+
+  @override
+  String get connectTvTitle => 'Підключення телевізора';
+
+  @override
+  String get connectTvInstruction =>
+      'На телевізорі відкрийте меню облікового запису → «Увійти за кодом» і введіть цей код.';
+
+  @override
+  String get connectTvFailed => 'Не вдалося отримати код';
 
   @override
   String get detailsTitle => 'Деталі';
@@ -342,6 +403,11 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get appUpdateReleaseNotes => 'Що нового';
+
+  @override
+  String appUpdateReleaseNotesTitle(String version) {
+    return 'Що нового у версії $version';
+  }
 
   @override
   String suppliersBundleUpdateAvailable(String version) {

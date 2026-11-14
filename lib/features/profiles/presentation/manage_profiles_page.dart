@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/localization.dart';
+import '../../auth/presentation/account_flows.dart';
+import '../../auth/presentation/auth_providers.dart';
 import '../domain/profile.dart';
 import 'profile_avatar.dart';
 import 'profile_edit_dialog.dart';
 import 'profiles_providers.dart';
 
-/// Settings → Profiles (spec-05 §5.4). Account linking arrives with M4.
+/// Settings → Profiles (spec-05 §5.4): add, rename/color, link or unlink a Google account, delete.
 class ManageProfilesPage extends ConsumerWidget {
   const ManageProfilesPage({super.key});
 
@@ -50,6 +52,12 @@ class ManageProfilesPage extends ConsumerWidget {
     final theme = Theme.of(context);
     final profiles = ref.watch(profilesProvider);
     final activeId = ref.watch(activeProfileIdProvider);
+    final accounts = ref.watch(accountsAvailableProvider);
+
+    String subtitle(Profile profile) => [
+      if (profile.id == activeId) l10n.profilesActive,
+      if (profile.isLinked) profile.accountName ?? l10n.accountSyncHint else l10n.accountNotSignedIn,
+    ].join(' · ');
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -64,15 +72,38 @@ class ManageProfilesPage extends ConsumerWidget {
                 ListTile(
                   leading: ProfileAvatar(profile: profile),
                   title: Text(profile.name),
-                  subtitle: Text(profile.id == activeId ? l10n.profilesActive : l10n.accountNotSignedIn),
+                  subtitle: Text(subtitle(profile)),
                   onTap: () => _edit(context, ref, profile),
-                  trailing: IconButton(
-                    tooltip: l10n.profilesDelete,
-                    icon: const Icon(Icons.delete_outline),
-                    // The active profile can't be deleted; switch first.
-                    onPressed: profile.id == activeId || profiles.length <= 1
-                        ? null
-                        : () => _delete(context, ref, profile),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (accounts)
+                        profile.isLinked
+                            ? IconButton(
+                                key: Key('profileSignOut-${profile.id}'),
+                                tooltip: l10n.accountSignOut,
+                                icon: const Icon(Icons.logout),
+                                onPressed: () => runAccountAction(
+                                  context,
+                                  ref,
+                                  () => ref.read(accountControllerProvider.notifier).signOut(profile.id),
+                                ),
+                              )
+                            : IconButton(
+                                key: Key('profileSignIn-${profile.id}'),
+                                tooltip: l10n.accountSignIn,
+                                icon: const Icon(Icons.login),
+                                onPressed: () => signInFlow(context, ref, profile.id),
+                              ),
+                      IconButton(
+                        tooltip: l10n.profilesDelete,
+                        icon: const Icon(Icons.delete_outline),
+                        // The active profile can't be deleted; switch first.
+                        onPressed: profile.id == activeId || profiles.length <= 1
+                            ? null
+                            : () => _delete(context, ref, profile),
+                      ),
+                    ],
                   ),
                 ),
             ],

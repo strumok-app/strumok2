@@ -80,7 +80,7 @@ enum ContentMediaItemSource {
 - Media item **position = index** in the returned list (0-based). This index is what the collection stores as
   `currentItem` and as `positions` keys — never re-sort items.
 - Enum mapping Rust→Dart is by lowercase name (`Movie`→`movie`). Unknown values are ignored, not errors.
-- Supported languages are strings matched to `ContentLanguage.name` (`en`, `uk`, `ja`).
+- Supported languages are strings matched to `ContentLanguage.name` (`en`, `uk`); other codes (e.g. legacy `ja`) are ignored.
 - `headers` MUST be sent for every request to that source (player, downloads, subtitles, manga images).
 - `hls_proxy: true` means the source's HLS segments are disguised with a junk prefix: playback MUST go through the
   local dejunking HLS proxy ([spec-12](spec-12-hls-ts-dejunking.instructions.md)). Downloads dejunk TS segments always,

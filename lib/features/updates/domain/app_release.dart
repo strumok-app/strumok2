@@ -13,9 +13,11 @@ final class AppRelease {
   final String name;
   final SemVer version;
   final List<ReleaseAsset> assets;
-  final String? htmlUrl;
 
-  const AppRelease({required this.name, required this.version, required this.assets, this.htmlUrl});
+  /// Release description (GitHub `body`), shown as "what's new".
+  final String? notes;
+
+  const AppRelease({required this.name, required this.version, required this.assets, this.notes});
 
   /// Returns null when the JSON is not a valid release; unknown fields are ignored.
   static AppRelease? tryParse(Map<String, Object?> json) {
@@ -29,13 +31,14 @@ final class AppRelease {
         if (asset is Map && asset['name'] is String && asset['browser_download_url'] is String)
           ReleaseAsset(name: asset['name'] as String, downloadUrl: asset['browser_download_url'] as String),
     ];
-    final htmlUrl = json['html_url'];
-    return AppRelease(name: name, version: version, assets: assets, htmlUrl: htmlUrl is String ? htmlUrl : null);
+    final body = json['body'];
+    final notes = body is String ? body.replaceAll('\r\n', '\n').trim() : '';
+    return AppRelease(name: name, version: version, assets: assets, notes: notes.isEmpty ? null : notes);
   }
 
   Map<String, Object?> toJson() => {
     'name': name,
-    'html_url': htmlUrl,
+    'body': notes,
     'assets': [
       for (final a in assets) {'name': a.name, 'browser_download_url': a.downloadUrl},
     ],

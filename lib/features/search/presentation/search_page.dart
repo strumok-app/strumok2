@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/widgets/content_row.dart';
 import '../../../app/widgets/state_views.dart';
+import '../../../app/widgets/text_field_arrow_escape.dart';
 import '../../../core/localization.dart';
 import '../../../core/platform/device_class.dart';
 import '../domain/search.dart';
@@ -44,14 +45,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     super.dispose();
   }
 
-  // A single-line field swallows arrow down; use it to leave the field: recent searches first, else results.
+  // Arrow down goes to recent searches first; other arrows are handled by [TextFieldArrowEscape].
   KeyEventResult _onFieldKey(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent || event.logicalKey != LogicalKeyboardKey.arrowDown) return KeyEventResult.ignored;
-    if (_suggestionsVisible) {
-      _firstSuggestion.requestFocus();
-      return KeyEventResult.handled;
+    if (event is! KeyDownEvent || event.logicalKey != LogicalKeyboardKey.arrowDown || !_suggestionsVisible) {
+      return KeyEventResult.ignored;
     }
-    return node.focusInDirection(TraversalDirection.down) ? KeyEventResult.handled : KeyEventResult.ignored;
+    _firstSuggestion.requestFocus();
+    return KeyEventResult.handled;
   }
 
   void _submit(String query) {
@@ -81,26 +81,29 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             spacing: 8,
             children: [
               Expanded(
-                child: TextField(
+                child: TextFieldArrowEscape(
                   controller: _controller,
-                  focusNode: _focusNode,
-                  // No autofocus on TV: it would pop up the on-screen keyboard.
-                  autofocus: !isTv && query == null,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: _submit,
-                  decoration: InputDecoration(
-                    hintText: l10n.searchHint,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _controller.text.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: l10n.searchClear,
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              _controller.clear();
-                              _focusNode.requestFocus();
-                            },
-                          ),
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    // No autofocus on TV: it would pop up the on-screen keyboard.
+                    autofocus: !isTv && query == null,
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: _submit,
+                    decoration: InputDecoration(
+                      hintText: l10n.searchHint,
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _controller.text.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: l10n.searchClear,
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                _controller.clear();
+                                _focusNode.requestFocus();
+                              },
+                            ),
+                    ),
                   ),
                 ),
               ),

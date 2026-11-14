@@ -14,7 +14,6 @@ extension ContentLabels on AppLocalizations {
   String contentLanguage(ContentLanguage language) => switch (language) {
     ContentLanguage.en => languageEn,
     ContentLanguage.uk => languageUk,
-    ContentLanguage.ja => languageJa,
   };
 
   String mediaType(MediaType type) => switch (type) {

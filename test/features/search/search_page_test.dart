@@ -84,6 +84,34 @@ void main() {
     expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, 'Naruto');
   });
 
+  testAppWidgets('arrows leave the field: right to filters, left to the rail, down to results', (tester) async {
+    await openSearch(tester, [FakeSupplier('alpha', onSearch: pagesOf('alpha', pages: 1, count: 1))]);
+    T? focusedIn<T extends Widget>() => FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<T>();
+    Future<void> press(LogicalKeyboardKey key) async {
+      await tester.sendKeyEvent(key);
+      await tester.pumpAndSettle();
+    }
+
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+    await press(LogicalKeyboardKey.arrowRight);
+    expect(focusedIn<IconButton>()?.key, const Key('searchFiltersButton'));
+    await press(LogicalKeyboardKey.arrowLeft);
+    expect(focusedIn<TextField>(), isNotNull);
+    await press(LogicalKeyboardKey.arrowLeft);
+    expect(focusedIn<NavigationRail>(), isNotNull);
+
+    await tester.enterText(find.byType(TextField), 'matrix');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+    await press(LogicalKeyboardKey.arrowLeft);
+    expect(focusedIn<TextField>(), isNotNull, reason: 'left moves the caret inside the text');
+    await press(LogicalKeyboardKey.arrowDown);
+    expect(focusedIn<ContentCard>(), isNotNull);
+  });
+
   testAppWidgets('filters dialog excludes suppliers', (tester) async {
     await openSearch(tester, [
       FakeSupplier('alpha', onSearch: pagesOf('alpha', pages: 1, count: 1)),

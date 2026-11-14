@@ -6,6 +6,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// google-services.json is git-ignored (spec-10); without it the app builds, but Google sign-in is unavailable.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+} else {
+    logger.warn("android/app/google-services.json not found: Google sign-in will not work on Android")
+}
+
 // Release signing; the key must stay stable for self-update (spec-10, spec-11). File is git-ignored.
 val keystoreProperties = Properties().apply {
     val file = rootProject.file("keystore.properties")

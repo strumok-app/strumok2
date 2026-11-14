@@ -88,7 +88,11 @@ class ContentRow extends ConsumerWidget {
                   ),
                   _ => FilledButton.tonal(
                     onPressed: onLoadMore,
-                    style: FilledButton.styleFrom(padding: const EdgeInsets.all(12)),
+                    // Poster-shaped tile, so it keeps the card radius instead of the pill button shape.
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.all(12),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       spacing: 8,

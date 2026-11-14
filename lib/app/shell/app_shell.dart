@@ -63,6 +63,8 @@ class _AppShellState extends ConsumerState<AppShell> {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _lastIndex,
+          // Labels are shown as tooltips (NavigationDestination.tooltip defaults to its label).
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
           onDestinationSelected: _onDestinationSelected,
           destinations: [
             NavigationDestination(
@@ -89,7 +91,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             NavigationRail(
               selectedIndex: currentIndex,
               onDestinationSelected: _onDestinationSelected,
-              labelType: NavigationRailLabelType.all,
+              labelType: NavigationRailLabelType.none,
               // Fixed slot so destinations don't shift when the back button appears.
               leading: isTv
                   ? null
@@ -105,14 +107,17 @@ class _AppShellState extends ConsumerState<AppShell> {
               ),
               destinations: [
                 NavigationRailDestination(
-                  icon: const Icon(Icons.home_outlined),
-                  selectedIcon: const Icon(Icons.home),
+                  icon: _RailIcon(Icons.home_outlined, tooltip: l10n.navHome),
+                  selectedIcon: _RailIcon(Icons.home, tooltip: l10n.navHome),
                   label: Text(l10n.navHome),
                 ),
-                NavigationRailDestination(icon: const Icon(Icons.search), label: Text(l10n.navSearch)),
                 NavigationRailDestination(
-                  icon: const Icon(Icons.favorite_border),
-                  selectedIcon: const Icon(Icons.favorite),
+                  icon: _RailIcon(Icons.search, tooltip: l10n.navSearch),
+                  label: Text(l10n.navSearch),
+                ),
+                NavigationRailDestination(
+                  icon: _RailIcon(Icons.favorite_border, tooltip: l10n.navCollection),
+                  selectedIcon: _RailIcon(Icons.favorite, tooltip: l10n.navCollection),
                   label: Text(l10n.navCollection),
                 ),
               ],
@@ -128,6 +133,17 @@ class _AppShellState extends ConsumerState<AppShell> {
       ),
     );
   }
+}
+
+/// Rail icon with its (hidden) destination label as tooltip; the label still provides semantics.
+class _RailIcon extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+
+  const _RailIcon(this.icon, {required this.tooltip});
+
+  @override
+  Widget build(BuildContext context) => Tooltip(message: tooltip, excludeFromSemantics: true, child: Icon(icon));
 }
 
 /// Page area on `surface`, set apart from the navigation chrome (`surfaceContainer`) by tone only.

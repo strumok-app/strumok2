@@ -98,6 +98,12 @@ abstract class AppLocalizations {
   /// **'Скасувати'**
   String get commonCancel;
 
+  /// Dialog close button
+  ///
+  /// In uk, this message translates to:
+  /// **'Закрити'**
+  String get commonClose;
+
   /// Dialog save button
   ///
   /// In uk, this message translates to:
@@ -446,12 +452,6 @@ abstract class AppLocalizations {
   /// **'Англійська'**
   String get languageEn;
 
-  /// Language name
-  ///
-  /// In uk, this message translates to:
-  /// **'Японська'**
-  String get languageJa;
-
   /// Details: primary action for video
   ///
   /// In uk, this message translates to:
@@ -547,6 +547,120 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Ви не увійшли'**
   String get accountNotSignedIn;
+
+  /// Account menu: start Google sign-in
+  ///
+  /// In uk, this message translates to:
+  /// **'Увійти через Google'**
+  String get accountSignInGoogle;
+
+  /// Account menu: sign in with a pairing code generated on another device
+  ///
+  /// In uk, this message translates to:
+  /// **'Увійти за кодом'**
+  String get accountSignInWithCode;
+
+  /// Account menu: generate a pairing code for a TV
+  ///
+  /// In uk, this message translates to:
+  /// **'Підключити телевізор'**
+  String get accountConnectTv;
+
+  /// Account menu: sign out of the Google account
+  ///
+  /// In uk, this message translates to:
+  /// **'Вийти'**
+  String get accountSignOut;
+
+  /// Manage profiles: sign the profile in
+  ///
+  /// In uk, this message translates to:
+  /// **'Увійти'**
+  String get accountSignIn;
+
+  /// Shown while desktop Google consent is open in the browser
+  ///
+  /// In uk, this message translates to:
+  /// **'Продовжіть вхід у браузері'**
+  String get accountSignInBrowser;
+
+  /// Progress while signing in
+  ///
+  /// In uk, this message translates to:
+  /// **'Вхід…'**
+  String get accountSigningIn;
+
+  /// Sign-in failed (network/server)
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося увійти. Перевірте з’єднання та спробуйте ще раз.'**
+  String get accountSignInFailed;
+
+  /// Accounts are not configured in this build
+  ///
+  /// In uk, this message translates to:
+  /// **'Вхід недоступний у цій збірці застосунку'**
+  String get accountSignInUnavailable;
+
+  /// Two profiles cannot use the same Google account
+  ///
+  /// In uk, this message translates to:
+  /// **'Цей обліковий запис уже прив’язаний до профілю «{name}».'**
+  String accountAlreadyLinked(String name);
+
+  /// Action: switch to the profile that already uses the account
+  ///
+  /// In uk, this message translates to:
+  /// **'Перейти до профілю'**
+  String get accountSwitchToProfile;
+
+  /// Subtitle under a signed-in profile
+  ///
+  /// In uk, this message translates to:
+  /// **'Колекція синхронізується з обліковим записом Google'**
+  String get accountSyncHint;
+
+  /// Pairing code entry dialog title
+  ///
+  /// In uk, this message translates to:
+  /// **'Вхід за кодом'**
+  String get pairingCodeTitle;
+
+  /// Pairing code entry instructions
+  ///
+  /// In uk, this message translates to:
+  /// **'На телефоні чи комп’ютері, де ви вже увійшли, відкрийте меню облікового запису → «Підключити телевізор» і введіть показаний код.'**
+  String get pairingCodeInstruction;
+
+  /// Pairing code text field label
+  ///
+  /// In uk, this message translates to:
+  /// **'Код'**
+  String get pairingCodeLabel;
+
+  /// Pairing code was rejected
+  ///
+  /// In uk, this message translates to:
+  /// **'Невірний або прострочений код'**
+  String get pairingCodeInvalid;
+
+  /// Connect TV dialog title
+  ///
+  /// In uk, this message translates to:
+  /// **'Підключення телевізора'**
+  String get connectTvTitle;
+
+  /// Connect TV dialog instructions
+  ///
+  /// In uk, this message translates to:
+  /// **'На телевізорі відкрийте меню облікового запису → «Увійти за кодом» і введіть цей код.'**
+  String get connectTvInstruction;
+
+  /// Generating the pairing code failed
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося отримати код'**
+  String get connectTvFailed;
 
   /// Content details page title
   ///
@@ -722,11 +836,17 @@ abstract class AppLocalizations {
   /// **'Відкрити сторінку завантаження'**
   String get appUpdateOpenDownload;
 
-  /// Link to release notes
+  /// Button that opens the release notes dialog
   ///
   /// In uk, this message translates to:
   /// **'Що нового'**
   String get appUpdateReleaseNotes;
+
+  /// Release notes dialog title
+  ///
+  /// In uk, this message translates to:
+  /// **'Що нового у версії {version}'**
+  String appUpdateReleaseNotesTitle(String version);
 
   /// Notice: a newer suppliers library is available
   ///

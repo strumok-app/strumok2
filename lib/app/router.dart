@@ -20,6 +20,7 @@ import '../features/suppliers/data/supplier_registry.dart';
 import '../features/suppliers/presentation/supplier_install_page.dart';
 import '../features/updates/presentation/widgets/update_notice_listener.dart';
 import 'shell/app_shell.dart';
+import 'shell/shell_page.dart';
 
 part 'router.g.dart';
 
@@ -73,23 +74,22 @@ GoRouter router(Ref ref) {
           child: AppShell(location: state.uri.path, child: child),
         ),
         routes: [
-          GoRoute(path: AppRoutes.home, builder: (_, _) => const HomePage()),
-          GoRoute(path: AppRoutes.search, builder: (_, _) => const SearchPage()),
-          GoRoute(path: AppRoutes.collection, builder: (_, _) => const CollectionPage()),
-          GoRoute(
-            path: '/content/:supplier/:id',
-            builder: (_, state) =>
-                DetailsPage(supplier: state.pathParameters['supplier']!, id: state.pathParameters['id']!),
+          _shellRoute(AppRoutes.home, (_) => const HomePage()),
+          _shellRoute(AppRoutes.search, (_) => const SearchPage()),
+          _shellRoute(AppRoutes.collection, (_) => const CollectionPage()),
+          _shellRoute(
+            '/content/:supplier/:id',
+            (state) => DetailsPage(supplier: state.pathParameters['supplier']!, id: state.pathParameters['id']!),
           ),
-          GoRoute(
-            path: AppRoutes.settings,
-            builder: (_, _) => const SettingsPage(),
+          _shellRoute(
+            AppRoutes.settings,
+            (_) => const SettingsPage(),
             routes: [
-              GoRoute(path: 'suppliers', builder: (_, _) => const SuppliersSettingsPage()),
-              GoRoute(path: 'profiles', builder: (_, _) => const ManageProfilesPage()),
+              _shellRoute('suppliers', (_) => const SuppliersSettingsPage()),
+              _shellRoute('profiles', (_) => const ManageProfilesPage()),
             ],
           ),
-          GoRoute(path: AppRoutes.downloads, builder: (_, _) => const DownloadsPage()),
+          _shellRoute(AppRoutes.downloads, (_) => const DownloadsPage()),
         ],
       ),
       GoRoute(
@@ -114,6 +114,14 @@ GoRouter router(Ref ref) {
   ref.onDispose(registryChanges.dispose);
   return router;
 }
+
+/// Route inside the shell; its page lets D-pad focus leave the page for the navigation (see [ShellPage]).
+GoRoute _shellRoute(String path, Widget Function(GoRouterState state) builder, {List<RouteBase> routes = const []}) =>
+    GoRoute(
+      path: path,
+      pageBuilder: (_, state) => ShellPage(state: state, child: builder(state)),
+      routes: routes,
+    );
 
 class _NotFoundPage extends StatelessWidget {
   const _NotFoundPage();

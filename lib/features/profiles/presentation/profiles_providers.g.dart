@@ -40,7 +40,7 @@ final class ProfilesProvider extends $NotifierProvider<Profiles, List<Profile>> 
   }
 }
 
-String _$profilesHash() => r'535d00cdd8c3fb77aedd2f643345795dbebeed99';
+String _$profilesHash() => r'769018e8180f7a529b55e6c6acc320a71b0116ff';
 
 /// Device-wide list of profiles (spec-05 §5.1). The first launch creates a default profile.
 

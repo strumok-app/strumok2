@@ -21,6 +21,8 @@ plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "9.1.0" apply false
     id("org.jetbrains.kotlin.android") version "2.4.0" apply false
+    // Generates the OAuth client resources (default_web_client_id) used by Google Sign-In (spec-04, spec-10).
+    id("com.google.gms.google-services") version "4.4.4" apply false
 }
 
 include(":app")

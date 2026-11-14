@@ -4,6 +4,10 @@
   "@commonCancel": {
     "description": "Dialog cancel button"
   },
+  "commonClose": "Закрити",
+  "@commonClose": {
+    "description": "Dialog close button"
+  },
   "commonSave": "Зберегти",
   "@commonSave": {
     "description": "Dialog save button"
@@ -251,10 +255,6 @@
   "@languageEn": {
     "description": "Language name"
   },
-  "languageJa": "Японська",
-  "@languageJa": {
-    "description": "Language name"
-  },
   "detailsWatch": "Дивитися",
   "@detailsWatch": {
     "description": "Details: primary action for video"
@@ -318,6 +318,87 @@
   "accountNotSignedIn": "Ви не увійшли",
   "@accountNotSignedIn": {
     "description": "Account menu header when no user is signed in"
+  },
+  "accountSignInGoogle": "Увійти через Google",
+  "@accountSignInGoogle": {
+    "description": "Account menu: start Google sign-in"
+  },
+  "accountSignInWithCode": "Увійти за кодом",
+  "@accountSignInWithCode": {
+    "description": "Account menu: sign in with a pairing code generated on another device"
+  },
+  "accountConnectTv": "Підключити телевізор",
+  "@accountConnectTv": {
+    "description": "Account menu: generate a pairing code for a TV"
+  },
+  "accountSignOut": "Вийти",
+  "@accountSignOut": {
+    "description": "Account menu: sign out of the Google account"
+  },
+  "accountSignIn": "Увійти",
+  "@accountSignIn": {
+    "description": "Manage profiles: sign the profile in"
+  },
+  "accountSignInBrowser": "Продовжіть вхід у браузері",
+  "@accountSignInBrowser": {
+    "description": "Shown while desktop Google consent is open in the browser"
+  },
+  "accountSigningIn": "Вхід…",
+  "@accountSigningIn": {
+    "description": "Progress while signing in"
+  },
+  "accountSignInFailed": "Не вдалося увійти. Перевірте з’єднання та спробуйте ще раз.",
+  "@accountSignInFailed": {
+    "description": "Sign-in failed (network/server)"
+  },
+  "accountSignInUnavailable": "Вхід недоступний у цій збірці застосунку",
+  "@accountSignInUnavailable": {
+    "description": "Accounts are not configured in this build"
+  },
+  "accountAlreadyLinked": "Цей обліковий запис уже прив’язаний до профілю «{name}».",
+  "@accountAlreadyLinked": {
+    "description": "Two profiles cannot use the same Google account",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accountSwitchToProfile": "Перейти до профілю",
+  "@accountSwitchToProfile": {
+    "description": "Action: switch to the profile that already uses the account"
+  },
+  "accountSyncHint": "Колекція синхронізується з обліковим записом Google",
+  "@accountSyncHint": {
+    "description": "Subtitle under a signed-in profile"
+  },
+  "pairingCodeTitle": "Вхід за кодом",
+  "@pairingCodeTitle": {
+    "description": "Pairing code entry dialog title"
+  },
+  "pairingCodeInstruction": "На телефоні чи комп’ютері, де ви вже увійшли, відкрийте меню облікового запису → «Підключити телевізор» і введіть показаний код.",
+  "@pairingCodeInstruction": {
+    "description": "Pairing code entry instructions"
+  },
+  "pairingCodeLabel": "Код",
+  "@pairingCodeLabel": {
+    "description": "Pairing code text field label"
+  },
+  "pairingCodeInvalid": "Невірний або прострочений код",
+  "@pairingCodeInvalid": {
+    "description": "Pairing code was rejected"
+  },
+  "connectTvTitle": "Підключення телевізора",
+  "@connectTvTitle": {
+    "description": "Connect TV dialog title"
+  },
+  "connectTvInstruction": "На телевізорі відкрийте меню облікового запису → «Увійти за кодом» і введіть цей код.",
+  "@connectTvInstruction": {
+    "description": "Connect TV dialog instructions"
+  },
+  "connectTvFailed": "Не вдалося отримати код",
+  "@connectTvFailed": {
+    "description": "Generating the pairing code failed"
   },
   "detailsTitle": "Деталі",
   "@detailsTitle": {
@@ -462,7 +543,16 @@
   },
   "appUpdateReleaseNotes": "Що нового",
   "@appUpdateReleaseNotes": {
-    "description": "Link to release notes"
+    "description": "Button that opens the release notes dialog"
+  },
+  "appUpdateReleaseNotesTitle": "Що нового у версії {version}",
+  "@appUpdateReleaseNotesTitle": {
+    "description": "Release notes dialog title",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
   },
   "suppliersBundleUpdateAvailable": "Доступна нова бібліотека постачальників {version}",
   "@suppliersBundleUpdateAvailable": {

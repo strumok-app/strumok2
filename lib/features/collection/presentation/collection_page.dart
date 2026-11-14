@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/widgets/side_sheet.dart';
 import '../../../app/widgets/state_views.dart';
+import '../../../app/widgets/text_field_arrow_escape.dart';
 import '../../../core/content_labels.dart';
 import '../../../core/localization.dart';
 import '../../../core/platform/device_class.dart';
@@ -64,22 +65,25 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
             spacing: 8,
             children: [
               Expanded(
-                child: TextField(
+                child: TextFieldArrowEscape(
                   controller: _controller,
-                  onChanged: ref.read(collectionFilterProvider.notifier).setQuery,
-                  decoration: InputDecoration(
-                    hintText: l10n.collectionSearchHint,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _controller.text.isEmpty
-                        ? null
-                        : IconButton(
-                            tooltip: l10n.searchClear,
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              _controller.clear();
-                              ref.read(collectionFilterProvider.notifier).setQuery('');
-                            },
-                          ),
+                  child: TextField(
+                    controller: _controller,
+                    onChanged: ref.read(collectionFilterProvider.notifier).setQuery,
+                    decoration: InputDecoration(
+                      hintText: l10n.collectionSearchHint,
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _controller.text.isEmpty
+                          ? null
+                          : IconButton(
+                              tooltip: l10n.searchClear,
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                _controller.clear();
+                                ref.read(collectionFilterProvider.notifier).setQuery('');
+                              },
+                            ),
+                    ),
                   ),
                 ),
               ),

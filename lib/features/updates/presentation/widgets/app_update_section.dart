@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/localization.dart';
 import '../../data/app_installer.dart';
 import '../../domain/update_check.dart';
 import '../update_providers.dart';
 import 'install_progress_view.dart';
+import 'release_notes_dialog.dart';
 
 /// Settings → Application version (spec-09 §1, spec-11 §11.2).
 class AppUpdateSection extends ConsumerWidget {
@@ -22,7 +22,7 @@ class AppUpdateSection extends ConsumerWidget {
     final downloads = ref.watch(appInstallerProvider).downloads;
     final installing = install is InstallInProgress;
     final checkError = check.error;
-    final releaseNotes = (available ?? check.latest)?.htmlUrl;
+    final release = available ?? check.latest;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,9 +56,9 @@ class AppUpdateSection extends ConsumerWidget {
                 icon: Icon(downloads ? Icons.system_update : Icons.open_in_new),
                 label: Text(downloads ? l10n.updatesUpdate : l10n.appUpdateOpenDownload),
               ),
-            if (releaseNotes != null)
+            if (release != null && release.notes != null)
               TextButton(
-                onPressed: () => launchUrl(Uri.parse(releaseNotes), mode: LaunchMode.externalApplication),
+                onPressed: () => showReleaseNotesDialog(context, release),
                 child: Text(l10n.appUpdateReleaseNotes),
               ),
           ],

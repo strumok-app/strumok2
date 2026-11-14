@@ -88,6 +88,32 @@ void main() {
     });
   });
 
+  group('item completion and progress display', () {
+    const video = MediaType.video;
+    const manga = MediaType.manga;
+
+    test('video is watched within the last 60 s (10% for short videos)', () {
+      expect(isMediaItemCompleted(video, const MediaItemPosition(position: 2639, length: 2700)), isFalse);
+      expect(isMediaItemCompleted(video, const MediaItemPosition(position: 2640, length: 2700)), isTrue);
+      expect(isMediaItemCompleted(video, const MediaItemPosition(position: 60, length: 120)), isFalse);
+      expect(isMediaItemCompleted(video, const MediaItemPosition(position: 108, length: 120)), isTrue);
+      expect(isMediaItemCompleted(video, const MediaItemPosition(position: 5000)), isFalse);
+    });
+
+    test('manga is read on the last page', () {
+      expect(isMediaItemCompleted(manga, const MediaItemPosition(position: 18, length: 20)), isFalse);
+      expect(isMediaItemCompleted(manga, const MediaItemPosition(position: 19, length: 20)), isTrue);
+      expect(isMediaItemCompleted(manga, const MediaItemPosition(position: 3)), isFalse);
+    });
+
+    test('progress fraction', () {
+      expect(mediaItemProgress(video, const MediaItemPosition(position: 600, length: 2400)), 0.25);
+      expect(mediaItemProgress(video, const MediaItemPosition(position: 2390, length: 2400)), 1);
+      expect(mediaItemProgress(video, const MediaItemPosition(position: 600)), isNull);
+      expect(mediaItemProgress(manga, const MediaItemPosition(position: 4, length: 20)), 0.25);
+    });
+  });
+
   group('query', () {
     test('tokens are lowercase, Cyrillic aware', () {
       expect(searchTokens('Тіні забутих Предків: Part-2'), ['тіні', 'забутих', 'предків', 'part', '2']);

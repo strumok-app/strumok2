@@ -21,6 +21,12 @@ flutter build windows --release --dart-define-from-file=secrets.env
 Linux requires system `libmpv`. Android release signing reads `android/keystore.properties`
 (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`; git-ignored).
 
+Accounts and collection sync need `FIREBASE` (FirebaseOptions JSON) and `CLOUD_FUN_DOMAIN` (TV pairing);
+desktop Google sign-in needs `GOOGLE_AUTH` (`{"identifier": ..., "secret": ...}` installed-app OAuth client).
+Without them the app runs with local-only collections. Android Google sign-in additionally needs
+`android/app/google-services.json` for `app.strumok` (git-ignored; the build skips the Google Services plugin
+when it is missing). Each profile keeps its own Firebase session under `<appSupport>/firebase/<profileId>`.
+
 ## Supplier bridge (FFI)
 
 `packages/content_suppliers_rust` holds the FRB contract crate and generated Dart bindings

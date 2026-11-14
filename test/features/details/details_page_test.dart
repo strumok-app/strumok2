@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/router.dart';
+import 'package:strumok/app/widgets/app_network_image.dart';
+import 'package:strumok/features/collection/domain/collection_item.dart';
+import 'package:strumok/features/collection/presentation/collection_providers.dart';
+import 'package:strumok/features/details/presentation/details_page.dart';
 import 'package:strumok/features/details/presentation/details_providers.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 
@@ -61,9 +65,62 @@ void main() {
 
     await tester.tap(find.widgetWithText(Tab, 'Season 2'));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(ListTile, 'Episode 1'));
+    await tester.tap(find.text('Episode 1'));
     await tester.pumpAndSettle();
     expect(container.read(routerProvider).state.uri.toString(), '/video/alpha/m1?item=2');
+  });
+
+  testAppWidgets('episodes sheet shows previews, collection progress and opens at the current item', (tester) async {
+    final withImages = [
+      for (final item in items)
+        FakeMediaItem(item.number, item.title, section: item.section, image: 'thumb-${item.number}'),
+    ];
+    final (container, _) = await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => withImages));
+    await tester.runAsync(
+      () => container
+          .read(collectionItemsProvider.notifier)
+          .save(
+            const CollectionItem(
+              id: 'm1',
+              supplier: 'alpha',
+              title: 'Fake title',
+              image: '',
+              currentItem: 2,
+              status: CollectionStatus.inProgress,
+              positions: {
+                0: MediaItemPosition(position: 2390, length: 2400),
+                1: MediaItemPosition(position: 600, length: 2400),
+                2: MediaItemPosition(position: 75),
+              },
+            ),
+          ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('mediaItemsButton')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppNetworkImage), findsWidgets);
+    final current = find.byKey(const ValueKey('mediaItem-2'));
+    expect(
+      find.descendant(of: current, matching: find.text('Episode 1')),
+      findsOneWidget,
+      reason: 'opens on Season 2',
+    );
+    expect(find.descendant(of: current, matching: find.byIcon(Icons.play_arrow)), findsOneWidget);
+    expect(Focus.of(tester.element(find.descendant(of: current, matching: find.text('Episode 1')))).hasFocus, isTrue);
+    double? progressOf(Finder tile) => tester
+        .widget<LinearProgressIndicator>(find.descendant(of: tile, matching: find.byType(LinearProgressIndicator)))
+        .value;
+    expect(progressOf(current), 0, reason: 'unknown length');
+
+    await tester.tap(find.widgetWithText(Tab, 'Season 1'));
+    await tester.pumpAndSettle();
+    for (final key in ['mediaItem-0', 'mediaItem-1']) {
+      expect(find.descendant(of: find.byKey(ValueKey(key)), matching: find.byIcon(Icons.play_arrow)), findsNothing);
+    }
+    expect(progressOf(find.byKey(const ValueKey('mediaItem-0'))), 1, reason: 'watched to the end');
+    expect(progressOf(find.byKey(const ValueKey('mediaItem-1'))), 0.25);
   });
 
   testAppWidgets('single section has no tabs; escape closes the sheet', (tester) async {
@@ -73,11 +130,11 @@ void main() {
     await tester.tap(find.byKey(const Key('mediaItemsButton')));
     await tester.pumpAndSettle();
     expect(find.byType(TabBar), findsNothing);
-    expect(find.widgetWithText(ListTile, 'Ep 0'), findsOneWidget);
+    expect(find.text('Ep 0'), findsOneWidget);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(ListTile, 'Ep 0'), findsNothing);
+    expect(find.text('Ep 0'), findsNothing);
     expect(find.text('Fake title'), findsOneWidget);
   });
 
@@ -93,6 +150,23 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(container.read(routerProvider).state.uri.path, AppRoutes.manga('alpha', 'k1'));
+  });
+
+  testAppWidgets('wide layout: poster is flush with the pane edges', (tester) async {
+    await open(
+      tester,
+      FakeDetails('alpha', 'm1', similar: [const FakeInfo('alpha', 's1')], loadItems: () async => items),
+    );
+    final pane = tester.getRect(find.byType(DetailsPage));
+    final poster = tester.getRect(
+      find.descendant(of: find.byType(DetailsPage), matching: find.byType(AppNetworkImage)).last,
+    );
+    expect(poster.topRight, pane.topRight);
+    expect(poster.bottom, pane.bottom);
+
+    final similar = find.ancestor(of: find.text('Схоже', findRichText: true), matching: find.byType(ShaderMask));
+    expect(similar, findsOneWidget, reason: 'rows fade out before the poster');
+    expect(poster.left - tester.getRect(similar).right, greaterThanOrEqualTo(16));
   });
 
   testAppWidgets('narrow layout renders', (tester) async {

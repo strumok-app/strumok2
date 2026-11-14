@@ -70,6 +70,15 @@ void main() {
     expect(c.read(searchItemsProvider('a', 'x')).items, hasLength(1));
   });
 
+  test('persisted languages the app no longer supports (e.g. legacy "ja") are ignored', () async {
+    final prefs = await createTestPreferences({
+      AppPreferences.selectedContentLanguage: ['ja', 'en'],
+    });
+    final c = ProviderContainer(overrides: await testOverrides(prefs: prefs));
+    addTearDown(c.dispose);
+    expect(c.read(searchFiltersProvider).languages, {ContentLanguage.en});
+  });
+
   test('filters and history are persisted', () async {
     final c = await container([FakeSupplier('a'), FakeSupplier('b')]);
     expect(c.read(searchFiltersProvider).languages, {ContentLanguage.uk});

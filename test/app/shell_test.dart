@@ -17,7 +17,10 @@ void main() {
 
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.byType(NavigationRail), findsNothing);
-    expect(find.text('Головна'), findsWidgets);
+    final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+    expect(bar.labelBehavior, NavigationDestinationLabelBehavior.alwaysHide);
+    expect(find.byTooltip('Головна'), findsOneWidget);
+    expect(find.byTooltip('Пошук'), findsOneWidget);
   });
 
   testAppWidgets('wide layout uses navigation rail', (tester) async {
@@ -25,6 +28,10 @@ void main() {
 
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
+    final rail = tester.widget<NavigationRail>(find.byType(NavigationRail));
+    expect(rail.labelType, NavigationRailLabelType.none);
+    expect(find.byTooltip('Головна'), findsOneWidget);
+    expect(find.byTooltip('Пошук'), findsOneWidget);
   });
 
   testAppWidgets('nav destinations switch pages', (tester) async {
@@ -83,6 +90,28 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
     expect(router.state.uri.path, AppRoutes.home);
+  });
+
+  testAppWidgets('tv: arrows move focus between page content and the nav rail', (tester) async {
+    final container = await pumpApp(tester, size: desktop, deviceClass: DeviceClass.tv);
+    unawaited(container.read(routerProvider).push(AppRoutes.settings));
+    await tester.pumpAndSettle();
+
+    bool inRail() =>
+        FocusManager.instance.primaryFocus!.context!.findAncestorWidgetOfExactType<NavigationRail>() != null;
+
+    Focus.of(tester.element(find.descendant(of: find.byType(ListTile).first, matching: find.byType(Text)).first))
+        .requestFocus();
+    await tester.pump();
+    expect(inRail(), isFalse);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
+    await tester.pump();
+    expect(inRail(), isTrue, reason: 'left from the page edge reaches the rail');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(inRail(), isFalse, reason: 'right from the rail returns to the page');
   });
 
   testAppWidgets('escape closes the account dialog before popping', (tester) async {

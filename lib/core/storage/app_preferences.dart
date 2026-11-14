@@ -26,6 +26,7 @@ class AppPreferences {
   static const profiles = 'profiles';
   static const activeProfileId = 'active_profile_id';
   static const profileAskOnStartup = 'profile_ask_on_startup';
+  static const offlineMode = 'offline_mode';
 
   static String profileSearchHistory(String profileId) => '$searchHistory.$profileId';
   static const ffiUpdateLastCheck = 'ffi_update_last_check';

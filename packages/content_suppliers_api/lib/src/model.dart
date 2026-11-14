@@ -2,7 +2,8 @@ enum ContentType { movie, anime, cartoon, series, manga }
 
 enum MediaType { video, manga }
 
-enum ContentLanguage { en, uk, ja }
+/// Languages the app supports; codes a supplier reports that are not listed here are ignored.
+enum ContentLanguage { en, uk }
 
 enum FileKind { video, subtitle, manga }
 

@@ -32,9 +32,10 @@ ThemeData _flatTheme(ColorScheme cs) {
   final focusRing = BorderSide(color: cs.onSurface, width: 2, strokeAlign: BorderSide.strokeAlignOutside);
   WidgetStateProperty<BorderSide?> focusSide([BorderSide? otherwise]) =>
       WidgetStateProperty.resolveWith((states) => states.contains(WidgetState.focused) ? focusRing : otherwise);
+  // All buttons are pills: fully rounded left/right ends (radius = height / 2).
   final flatButton = ButtonStyle(
     elevation: const WidgetStatePropertyAll(0),
-    shape: const WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: _controlRadius)),
+    shape: const WidgetStatePropertyAll(StadiumBorder()),
     side: focusSide(),
   );
 
@@ -106,9 +107,14 @@ ThemeData _flatTheme(ColorScheme cs) {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: flatButton.copyWith(side: focusSide(BorderSide(color: cs.outlineVariant))),
     ),
-    iconButtonTheme: IconButtonThemeData(style: ButtonStyle(side: focusSide())),
+    iconButtonTheme: IconButtonThemeData(
+      style: ButtonStyle(shape: const WidgetStatePropertyAll(StadiumBorder()), side: focusSide()),
+    ),
     segmentedButtonTheme: SegmentedButtonThemeData(
-      style: ButtonStyle(side: focusSide(BorderSide(color: cs.outlineVariant))),
+      style: ButtonStyle(
+        shape: const WidgetStatePropertyAll(StadiumBorder()),
+        side: focusSide(BorderSide(color: cs.outlineVariant)),
+      ),
     ),
     // Selected tab is a tonal pill; no underline or divider.
     tabBarTheme: TabBarThemeData(

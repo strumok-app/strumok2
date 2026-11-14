@@ -2,10 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/router.dart';
 import 'package:strumok/app/widgets/content_card.dart';
+import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
+import 'package:strumok/features/collection/domain/collection_item.dart';
+import 'package:strumok/features/collection/presentation/collection_providers.dart';
 import 'package:strumok/features/profiles/domain/profile.dart';
 import 'package:strumok/features/profiles/presentation/profiles_providers.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
@@ -55,6 +59,49 @@ void main() {
     router.go(AppRoutes.home);
     await tester.pumpAndSettle();
     expect(find.text('Продовжити  1', findRichText: true), findsOneWidget);
+  });
+
+  testAppWidgets('tv: D-pad leaves the search field to the rows, filters and rail', (tester) async {
+    final container = await pumpApp(tester, deviceClass: DeviceClass.tv);
+    await tester.runAsync(
+      () => container
+          .read(collectionItemsProvider.notifier)
+          .save(
+            const CollectionItem(
+              id: 'm1',
+              supplier: 'alpha',
+              title: 'Shadows',
+              image: '',
+              status: CollectionStatus.latter,
+            ),
+          ),
+    );
+    container.read(routerProvider).go(AppRoutes.collection);
+    await tester.pumpAndSettle();
+
+    FocusNode? primary() => FocusManager.instance.primaryFocus;
+    T? focusedIn<T extends Widget>() => primary()?.context?.findAncestorWidgetOfExactType<T>();
+    Future<void> press(LogicalKeyboardKey key) async {
+      await tester.sendKeyEvent(key);
+      await tester.pumpAndSettle();
+    }
+
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+    expect(focusedIn<TextField>(), isNotNull);
+    await press(LogicalKeyboardKey.arrowDown);
+    expect(focusedIn<ContentCard>()?.info.title, 'Shadows');
+
+    await press(LogicalKeyboardKey.arrowUp);
+    expect(focusedIn<TextField>(), isNotNull, reason: 'up from the first row returns to the field');
+
+    await press(LogicalKeyboardKey.arrowRight);
+    expect(focusedIn<IconButton>()?.key, const Key('collectionFiltersButton'));
+
+    await press(LogicalKeyboardKey.arrowLeft);
+    expect(focusedIn<TextField>(), isNotNull);
+    await press(LogicalKeyboardKey.arrowLeft);
+    expect(focusedIn<NavigationRail>(), isNotNull);
   });
 
   testAppWidgets('empty collection page', (tester) async {

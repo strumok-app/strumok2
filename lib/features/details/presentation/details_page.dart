@@ -40,7 +40,9 @@ class DetailsPage extends ConsumerWidget {
   }
 }
 
-/// Two zones: scrolling content on the left, poster pinned on the right.
+/// Two zones: scrolling content on the left, poster pinned on the right. The poster is flush with the
+/// pane's top, trailing and bottom edges; the pane's rounded clip shapes its corners. Horizontal rows fade out
+/// before a gap, so cards scrolling under the poster dissolve instead of being cut by it.
 class _WideDetails extends StatelessWidget {
   final ContentDetails details;
   final Size viewport;
@@ -48,13 +50,14 @@ class _WideDetails extends StatelessWidget {
   const _WideDetails({required this.details, required this.viewport});
 
   static const _padding = 24.0;
+  static const gap = 16.0;
 
   @override
   Widget build(BuildContext context) {
-    // Poster fills the visible height, but never more than 40% of the width.
-    final posterHeight = min(viewport.height - 2 * _padding, viewport.width * 0.4 / posterAspectRatio);
+    // Full height at poster ratio, but never wider than 40% of the pane (then cropped by `cover`).
+    final posterWidth = min(viewport.height * posterAspectRatio, viewport.width * 0.4);
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: ListView(
@@ -64,24 +67,40 @@ class _WideDetails extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: _padding),
                 child: DetailsInfo(details: details),
               ),
-              ..._sections(details),
+              for (final section in _sections(details)) _TrailingFade(child: section),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, _padding, _padding, _padding),
-          child: SizedBox(
-            height: posterHeight,
-            width: posterHeight * posterAspectRatio,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-              child: AppNetworkImage(details.image),
-            ),
-          ),
-        ),
+        const SizedBox(width: gap),
+        SizedBox(width: posterWidth, child: AppNetworkImage(details.image)),
       ],
     );
   }
+}
+
+/// Fades the trailing [width] of [child] to transparent (applies to content overflowing into that area too,
+/// because the enclosing list clips at the same edge).
+class _TrailingFade extends StatelessWidget {
+  static const width = 48.0;
+
+  final Widget child;
+
+  const _TrailingFade({required this.child});
+
+  @override
+  Widget build(BuildContext context) => ShaderMask(
+    blendMode: BlendMode.dstIn,
+    shaderCallback: (bounds) {
+      final fadeStart = bounds.width <= width ? 0.0 : 1 - width / bounds.width;
+      return LinearGradient(
+        begin: AlignmentDirectional.centerStart,
+        end: AlignmentDirectional.centerEnd,
+        colors: const [Colors.white, Colors.white, Colors.transparent],
+        stops: [0, fadeStart, 1],
+      ).createShader(bounds, textDirection: Directionality.of(context));
+    },
+    child: child,
+  );
 }
 
 class _NarrowDetails extends StatelessWidget {
