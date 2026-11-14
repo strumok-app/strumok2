@@ -4,7 +4,7 @@ import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/widgets/app_network_image.dart';
-import '../../../app/widgets/focus_highlight.dart';
+import '../../../app/widgets/focus_accent_bar.dart';
 import '../../collection/domain/collection_item.dart';
 import '../../collection/domain/progress.dart';
 import 'details_providers.dart';
@@ -177,15 +177,12 @@ class _MediaItemTileState extends State<_MediaItemTile> {
     final position = widget.position;
     final progress = position == null ? 0.0 : mediaItemProgress(widget.mediaType, position) ?? 0.0;
 
-    final base = widget.selected ? colors.surfaceContainerHighest : Colors.transparent;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: _MediaItemTile.gap),
       child: FocusAccentBar(
         focused: _focused,
         child: Material(
-          // Focus is a tonal fill (painted under the thumbnail) + accent bar; the border never changes.
-          color: _focused ? Color.alphaBlend(colors.onSurface.withValues(alpha: 0.12), base) : base,
+          color: widget.selected ? colors.surfaceContainerHighest : Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: _radius,
             side: BorderSide(color: widget.selected ? colors.outline : colors.outlineVariant),
@@ -193,7 +190,6 @@ class _MediaItemTileState extends State<_MediaItemTile> {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             autofocus: widget.autofocus,
-            focusColor: Colors.transparent,
             onTap: widget.onTap,
             onFocusChange: (focused) => setState(() => _focused = focused),
             child: Row(

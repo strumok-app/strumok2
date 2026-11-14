@@ -14,23 +14,33 @@ import '../../features/updates/presentation/update_providers.dart';
 import '../router.dart';
 import '../theme.dart';
 
+const accountMenuKey = Key('accountMenuButton');
+
+Future<void> showAccountDialog(BuildContext context) =>
+    showDialog<void>(context: context, builder: (_) => const AccountDialog());
+
 /// Active profile avatar opening [AccountDialog]: account actions, profiles, Settings, Downloads.
-class AccountMenu extends ConsumerWidget {
+class AccountMenu extends StatelessWidget {
   const AccountMenu({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final hasUpdate = ref.watch(hasUpdateNoticeProvider);
-    return IconButton(
-      key: const Key('accountMenuButton'),
-      tooltip: context.l10n.accountMenuTooltip,
-      icon: Badge(
-        isLabelVisible: hasUpdate,
-        child: ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14),
-      ),
-      onPressed: () => showDialog<void>(context: context, builder: (_) => const AccountDialog()),
-    );
-  }
+  Widget build(BuildContext context) => IconButton(
+    key: accountMenuKey,
+    tooltip: context.l10n.accountMenuTooltip,
+    icon: const AccountAvatar(),
+    onPressed: () => showAccountDialog(context),
+  );
+}
+
+/// Active profile avatar with the update-notice badge (spec-01, spec-11).
+class AccountAvatar extends ConsumerWidget {
+  const AccountAvatar({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => Badge(
+    isLabelVisible: ref.watch(hasUpdateNoticeProvider),
+    child: ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14),
+  );
 }
 
 class AccountDialog extends ConsumerWidget {

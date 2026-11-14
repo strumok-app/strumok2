@@ -60,7 +60,8 @@ class _ConnectTvDialogState extends ConsumerState<ConnectTvDialog> {
             ),
             _ => const Padding(
               padding: EdgeInsets.all(24),
-              child: Center(child: CircularProgressIndicator()),
+              // heightFactor keeps the dialog sized to the spinner instead of the full available height.
+              child: Center(heightFactor: 1, child: CircularProgressIndicator()),
             ),
           },
         ),

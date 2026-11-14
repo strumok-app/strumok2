@@ -13,11 +13,16 @@ import 'package:strumok/core/network/http_client.dart';
 import 'package:strumok/core/network/image_cache.dart';
 import 'package:strumok/core/platform/app_paths.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/features/collection/data/collection_repository.dart';
+import 'package:strumok/features/player/data/video_backend.dart';
+import 'package:strumok/features/player/presentation/player_controller.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 import 'package:strumok/features/suppliers/domain/ffi_bundle_info.dart';
 import 'package:strumok/features/updates/presentation/update_providers.dart';
+
+import 'fake_player.dart';
 
 typedef PageFetcher = Future<List<ContentInfo>> Function(String key, int page);
 
@@ -98,10 +103,11 @@ class FakeMediaItem implements ContentMediaItem {
   final String? section;
   @override
   final String? image;
+  final List<ContentMediaItemSource> sourceList;
   @override
-  Future<List<ContentMediaItemSource>> get sources async => const [];
+  Future<List<ContentMediaItemSource>> get sources async => sourceList;
 
-  const FakeMediaItem(this.number, this.title, {this.section, this.image});
+  const FakeMediaItem(this.number, this.title, {this.section, this.image, this.sourceList = const []});
 }
 
 class FakeDetails implements ContentDetails {
@@ -183,6 +189,8 @@ Future<List<Override>> testOverrides({
   AppPreferences? prefs,
   http.Client? client,
   String appVersion = '1.0.0',
+  VideoBackend Function()? videoBackend,
+  WindowFullscreen? windowFullscreen,
 }) async {
   final tmp = Directory.systemTemp.createTempSync('strumok_test');
   final paths = AppPaths(support: tmp, cache: Directory('${tmp.path}/cache'), temp: Directory('${tmp.path}/tmp'));
@@ -196,5 +204,7 @@ Future<List<Override>> testOverrides({
     initialSupplierBundleProvider.overrideWithValue(bundle ?? defaultTestBundle),
     imageCacheManagerProvider.overrideWithValue(FakeCacheManager()),
     collectionDatabaseFactoryProvider.overrideWithValue(newDatabaseFactoryMemory()),
+    videoBackendFactoryProvider.overrideWithValue(videoBackend ?? FakeVideoBackend.new),
+    windowFullscreenProvider.overrideWithValue(windowFullscreen ?? FakeWindowFullscreen()),
   ];
 }

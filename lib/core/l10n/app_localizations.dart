@@ -440,16 +440,16 @@ abstract class AppLocalizations {
   /// **'Манга'**
   String get contentTypeManga;
 
-  /// Language name
+  /// Ukrainian language name, always in Ukrainian
   ///
   /// In uk, this message translates to:
   /// **'Українська'**
   String get languageUk;
 
-  /// Language name
+  /// English language name, always in English
   ///
   /// In uk, this message translates to:
-  /// **'Англійська'**
+  /// **'English'**
   String get languageEn;
 
   /// Details: primary action for video
@@ -680,6 +680,84 @@ abstract class AppLocalizations {
   /// **'Читалка'**
   String get readerTitle;
 
+  /// Player error: the item has no video sources
+  ///
+  /// In uk, this message translates to:
+  /// **'Немає доступних джерел відео'**
+  String get playerNoSources;
+
+  /// Player error: loading items, sources or the link failed
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося завантажити відео'**
+  String get playerLoadFailed;
+
+  /// Player error: playback stopped with an error
+  ///
+  /// In uk, this message translates to:
+  /// **'Помилка відтворення'**
+  String get playerPlaybackFailed;
+
+  /// Player error action: pick another source
+  ///
+  /// In uk, this message translates to:
+  /// **'Змінити джерело'**
+  String get playerChangeSource;
+
+  /// Player source (server) selector
+  ///
+  /// In uk, this message translates to:
+  /// **'Джерело'**
+  String get playerSource;
+
+  /// Player play button
+  ///
+  /// In uk, this message translates to:
+  /// **'Відтворити'**
+  String get playerPlay;
+
+  /// Player pause button
+  ///
+  /// In uk, this message translates to:
+  /// **'Пауза'**
+  String get playerPause;
+
+  /// Player next item button
+  ///
+  /// In uk, this message translates to:
+  /// **'Наступний'**
+  String get playerNext;
+
+  /// Player previous item button
+  ///
+  /// In uk, this message translates to:
+  /// **'Попередній'**
+  String get playerPrevious;
+
+  /// Player enter full screen button
+  ///
+  /// In uk, this message translates to:
+  /// **'На весь екран'**
+  String get playerFullscreen;
+
+  /// Player exit full screen button
+  ///
+  /// In uk, this message translates to:
+  /// **'Вийти з повноекранного режиму'**
+  String get playerExitFullscreen;
+
+  /// Player mute button
+  ///
+  /// In uk, this message translates to:
+  /// **'Вимкнути звук'**
+  String get playerMute;
+
+  /// Player unmute button
+  ///
+  /// In uk, this message translates to:
+  /// **'Увімкнути звук'**
+  String get playerUnmute;
+
   /// Settings sub-page: content suppliers
   ///
   /// In uk, this message translates to:
@@ -721,6 +799,96 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Порядок, увімкнення та канали рекомендацій'**
   String get settingsSuppliersSubtitle;
+
+  /// Settings section: app language
+  ///
+  /// In uk, this message translates to:
+  /// **'Мова'**
+  String get settingsLanguageSection;
+
+  /// Explains what the language setting affects
+  ///
+  /// In uk, this message translates to:
+  /// **'Мова інтерфейсу та рекомендованих постачальників'**
+  String get settingsLanguageHint;
+
+  /// Settings section: theme
+  ///
+  /// In uk, this message translates to:
+  /// **'Тема'**
+  String get settingsThemeSection;
+
+  /// Light theme brightness
+  ///
+  /// In uk, this message translates to:
+  /// **'Світла'**
+  String get settingsThemeLight;
+
+  /// Theme brightness follows the system
+  ///
+  /// In uk, this message translates to:
+  /// **'Системна'**
+  String get settingsThemeSystem;
+
+  /// Dark theme brightness
+  ///
+  /// In uk, this message translates to:
+  /// **'Темна'**
+  String get settingsThemeDark;
+
+  /// Theme color scheme picker label
+  ///
+  /// In uk, this message translates to:
+  /// **'Кольорова схема'**
+  String get settingsColorScheme;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Олива'**
+  String get colorSchemeOlive;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Багрянець'**
+  String get colorSchemeCrimson;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Монохром'**
+  String get colorSchemeMonochrome;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Хакі'**
+  String get colorSchemeKhaki;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Бурштин'**
+  String get colorSchemeAmber;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Електричний фіолет'**
+  String get colorSchemeElectricViolet;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Кобальт'**
+  String get colorSchemeCobalt;
+
+  /// Color scheme name
+  ///
+  /// In uk, this message translates to:
+  /// **'Неоновий ціан'**
+  String get colorSchemeNeonCyan;
 
   /// Currently running app version
   ///

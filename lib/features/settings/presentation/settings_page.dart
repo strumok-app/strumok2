@@ -6,6 +6,7 @@ import '../../../app/theme.dart';
 import '../../../core/localization.dart';
 import '../../updates/presentation/widgets/app_update_section.dart';
 import '../../updates/presentation/widgets/supplier_bundle_section.dart';
+import 'widgets/appearance_settings.dart';
 
 /// Sections follow spec-09 order; later sections arrive with their milestones.
 class SettingsPage extends StatelessWidget {
@@ -21,6 +22,8 @@ class SettingsPage extends StatelessWidget {
         Text(l10n.navSettings, style: theme.textTheme.headlineSmall),
         _Section(title: l10n.settingsAppVersionSection, child: const AppUpdateSection()),
         _Section(title: l10n.settingsSuppliersBundleSection, child: const SupplierBundleSection()),
+        _Section(title: l10n.settingsLanguageSection, child: const LanguageSettingsSection()),
+        _Section(title: l10n.settingsThemeSection, child: const ThemeSettingsSection()),
         const SizedBox(height: 24),
         SurfaceZone(
           padding: const EdgeInsets.all(4),

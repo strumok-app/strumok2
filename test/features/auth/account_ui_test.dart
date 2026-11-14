@@ -109,6 +109,10 @@ void main() {
     expect(find.text('Alice'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('accountConnectTv')));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    final dialogSurface = find.descendant(of: find.byType(AlertDialog), matching: find.byType(Material)).first;
+    expect(tester.getSize(dialogSurface).height, lessThan(300), reason: 'loading keeps the dialog compact');
     await tester.pumpAndSettle();
     expect(find.text('ZX98YU'), findsOneWidget);
     await tester.tap(find.text('Закрити'));

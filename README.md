@@ -25,7 +25,11 @@ Accounts and collection sync need `FIREBASE` (FirebaseOptions JSON) and `CLOUD_F
 desktop Google sign-in needs `GOOGLE_AUTH` (`{"identifier": ..., "secret": ...}` installed-app OAuth client).
 Without them the app runs with local-only collections. Android Google sign-in additionally needs
 `android/app/google-services.json` for `app.strumok` (git-ignored; the build skips the Google Services plugin
-when it is missing). Each profile keeps its own Firebase session under `<appSupport>/firebase/<profileId>`.
+when it is missing). The SHA-1/SHA-256 of every signing key (debug keystore and release
+`strumok-release.jks`) must be registered on the `app.strumok` Firebase Android app, then the JSON re-downloaded;
+otherwise sign-in fails with `UNREGISTERED_ON_API_CONSOLE` / `Account reauth failed` in logcat:
+`firebase apps:android:sha:create <appId> <sha> --project cloud-hook-b1106`.
+Each profile keeps its own Firebase session under `<appSupport>/firebase/<profileId>`.
 
 ## Supplier bridge (FFI)
 

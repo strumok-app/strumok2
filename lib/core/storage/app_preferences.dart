@@ -27,6 +27,10 @@ class AppPreferences {
   static const activeProfileId = 'active_profile_id';
   static const profileAskOnStartup = 'profile_ask_on_startup';
   static const offlineMode = 'offline_mode';
+  static const userLanguage = 'user_language';
+  static const themeBrightness = 'theme_brightness';
+  static const themeColorScheme = 'theme_color_scheme';
+  static const volume = 'volume';
 
   static String profileSearchHistory(String profileId) => '$searchHistory.$profileId';
   static const ffiUpdateLastCheck = 'ffi_update_last_check';
@@ -44,6 +48,9 @@ class AppPreferences {
 
   bool? getBool(String key) => _prefs.getBool(key);
   Future<void> setBool(String key, bool value) => _prefs.setBool(key, value);
+
+  double? getDouble(String key) => _prefs.getDouble(key);
+  Future<void> setDouble(String key, double value) => _prefs.setDouble(key, value);
 
   List<String>? getStringList(String key) => _prefs.getStringList(key);
   Future<void> setStringList(String key, List<String> value) => _prefs.setStringList(key, value);

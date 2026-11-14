@@ -1,0 +1,99 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+
+@immutable
+final class PlaybackStatus {
+  final Duration position;
+  final Duration duration;
+  final Duration buffered;
+  final bool playing;
+  final bool buffering;
+
+  /// 0..100.
+  final double volume;
+
+  const PlaybackStatus({
+    this.position = Duration.zero,
+    this.duration = Duration.zero,
+    this.buffered = Duration.zero,
+    this.playing = false,
+    this.buffering = false,
+    this.volume = 100,
+  });
+
+  PlaybackStatus copyWith({
+    Duration? position,
+    Duration? duration,
+    Duration? buffered,
+    bool? playing,
+    bool? buffering,
+    double? volume,
+  }) => PlaybackStatus(
+    position: position ?? this.position,
+    duration: duration ?? this.duration,
+    buffered: buffered ?? this.buffered,
+    playing: playing ?? this.playing,
+    buffering: buffering ?? this.buffering,
+    volume: volume ?? this.volume,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is PlaybackStatus &&
+      other.position == position &&
+      other.duration == duration &&
+      other.buffered == buffered &&
+      other.playing == playing &&
+      other.buffering == buffering &&
+      other.volume == volume;
+
+  @override
+  int get hashCode => Object.hash(position, duration, buffered, playing, buffering, volume);
+}
+
+final class VideoOpenRequest {
+  final Uri link;
+  final Map<String, String>? headers;
+  final Duration start;
+
+  /// Play through the local dejunking HLS proxy (spec-06 §6.4).
+  final bool hlsProxy;
+
+  /// Preferred audio/video track languages, most preferred first.
+  final List<String> languages;
+
+  const VideoOpenRequest({
+    required this.link,
+    this.headers,
+    this.start = Duration.zero,
+    this.hlsProxy = false,
+    this.languages = const [],
+  });
+}
+
+/// Playback engine behind the player controller (spec-06 §6.1); one instance per player session.
+abstract interface class VideoBackend {
+  /// High-frequency playback state; listen narrowly.
+  ValueListenable<PlaybackStatus> get status;
+
+  /// The current media reached its end (with the near-EOF tolerance).
+  Stream<void> get ended;
+
+  /// Playback of the current media stopped with an error.
+  Stream<String> get errors;
+
+  /// Replaces the current media and starts playing.
+  Future<void> open(VideoOpenRequest request);
+
+  Future<void> play();
+  Future<void> pause();
+  Future<void> playOrPause();
+  Future<void> seek(Duration position);
+  Future<void> setVolume(double volume);
+  Future<void> frameStep({required bool forward});
+
+  /// The video surface; build it in one place per backend.
+  Widget buildView();
+
+  Future<void> dispose();
+}

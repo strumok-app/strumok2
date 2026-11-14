@@ -193,7 +193,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get languageUk => 'Українська';
 
   @override
-  String get languageEn => 'Англійська';
+  String get languageEn => 'English';
 
   @override
   String get detailsWatch => 'Дивитися';
@@ -314,6 +314,45 @@ class AppLocalizationsUk extends AppLocalizations {
   String get readerTitle => 'Читалка';
 
   @override
+  String get playerNoSources => 'Немає доступних джерел відео';
+
+  @override
+  String get playerLoadFailed => 'Не вдалося завантажити відео';
+
+  @override
+  String get playerPlaybackFailed => 'Помилка відтворення';
+
+  @override
+  String get playerChangeSource => 'Змінити джерело';
+
+  @override
+  String get playerSource => 'Джерело';
+
+  @override
+  String get playerPlay => 'Відтворити';
+
+  @override
+  String get playerPause => 'Пауза';
+
+  @override
+  String get playerNext => 'Наступний';
+
+  @override
+  String get playerPrevious => 'Попередній';
+
+  @override
+  String get playerFullscreen => 'На весь екран';
+
+  @override
+  String get playerExitFullscreen => 'Вийти з повноекранного режиму';
+
+  @override
+  String get playerMute => 'Вимкнути звук';
+
+  @override
+  String get playerUnmute => 'Увімкнути звук';
+
+  @override
   String get settingsSuppliers => 'Постачальники';
 
   @override
@@ -333,6 +372,51 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settingsSuppliersSubtitle => 'Порядок, увімкнення та канали рекомендацій';
+
+  @override
+  String get settingsLanguageSection => 'Мова';
+
+  @override
+  String get settingsLanguageHint => 'Мова інтерфейсу та рекомендованих постачальників';
+
+  @override
+  String get settingsThemeSection => 'Тема';
+
+  @override
+  String get settingsThemeLight => 'Світла';
+
+  @override
+  String get settingsThemeSystem => 'Системна';
+
+  @override
+  String get settingsThemeDark => 'Темна';
+
+  @override
+  String get settingsColorScheme => 'Кольорова схема';
+
+  @override
+  String get colorSchemeOlive => 'Олива';
+
+  @override
+  String get colorSchemeCrimson => 'Багрянець';
+
+  @override
+  String get colorSchemeMonochrome => 'Монохром';
+
+  @override
+  String get colorSchemeKhaki => 'Хакі';
+
+  @override
+  String get colorSchemeAmber => 'Бурштин';
+
+  @override
+  String get colorSchemeElectricViolet => 'Електричний фіолет';
+
+  @override
+  String get colorSchemeCobalt => 'Кобальт';
+
+  @override
+  String get colorSchemeNeonCyan => 'Неоновий ціан';
 
   @override
   String updatesCurrentVersion(String version) {

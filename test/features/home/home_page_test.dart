@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +34,33 @@ void main() {
     expect(find.text('top  alpha', findRichText: true), findsOneWidget);
     expect(find.byType(ContentCard), findsNWidgets(6));
     expect(en.calls, isEmpty, reason: 'suppliers without the UI language are disabled by default');
+  });
+
+  testAppWidgets('arrows on a page pushed over Home never reach the covered Home cards', (tester) async {
+    final a = FakeSupplier('alpha', onLoadChannel: pagesOf('alpha', pages: 1));
+    final container = await pumpApp(tester, deviceClass: DeviceClass.tv, bundle: bundleWith([a]));
+    expect(find.byType(ContentCard), findsWidgets);
+
+    unawaited(container.read(routerProvider).push(AppRoutes.settings));
+    await tester.pumpAndSettle();
+
+    bool inHome() => FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<ContentCard>() != null;
+    for (final key in [
+      for (var i = 0; i < 8; i++) LogicalKeyboardKey.arrowDown,
+      for (var i = 0; i < 4; i++) LogicalKeyboardKey.arrowLeft,
+      for (var i = 0; i < 8; i++) LogicalKeyboardKey.arrowRight,
+      for (var i = 0; i < 12; i++) LogicalKeyboardKey.arrowUp,
+    ]) {
+      await tester.sendKeyEvent(key);
+      await tester.pump();
+      expect(inHome(), isFalse, reason: 'focus moved into the covered Home page with $key');
+    }
+
+    container.read(routerProvider).pop();
+    await tester.pumpAndSettle();
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(inHome(), isTrue, reason: 'Home is traversable again once it is on top');
   });
 
   testAppWidgets('empty state links to supplier settings', (tester) async {

@@ -412,6 +412,58 @@
   "@readerTitle": {
     "description": "Manga reader page title"
   },
+  "playerNoSources": "Немає доступних джерел відео",
+  "@playerNoSources": {
+    "description": "Player error: the item has no video sources"
+  },
+  "playerLoadFailed": "Не вдалося завантажити відео",
+  "@playerLoadFailed": {
+    "description": "Player error: loading items, sources or the link failed"
+  },
+  "playerPlaybackFailed": "Помилка відтворення",
+  "@playerPlaybackFailed": {
+    "description": "Player error: playback stopped with an error"
+  },
+  "playerChangeSource": "Змінити джерело",
+  "@playerChangeSource": {
+    "description": "Player error action: pick another source"
+  },
+  "playerSource": "Джерело",
+  "@playerSource": {
+    "description": "Player source (server) selector"
+  },
+  "playerPlay": "Відтворити",
+  "@playerPlay": {
+    "description": "Player play button"
+  },
+  "playerPause": "Пауза",
+  "@playerPause": {
+    "description": "Player pause button"
+  },
+  "playerNext": "Наступний",
+  "@playerNext": {
+    "description": "Player next item button"
+  },
+  "playerPrevious": "Попередній",
+  "@playerPrevious": {
+    "description": "Player previous item button"
+  },
+  "playerFullscreen": "На весь екран",
+  "@playerFullscreen": {
+    "description": "Player enter full screen button"
+  },
+  "playerExitFullscreen": "Вийти з повноекранного режиму",
+  "@playerExitFullscreen": {
+    "description": "Player exit full screen button"
+  },
+  "playerMute": "Вимкнути звук",
+  "@playerMute": {
+    "description": "Player mute button"
+  },
+  "playerUnmute": "Увімкнути звук",
+  "@playerUnmute": {
+    "description": "Player unmute button"
+  },
   "settingsSuppliers": "Постачальники",
   "@settingsSuppliers": {
     "description": "Settings sub-page: content suppliers"
@@ -439,6 +491,74 @@
   "settingsSuppliersSubtitle": "Порядок, увімкнення та канали рекомендацій",
   "@settingsSuppliersSubtitle": {
     "description": "Subtitle of the suppliers settings entry"
+  },
+  "settingsLanguageSection": "Мова",
+  "@settingsLanguageSection": {
+    "description": "Settings section: app language"
+  },
+  "settingsLanguageHint": "Мова інтерфейсу та рекомендованих постачальників",
+  "@settingsLanguageHint": {
+    "description": "Explains what the language setting affects"
+  },
+  "languageUk": "Українська",
+  "@languageUk": {
+    "description": "Ukrainian language name, always in Ukrainian"
+  },
+  "languageEn": "English",
+  "@languageEn": {
+    "description": "English language name, always in English"
+  },
+  "settingsThemeSection": "Тема",
+  "@settingsThemeSection": {
+    "description": "Settings section: theme"
+  },
+  "settingsThemeLight": "Світла",
+  "@settingsThemeLight": {
+    "description": "Light theme brightness"
+  },
+  "settingsThemeSystem": "Системна",
+  "@settingsThemeSystem": {
+    "description": "Theme brightness follows the system"
+  },
+  "settingsThemeDark": "Темна",
+  "@settingsThemeDark": {
+    "description": "Dark theme brightness"
+  },
+  "settingsColorScheme": "Кольорова схема",
+  "@settingsColorScheme": {
+    "description": "Theme color scheme picker label"
+  },
+  "colorSchemeOlive": "Олива",
+  "@colorSchemeOlive": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeCrimson": "Багрянець",
+  "@colorSchemeCrimson": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeMonochrome": "Монохром",
+  "@colorSchemeMonochrome": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeKhaki": "Хакі",
+  "@colorSchemeKhaki": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeAmber": "Бурштин",
+  "@colorSchemeAmber": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeElectricViolet": "Електричний фіолет",
+  "@colorSchemeElectricViolet": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeCobalt": "Кобальт",
+  "@colorSchemeCobalt": {
+    "description": "Color scheme name"
+  },
+  "colorSchemeNeonCyan": "Неоновий ціан",
+  "@colorSchemeNeonCyan": {
+    "description": "Color scheme name"
   },
   "updatesCurrentVersion": "Поточна версія: {version}",
   "@updatesCurrentVersion": {

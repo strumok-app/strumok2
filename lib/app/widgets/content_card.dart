@@ -4,13 +4,17 @@ import 'package:go_router/go_router.dart';
 
 import '../router.dart';
 import 'app_network_image.dart';
-import 'focus_highlight.dart';
 
 const posterAspectRatio = 2 / 3;
+
+/// Space between the card's ink (hover/press/focus) area and its poster/titles; rows subtract it from their padding.
+const contentCardInset = 6.0;
 
 /// Poster card opening the details page. On focus (TV/keyboard) it scales up, shows an outer ring and scrolls into view.
 class ContentCard extends StatefulWidget {
   final ContentInfo info;
+
+  /// Poster width; the card adds [contentCardInset] on each side.
   final double width;
   final bool autofocus;
 
@@ -54,24 +58,23 @@ class _ContentCardState extends State<ContentCard> {
     const radius = BorderRadius.all(Radius.circular(16));
 
     return SizedBox(
-      width: widget.width,
+      width: widget.width + 2 * contentCardInset,
       child: InkWell(
         autofocus: widget.autofocus,
         borderRadius: radius,
-        focusColor: Colors.transparent,
         onFocusChange: _onFocusChange,
         onTap: () => context.push(AppRoutes.details(info.supplier, info.id)),
-        child: AnimatedScale(
-          scale: _focused ? 1.05 : 1,
-          duration: const Duration(milliseconds: 120),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AspectRatio(
-                aspectRatio: posterAspectRatio,
-                child: FocusRing(
-                  focused: _focused,
-                  borderRadius: radius,
+        // Room for the hover/press highlight and the focus scale around the poster and titles.
+        child: Padding(
+          padding: const EdgeInsets.all(contentCardInset),
+          child: AnimatedScale(
+            scale: _focused ? 1.05 : 1,
+            duration: const Duration(milliseconds: 120),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AspectRatio(
+                  aspectRatio: posterAspectRatio,
                   child: ClipRRect(
                     borderRadius: radius,
                     child: Stack(
@@ -104,17 +107,17 @@ class _ContentCardState extends State<ContentCard> {
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(info.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall),
-              if (widget.caption ?? info.secondaryTitle case final secondary? when secondary.isNotEmpty)
-                Text(
-                  secondary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                ),
-            ],
+                const SizedBox(height: 8),
+                Text(info.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: theme.textTheme.titleSmall),
+                if (widget.caption ?? info.secondaryTitle case final secondary? when secondary.isNotEmpty)
+                  Text(
+                    secondary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

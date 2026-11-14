@@ -60,14 +60,14 @@ class CollectionItemsRow extends ConsumerWidget {
           ),
         ),
         SizedBox(
-          height: cardWidth / posterAspectRatio + 72,
+          height: cardWidth / posterAspectRatio + 72 + 2 * contentCardInset,
           child: FocusTraversalGroup(
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16 - contentCardInset, vertical: 8 - contentCardInset),
               clipBehavior: Clip.none,
               itemCount: items.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12 - 2 * contentCardInset),
               itemBuilder: (context, index) {
                 final item = items[index];
                 return ContentCard(

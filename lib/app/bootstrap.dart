@@ -1,7 +1,9 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:logging/logging.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../core/network/http_client.dart';
 import '../core/platform/app_paths.dart';
@@ -18,6 +20,8 @@ final _log = Logger('bootstrap');
 /// Initializes infrastructure needed before runApp() and returns the root `ProviderScope` overrides.
 Future<List<Override>> bootstrap() async {
   final platform = AppPlatform.current;
+  MediaKit.ensureInitialized();
+  if (platform != AppPlatform.android) await windowManager.ensureInitialized();
   final (prefs, paths, deviceClass, packageInfo) = await (
     AppPreferences.create(),
     AppPaths.resolve(),

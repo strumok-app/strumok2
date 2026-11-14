@@ -19,11 +19,12 @@ applyTo: 'lib/app/**, lib/features/home/**, lib/features/search/**, lib/features
 | – | Downloads (offline items) | `/downloads` | via account menu | See spec-08. |
 
 Main navigation order: Home, Search, Collection. Settings, Downloads, Profile/Account are reached from the
-account menu (avatar button) shown in the top bar (bottom-nav layout) or at the bottom of the side rail.
+account menu (avatar button) shown as the last bottom-bar item (bottom-nav layout) or at the bottom of the side rail.
 
 ## Shell layouts
 
-- Width `< 450` → **bottom navigation** layout.
+- Width `< 450` → **bottom navigation** layout: compact, no top bar; 50 dp bar with icon-only destinations
+  plus the account avatar; back is the system back (Android) / Escape (desktop), no on-screen back button.
 - Width `≥ 450` → **side navigation rail** layout; show a back button on non-root pages except on TV
   (TV uses the remote's back key).
 - The shell wraps every page except the player and manga reader (they are full-screen).

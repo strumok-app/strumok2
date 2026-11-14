@@ -45,7 +45,7 @@ class ContentRow extends ConsumerWidget {
     final l10n = context.l10n;
     final isTv = ref.watch(deviceClassProvider) == DeviceClass.tv;
     final cardWidth = isTv ? 160.0 : 136.0;
-    final rowHeight = cardWidth / posterAspectRatio + 72;
+    final rowHeight = cardWidth / posterAspectRatio + 72 + 2 * contentCardInset;
     final items = state.items;
 
     void requestMore() {
@@ -68,41 +68,44 @@ class ContentRow extends ConsumerWidget {
       body = FocusTraversalGroup(
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16 - contentCardInset, vertical: 8 - contentCardInset),
           clipBehavior: Clip.none,
           itemCount: items.length + trailing,
-          separatorBuilder: (_, _) => const SizedBox(width: 12),
+          separatorBuilder: (_, _) => const SizedBox(width: 12 - 2 * contentCardInset),
           itemBuilder: (context, index) {
             if (index < items.length) {
               if (!isTv && index >= items.length - 4) requestMore();
               return ContentCard(info: items[index], width: cardWidth, autofocus: autofocusFirst && index == 0);
             }
-            return SizedBox(
-              width: cardWidth,
-              child: AspectRatio(
-                aspectRatio: posterAspectRatio,
-                child: switch (state) {
-                  PagedItems(loading: true) => const Center(child: CircularProgressIndicator()),
-                  PagedItems(error: _?) => Center(
-                    child: FilledButton.tonal(onPressed: onRetry, child: Text(l10n.commonRetry)),
-                  ),
-                  _ => FilledButton.tonal(
-                    onPressed: onLoadMore,
-                    // Poster-shaped tile, so it keeps the card radius instead of the pill button shape.
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.all(12),
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+            return Padding(
+              padding: const EdgeInsets.all(contentCardInset),
+              child: SizedBox(
+                width: cardWidth,
+                child: AspectRatio(
+                  aspectRatio: posterAspectRatio,
+                  child: switch (state) {
+                    PagedItems(loading: true) => const Center(child: CircularProgressIndicator()),
+                    PagedItems(error: _?) => Center(
+                      child: FilledButton.tonal(onPressed: onRetry, child: Text(l10n.commonRetry)),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 8,
-                      children: [
-                        const Icon(Icons.more_horiz),
-                        Text(l10n.rowLoadMore, textAlign: TextAlign.center),
-                      ],
+                    _ => FilledButton.tonal(
+                      onPressed: onLoadMore,
+                      // Poster-shaped tile, so it keeps the card radius instead of the pill button shape.
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.all(12),
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 8,
+                        children: [
+                          const Icon(Icons.more_horiz),
+                          Text(l10n.rowLoadMore, textAlign: TextAlign.center),
+                        ],
+                      ),
                     ),
-                  ),
-                },
+                  },
+                ),
               ),
             );
           },

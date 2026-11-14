@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/router.dart';
+import 'package:strumok/app/shell/app_shell.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/features/home/presentation/home_page.dart';
+import 'package:strumok/features/settings/presentation/settings_page.dart';
 
 import '../helpers/test_app.dart';
 
@@ -21,6 +24,26 @@ void main() {
     expect(bar.labelBehavior, NavigationDestinationLabelBehavior.alwaysHide);
     expect(find.byTooltip('Головна'), findsOneWidget);
     expect(find.byTooltip('Пошук'), findsOneWidget);
+  });
+
+  testAppWidgets('narrow layout is compact: no top bar, 50 dp bar with the account menu', (tester) async {
+    final container = await pumpApp(tester, size: phone, deviceClass: DeviceClass.phone);
+
+    expect(find.byType(AppBar), findsNothing);
+    expect(tester.getSize(find.byType(NavigationBar)).height, bottomNavHeight);
+    final account = find.byKey(const Key('accountMenuButton'));
+    expect(find.descendant(of: find.byType(NavigationBar), matching: account), findsOneWidget);
+
+    await tester.tap(account);
+    await tester.pumpAndSettle();
+    expect(find.byType(Dialog), findsOneWidget);
+    await tester.tap(find.text('Налаштування'));
+    await tester.pumpAndSettle();
+
+    expect(container.read(routerProvider).state.uri.path, AppRoutes.settings);
+    expect(find.byType(BackButton), findsNothing);
+    final bar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+    expect(bar.selectedIndex, 0, reason: 'account destination is never selected');
   });
 
   testAppWidgets('wide layout uses navigation rail', (tester) async {
@@ -44,6 +67,18 @@ void main() {
     await tester.tap(find.byIcon(Icons.favorite_border));
     await tester.pumpAndSettle();
     expect(container.read(routerProvider).state.uri.path, AppRoutes.collection);
+  });
+
+  testAppWidgets('each shell page paints ink on its own Material, so covered pages cannot show through', (
+    tester,
+  ) async {
+    final container = await pumpApp(tester, size: desktop, deviceClass: DeviceClass.desktop);
+    unawaited(container.read(routerProvider).push(AppRoutes.settings));
+    await tester.pumpAndSettle();
+
+    final home = tester.element(find.byType(HomePage, skipOffstage: false));
+    final settings = tester.element(find.byType(SettingsPage));
+    expect(Material.of(home), isNot(same(Material.of(settings))));
   });
 
   testAppWidgets('account dialog opens settings with back button', (tester) async {
@@ -100,8 +135,7 @@ void main() {
     bool inRail() =>
         FocusManager.instance.primaryFocus!.context!.findAncestorWidgetOfExactType<NavigationRail>() != null;
 
-    Focus.of(tester.element(find.descendant(of: find.byType(ListTile).first, matching: find.byType(Text)).first))
-        .requestFocus();
+    Focus.of(tester.element(find.text('Українська'))).requestFocus();
     await tester.pump();
     expect(inRail(), isFalse);
 

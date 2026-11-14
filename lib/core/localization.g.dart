@@ -8,15 +8,14 @@ part of 'localization.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// UI language: `uk` by default; becomes user-selectable with the language setting (spec-09).
+/// UI language (spec-09 key `user_language`, language code); `uk` by default.
 
-@ProviderFor(appLocale)
+@ProviderFor(AppLocale)
 final appLocaleProvider = AppLocaleProvider._();
 
-/// UI language: `uk` by default; becomes user-selectable with the language setting (spec-09).
-
-final class AppLocaleProvider extends $FunctionalProvider<Locale, Locale, Locale> with $Provider<Locale> {
-  /// UI language: `uk` by default; becomes user-selectable with the language setting (spec-09).
+/// UI language (spec-09 key `user_language`, language code); `uk` by default.
+final class AppLocaleProvider extends $NotifierProvider<AppLocale, Locale> {
+  /// UI language (spec-09 key `user_language`, language code); `uk` by default.
   AppLocaleProvider._()
     : super(
         from: null,
@@ -33,12 +32,7 @@ final class AppLocaleProvider extends $FunctionalProvider<Locale, Locale, Locale
 
   @$internal
   @override
-  $ProviderElement<Locale> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
-
-  @override
-  Locale create(Ref ref) {
-    return appLocale(ref);
-  }
+  AppLocale create() => AppLocale();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Locale value) {
@@ -46,4 +40,17 @@ final class AppLocaleProvider extends $FunctionalProvider<Locale, Locale, Locale
   }
 }
 
-String _$appLocaleHash() => r'64f4d0e39ca616b5fff69370579d5ae2a93cac53';
+String _$appLocaleHash() => r'f3e71a9b130762dc900427e055bc1c1198415053';
+
+/// UI language (spec-09 key `user_language`, language code); `uk` by default.
+
+abstract class _$AppLocale extends $Notifier<Locale> {
+  Locale build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<Locale, Locale>;
+    final element = ref.element as $ClassProviderElement<AnyNotifier<Locale, Locale>, Locale, Object?, Object?>;
+    return element.handleCreate(ref, build);
+  }
+}

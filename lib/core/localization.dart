@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'l10n/app_localizations.dart';
+import 'storage/app_preferences.dart';
 
 export 'l10n/app_localizations.dart';
 
@@ -11,6 +12,19 @@ extension LocalizationContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
 }
 
-/// UI language: `uk` by default; becomes user-selectable with the language setting (spec-09).
+/// UI language (spec-09 key `user_language`, language code); `uk` by default.
 @Riverpod(keepAlive: true)
-Locale appLocale(Ref ref) => const Locale('uk');
+class AppLocale extends _$AppLocale {
+  static const defaultLocale = Locale('uk');
+
+  @override
+  Locale build() {
+    final saved = ref.read(appPreferencesProvider).getString(AppPreferences.userLanguage);
+    return AppLocalizations.supportedLocales.where((l) => l.languageCode == saved).firstOrNull ?? defaultLocale;
+  }
+
+  Future<void> set(Locale value) async {
+    state = value;
+    await ref.read(appPreferencesProvider).setString(AppPreferences.userLanguage, value.languageCode);
+  }
+}

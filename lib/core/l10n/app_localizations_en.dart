@@ -190,7 +190,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contentTypeManga => 'Manga';
 
   @override
-  String get languageUk => 'Ukrainian';
+  String get languageUk => 'Українська';
 
   @override
   String get languageEn => 'English';
@@ -313,6 +313,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get readerTitle => 'Reader';
 
   @override
+  String get playerNoSources => 'No video sources available';
+
+  @override
+  String get playerLoadFailed => 'Could not load the video';
+
+  @override
+  String get playerPlaybackFailed => 'Playback error';
+
+  @override
+  String get playerChangeSource => 'Change source';
+
+  @override
+  String get playerSource => 'Source';
+
+  @override
+  String get playerPlay => 'Play';
+
+  @override
+  String get playerPause => 'Pause';
+
+  @override
+  String get playerNext => 'Next';
+
+  @override
+  String get playerPrevious => 'Previous';
+
+  @override
+  String get playerFullscreen => 'Full screen';
+
+  @override
+  String get playerExitFullscreen => 'Exit full screen';
+
+  @override
+  String get playerMute => 'Mute';
+
+  @override
+  String get playerUnmute => 'Unmute';
+
+  @override
   String get settingsSuppliers => 'Suppliers';
 
   @override
@@ -332,6 +371,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSuppliersSubtitle => 'Order, availability and recommendation channels';
+
+  @override
+  String get settingsLanguageSection => 'Language';
+
+  @override
+  String get settingsLanguageHint => 'Interface language and default suppliers';
+
+  @override
+  String get settingsThemeSection => 'Theme';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsColorScheme => 'Color scheme';
+
+  @override
+  String get colorSchemeOlive => 'Olive';
+
+  @override
+  String get colorSchemeCrimson => 'Crimson';
+
+  @override
+  String get colorSchemeMonochrome => 'Monochrome';
+
+  @override
+  String get colorSchemeKhaki => 'Khaki';
+
+  @override
+  String get colorSchemeAmber => 'Amber';
+
+  @override
+  String get colorSchemeElectricViolet => 'Electric violet';
+
+  @override
+  String get colorSchemeCobalt => 'Cobalt';
+
+  @override
+  String get colorSchemeNeonCyan => 'Neon cyan';
 
   @override
   String updatesCurrentVersion(String version) {

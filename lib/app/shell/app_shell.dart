@@ -10,6 +10,9 @@ import 'account_menu.dart';
 /// Below this width the shell uses a bottom navigation bar, otherwise a side rail (spec-01).
 const bottomNavMaxWidth = 450.0;
 
+/// Compact bottom bar (Material default is 80); labels are hidden, so icons and the indicator fit.
+const bottomNavHeight = 50.0;
+
 const _destinations = [AppRoutes.home, AppRoutes.search, AppRoutes.collection];
 
 class AppShell extends ConsumerStatefulWidget {
@@ -49,23 +52,24 @@ class _AppShellState extends ConsumerState<AppShell> {
 
     final useBottomNav = MediaQuery.sizeOf(context).width < bottomNavMaxWidth;
     if (useBottomNav) {
+      // Compact layout: no top bar; back is the system back (Android) or Escape (desktop).
       return Scaffold(
         backgroundColor: colors.surfaceContainer,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          leading: showBack ? BackButton(onPressed: _onBack) : null,
-          title: Text(l10n.appTitle),
-          actions: const [AccountMenu(), SizedBox(width: 8)],
-        ),
-        body: _ContentZone(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24), bottom: Radius.circular(24)),
-          child: widget.child,
+        body: SafeArea(
+          bottom: false,
+          child: _ContentZone(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24), bottom: Radius.circular(24)),
+            child: widget.child,
+          ),
         ),
         bottomNavigationBar: NavigationBar(
+          height: bottomNavHeight,
           selectedIndex: _lastIndex,
           // Labels are shown as tooltips (NavigationDestination.tooltip defaults to its label).
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-          onDestinationSelected: _onDestinationSelected,
+          // The trailing account destination opens the account dialog instead of being selected.
+          onDestinationSelected: (index) =>
+              index < _destinations.length ? _onDestinationSelected(index) : showAccountDialog(context),
           destinations: [
             NavigationDestination(
               icon: const Icon(Icons.home_outlined),
@@ -78,6 +82,7 @@ class _AppShellState extends ConsumerState<AppShell> {
               selectedIcon: const Icon(Icons.favorite),
               label: l10n.navCollection,
             ),
+            NavigationDestination(key: accountMenuKey, icon: const AccountAvatar(), label: l10n.accountMenuTooltip),
           ],
         ),
       );

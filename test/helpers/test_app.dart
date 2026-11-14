@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/app.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
+import 'package:strumok/features/player/data/video_backend.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 
 import 'test_overrides.dart';
@@ -15,13 +17,21 @@ Future<ProviderContainer> pumpApp(
   DeviceClass deviceClass = DeviceClass.desktop,
   SupplierBundleState? bundle,
   AppPreferences? prefs,
+  VideoBackend Function()? videoBackend,
+  WindowFullscreen? windowFullscreen,
   List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
 
-  final overrides = await testOverrides(deviceClass: deviceClass, bundle: bundle, prefs: prefs);
+  final overrides = await testOverrides(
+    deviceClass: deviceClass,
+    bundle: bundle,
+    prefs: prefs,
+    videoBackend: videoBackend,
+    windowFullscreen: windowFullscreen,
+  );
   final container = ProviderContainer(overrides: [...overrides, ...extraOverrides]);
   addTearDown(container.dispose);
 

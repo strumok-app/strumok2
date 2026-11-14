@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../core/localization.dart';
 import 'router.dart';
 import 'theme.dart';
+import 'theme_settings.dart';
 
 class StrumokApp extends ConsumerWidget {
   const StrumokApp({super.key});
@@ -15,14 +16,14 @@ class StrumokApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    const scheme = AppColorScheme.defaultScheme;
+    final scheme = ref.watch(themeColorSchemeProvider);
 
     return MaterialApp.router(
       onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,
       theme: buildTheme(scheme, Brightness.light),
       darkTheme: buildTheme(scheme, Brightness.dark),
-      themeMode: ThemeMode.system,
+      themeMode: ref.watch(themeBrightnessProvider),
       locale: ref.watch(appLocaleProvider),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
-import '../../../app/widgets/focus_highlight.dart';
 import '../../../core/localization.dart';
 import 'profile_avatar.dart';
 import 'profile_edit_dialog.dart';
@@ -95,20 +94,19 @@ class _PickerTileState extends State<_PickerTile> {
     return InkWell(
       autofocus: widget.autofocus,
       borderRadius: const BorderRadius.all(Radius.circular(16)),
-      focusColor: Colors.transparent,
       onFocusChange: (focused) => setState(() => _focused = focused),
       onTap: widget.onTap,
       child: AnimatedScale(
         scale: _focused ? 1.08 : 1,
         duration: const Duration(milliseconds: 120),
         child: SizedBox(
-          width: 128,
+          width: 136,
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: Column(
               spacing: 12,
               children: [
-                FocusRing(focused: _focused, child: widget.avatar),
+                widget.avatar,
                 Text(widget.label, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center),
               ],
             ),
