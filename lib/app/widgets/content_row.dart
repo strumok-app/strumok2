@@ -6,6 +6,7 @@ import '../../core/localization.dart';
 import '../../core/paging/paged_items.dart';
 import '../../core/platform/device_class.dart';
 import 'content_card.dart';
+import 'reveal_on_focus.dart';
 
 /// Horizontal list of content cards with independent paging (spec-01): lazy load-more for touch/mouse,
 /// an explicit focusable "Load more" tile on TV.
@@ -113,27 +114,30 @@ class ContentRow extends ConsumerWidget {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: title),
-                if (subtitle != null)
-                  TextSpan(
-                    text: '  $subtitle',
-                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
-              ],
+    return RevealOnFocus(
+      margin: 0,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: title),
+                  if (subtitle != null)
+                    TextSpan(
+                      text: '  $subtitle',
+                      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    ),
+                ],
+              ),
+              style: theme.textTheme.titleMedium,
             ),
-            style: theme.textTheme.titleMedium,
           ),
-        ),
-        SizedBox(height: rowHeight, child: body),
-      ],
+          SizedBox(height: rowHeight, child: body),
+        ],
+      ),
     );
   }
 }

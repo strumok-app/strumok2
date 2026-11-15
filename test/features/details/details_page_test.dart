@@ -123,6 +123,25 @@ void main() {
     expect(progressOf(find.byKey(const ValueKey('mediaItem-1'))), 0.25);
   });
 
+  testAppWidgets('keys: coming back up to Watch reveals the title above it', (tester) async {
+    await open(
+      tester,
+      FakeDetails('alpha', 'm1', similar: [for (var i = 0; i < 3; i++) FakeInfo('alpha', 's$i')]),
+      size: const Size(1280, 420),
+    );
+    ScrollPosition position() => tester
+        .state<ScrollableState>(find.ancestor(of: find.text('Fake title'), matching: find.byType(Scrollable)).first)
+        .position;
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
+    expect(position().pixels, greaterThan(0), reason: 'the similar row is below the fold');
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
+    expect(position().pixels, 0);
+  });
+
   testAppWidgets('single section has no tabs; escape closes the sheet', (tester) async {
     final oneSeason = [for (var i = 0; i < 3; i++) FakeMediaItem(i, 'Ep $i')];
     await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => oneSeason));

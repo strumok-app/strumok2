@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
+import '../../../app/widgets/reveal_on_focus.dart';
 import '../../../core/localization.dart';
 import '../../collection/domain/collection_item.dart';
 import '../../collection/presentation/collection_labels.dart';
@@ -29,42 +30,46 @@ class DetailsInfo extends StatelessWidget {
     final isVideo = details.mediaType == MediaType.video;
     final muted = theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 12,
-      children: [
-        SelectableText(details.title, style: theme.textTheme.headlineMedium),
-        if (details.originalTitle case final original? when original.isNotEmpty)
-          SelectableText(
-            original,
-            style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    // Margin covers the list padding above the title.
+    return RevealOnFocus(
+      margin: 24,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
+        children: [
+          SelectableText(details.title, style: theme.textTheme.headlineMedium),
+          if (details.originalTitle case final original? when original.isNotEmpty)
+            SelectableText(
+              original,
+              style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilledButton.icon(
+                  autofocus: true,
+                  onPressed: () => context.push(mediaItemRoute(details)),
+                  icon: Icon(isVideo ? Icons.play_arrow : Icons.menu_book),
+                  label: Text(isVideo ? l10n.detailsWatch : l10n.detailsRead),
+                ),
+                _CollectionButton(details: details),
+                _MediaItemsButton(details: details),
+              ],
+            ),
           ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              FilledButton.icon(
-                autofocus: true,
-                onPressed: () => context.push(mediaItemRoute(details)),
-                icon: Icon(isVideo ? Icons.play_arrow : Icons.menu_book),
-                label: Text(isVideo ? l10n.detailsWatch : l10n.detailsRead),
-              ),
-              _CollectionButton(details: details),
-              _MediaItemsButton(details: details),
-            ],
-          ),
-        ),
-        // SPEC: download actions (M8) are added with their milestone.
-        if (details.additionalInfo.isNotEmpty)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
-            children: [for (final line in details.additionalInfo) Text(line, style: muted)],
-          ),
-        if (details.description.isNotEmpty) ExpandableText(details.description),
-      ],
+          // SPEC: download actions (M8) are added with their milestone.
+          if (details.additionalInfo.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 4,
+              children: [for (final line in details.additionalInfo) Text(line, style: muted)],
+            ),
+          if (details.description.isNotEmpty) ExpandableText(details.description),
+        ],
+      ),
     );
   }
 }

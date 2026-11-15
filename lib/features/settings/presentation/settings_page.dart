@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme.dart';
+import '../../../app/widgets/reveal_on_focus.dart';
 import '../../../core/localization.dart';
 import '../../updates/presentation/widgets/app_update_section.dart';
 import '../../updates/presentation/widgets/supplier_bundle_section.dart';
@@ -60,17 +61,19 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(top: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-            child: Text(title, style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary)),
-          ),
-          SurfaceZone(child: child),
-        ],
+    return RevealOnFocus(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+              child: Text(title, style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.primary)),
+            ),
+            SurfaceZone(child: child),
+          ],
+        ),
       ),
     );
   }
