@@ -79,6 +79,44 @@ void main() {
     expect(backend.opened.single.link.toString(), 'https://a.example/0.m3u8');
   });
 
+  testAppWidgets('desktop: seek bar is thin without a thumb until hovered', (tester) async {
+    await openPlayer(tester);
+    backend.emit(duration: const Duration(minutes: 10));
+    await tester.pumpAndSettle();
+    final bar = find.byKey(const Key('seekBar'));
+    SliderThemeData theme() =>
+        tester.widget<SliderTheme>(find.ancestor(of: bar, matching: find.byType(SliderTheme)).first).data;
+
+    final height = tester.getSize(bar).height;
+    expect(theme().thumbShape, SliderComponentShape.noThumb);
+    expect(theme().overlayShape, SliderComponentShape.noOverlay);
+    final thin = theme().trackHeight!;
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: tester.getCenter(bar));
+    addTearDown(mouse.removePointer);
+    await tester.pumpAndSettle();
+    expect(theme().thumbShape, isA<RoundSliderThumbShape>());
+    expect(theme().trackHeight, thin * 2);
+    expect(tester.getSize(bar).height, height, reason: 'controls below must not move');
+
+    final label = find.byKey(const Key('seekHoverTime'));
+    expect(
+      find.descendant(of: label, matching: find.text('5:00')),
+      findsOneWidget,
+      reason: 'middle of 10 min',
+    );
+    expect(tester.getRect(label).bottom, lessThanOrEqualTo(tester.getRect(bar).top + 4), reason: 'above the bar');
+
+    await mouse.moveTo(tester.getRect(bar).centerLeft + const Offset(2, 0));
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: label, matching: find.text('0:00')), findsOneWidget);
+
+    await mouse.moveTo(tester.getRect(bar).topCenter - const Offset(0, 100));
+    await tester.pumpAndSettle();
+    expect(label, findsNothing);
+  });
+
   testAppWidgets('desktop: keyboard map (spec-06 §6.6)', (tester) async {
     final container = await openPlayer(tester);
     backend.emit(position: const Duration(seconds: 100), duration: const Duration(seconds: 1000));

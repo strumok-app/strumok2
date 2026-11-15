@@ -71,15 +71,28 @@ class PlayerSeekBar extends StatefulWidget {
   /// Keyboard-focusable; desktop turns it off so the arrow keys keep seeking by the key map.
   final bool focusable;
 
-  const PlayerSeekBar({super.key, required this.status, required this.onSeek, this.focusable = true});
+  /// Desktop look: thin track that thickens and shows a small thumb only while hovered or dragged.
+  final bool expandOnHover;
+
+  const PlayerSeekBar({
+    super.key,
+    required this.status,
+    required this.onSeek,
+    this.focusable = true,
+    this.expandOnHover = false,
+  });
 
   @override
   State<PlayerSeekBar> createState() => _PlayerSeekBarState();
 }
 
 class _PlayerSeekBarState extends State<PlayerSeekBar> {
+  static const _sidePadding = 8.0;
+
   late final _focusNode = FocusNode(canRequestFocus: widget.focusable, skipTraversal: !widget.focusable);
   double? _dragValue;
+  bool _hovered = false;
+  double? _hoverX;
 
   @override
   void dispose() {
@@ -92,21 +105,108 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
     valueListenable: widget.status,
     builder: (context, status, _) {
       final max = status.duration.inMilliseconds.toDouble();
-      if (max <= 0) return Slider(key: const Key('seekBar'), value: 0, focusNode: _focusNode, onChanged: null);
       double clamp(Duration d) => d.inMilliseconds.clamp(0, max).toDouble();
-      return Slider(
-        key: const Key('seekBar'),
-        focusNode: _focusNode,
-        max: max,
-        value: _dragValue ?? clamp(status.position),
-        secondaryTrackValue: clamp(status.buffered),
-        onChanged: (v) => setState(() => _dragValue = v),
-        onChangeEnd: (v) {
-          widget.onSeek(Duration(milliseconds: v.round()));
-          setState(() => _dragValue = null);
-        },
+      final slider = max <= 0
+          ? Slider(key: const Key('seekBar'), value: 0, focusNode: _focusNode, onChanged: null)
+          : Slider(
+              key: const Key('seekBar'),
+              focusNode: _focusNode,
+              max: max,
+              value: _dragValue ?? clamp(status.position),
+              secondaryTrackValue: clamp(status.buffered),
+              onChanged: (v) => setState(() => _dragValue = v),
+              onChangeEnd: (v) {
+                widget.onSeek(Duration(milliseconds: v.round()));
+                setState(() => _dragValue = null);
+              },
+            );
+      if (!widget.expandOnHover) return slider;
+
+      final active = _hovered || _dragValue != null;
+      final themed = SliderTheme(
+        data: SliderTheme.of(context).copyWith(
+          trackHeight: active ? 6 : 3,
+          thumbShape: active
+              ? const RoundSliderThumbShape(enabledThumbRadius: 6, elevation: 0, pressedElevation: 0)
+              : SliderComponentShape.noThumb,
+          overlayShape: SliderComponentShape.noOverlay,
+          padding: const EdgeInsets.symmetric(horizontal: _sidePadding, vertical: 12),
+        ),
+        child: slider,
+      );
+      return MouseRegion(
+        onEnter: (event) => setState(() {
+          _hovered = true;
+          _hoverX = event.localPosition.dx;
+        }),
+        onHover: (event) => setState(() => _hoverX = event.localPosition.dx),
+        onExit: (_) => setState(() {
+          _hovered = false;
+          _hoverX = null;
+        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final track = constraints.maxWidth - 2 * _sidePadding;
+            final dragging = _dragValue != null;
+            final x = dragging ? _sidePadding + _dragValue! / max * track : _hoverX;
+            final show = x != null && max > 0 && track > 0;
+            final time = show
+                ? Duration(milliseconds: ((x - _sidePadding) / track * max).clamp(0, max).round())
+                : Duration.zero;
+            // Always a Stack, so the slider keeps its state when the hover indicator appears.
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                themed,
+                if (show && !dragging)
+                  Positioned(
+                    left: x - 1,
+                    top: 0,
+                    bottom: 0,
+                    child: const IgnorePointer(
+                      child: Center(
+                        child: SizedBox(width: 2, height: 14, child: ColoredBox(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                // Kept inside the bar so the label never leaves the screen at the ends.
+                if (show)
+                  Positioned(
+                    left: x.clamp(28.0, constraints.maxWidth - 28),
+                    top: 4,
+                    child: IgnorePointer(
+                      child: FractionalTranslation(
+                        translation: const Offset(-0.5, -1),
+                        child: _SeekTimeLabel(time: time),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       );
     },
+  );
+}
+
+class _SeekTimeLabel extends StatelessWidget {
+  final Duration time;
+
+  const _SeekTimeLabel({required this.time});
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    key: const Key('seekHoverTime'),
+    decoration: const BoxDecoration(color: Color(0xE6000000), borderRadius: BorderRadius.all(Radius.circular(6))),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      child: Text(
+        formatPlaybackTime(time),
+        style: Theme.of(context).textTheme.labelMedium
+            ?.copyWith(color: Colors.white, fontFeatures: const [FontFeature.tabularFigures()]),
+      ),
+    ),
   );
 }
 

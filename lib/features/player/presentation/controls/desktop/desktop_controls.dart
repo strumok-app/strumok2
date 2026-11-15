@@ -146,7 +146,12 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              PlayerSeekBar(status: status, onSeek: _controller.seekTo, focusable: false),
+                              PlayerSeekBar(
+                                status: status,
+                                onSeek: _controller.seekTo,
+                                focusable: false,
+                                expandOnHover: true,
+                              ),
                               Row(
                                 children: [
                                   IconButton(
