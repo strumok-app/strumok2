@@ -25,6 +25,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   /// Has focus while any suggestion does, so suggestions stay visible when focus leaves the field.
   final _suggestionsArea = FocusNode(debugLabel: 'searchSuggestions', canRequestFocus: false, skipTraversal: true);
   final _firstSuggestion = FocusNode(debugLabel: 'firstSuggestion');
+
+  /// Tap region group of the field and suggestions: clicks on suggestions don't unfocus the field.
+  final _searchFieldTapGroup = Object();
   var _suggestionsVisible = false;
 
   @override
@@ -81,28 +84,33 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             spacing: 8,
             children: [
               Expanded(
-                child: TextFieldArrowEscape(
-                  controller: _controller,
-                  child: TextField(
+                // TextField's own outer region (decoration, clear button) ignores custom groupId.
+                child: TapRegion(
+                  groupId: _searchFieldTapGroup,
+                  child: TextFieldArrowEscape(
                     controller: _controller,
-                    focusNode: _focusNode,
-                    // No autofocus on TV: it would pop up the on-screen keyboard.
-                    autofocus: !isTv && query == null,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: _submit,
-                    decoration: InputDecoration(
-                      hintText: l10n.searchHint,
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _controller.text.isEmpty
-                          ? null
-                          : IconButton(
-                              tooltip: l10n.searchClear,
-                              icon: const Icon(Icons.close),
-                              onPressed: () {
-                                _controller.clear();
-                                _focusNode.requestFocus();
-                              },
-                            ),
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      groupId: _searchFieldTapGroup,
+                      // No autofocus on TV: it would pop up the on-screen keyboard.
+                      autofocus: !isTv && query == null,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: _submit,
+                      decoration: InputDecoration(
+                        hintText: l10n.searchHint,
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: _controller.text.isEmpty
+                            ? null
+                            : IconButton(
+                                tooltip: l10n.searchClear,
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  _controller.clear();
+                                  _focusNode.requestFocus();
+                                },
+                              ),
+                      ),
                     ),
                   ),
                 ),
@@ -118,9 +126,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         ),
         Expanded(
           child: showSuggestions
-              ? Focus(
-                  focusNode: _suggestionsArea,
-                  child: _Suggestions(suggestions: suggestions, firstFocus: _firstSuggestion, onSelected: _submit),
+              ? TapRegion(
+                  groupId: _searchFieldTapGroup,
+                  child: Focus(
+                    focusNode: _suggestionsArea,
+                    child: _Suggestions(suggestions: suggestions, firstFocus: _firstSuggestion, onSelected: _submit),
+                  ),
                 )
               : _Results(query: query),
         ),
