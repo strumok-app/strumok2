@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/widgets.dart';
+import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
 
@@ -101,4 +102,32 @@ class FakeWindowFullscreen implements WindowFullscreen {
 
   @override
   Future<void> setFullScreen(bool value) async => changes.add(value);
+}
+
+class FakeBrightnessControl implements BrightnessControl {
+  double value;
+  var resets = 0;
+
+  FakeBrightnessControl([this.value = 0.5]);
+
+  @override
+  Future<double> get() async => value;
+
+  @override
+  Future<void> set(double value) async => this.value = value;
+
+  @override
+  Future<void> reset() async => resets++;
+}
+
+class FakeVolumeControl implements VolumeControl {
+  double value;
+
+  FakeVolumeControl([this.value = 0.5]);
+
+  @override
+  Future<double> get() async => value;
+
+  @override
+  Future<void> set(double value) async => this.value = value;
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/app.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
@@ -19,6 +20,8 @@ Future<ProviderContainer> pumpApp(
   AppPreferences? prefs,
   VideoBackend Function()? videoBackend,
   WindowFullscreen? windowFullscreen,
+  BrightnessControl? brightness,
+  VolumeControl? volume,
   List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
@@ -31,6 +34,8 @@ Future<ProviderContainer> pumpApp(
     prefs: prefs,
     videoBackend: videoBackend,
     windowFullscreen: windowFullscreen,
+    brightness: brightness,
+    volume: volume,
   );
   final container = ProviderContainer(overrides: [...overrides, ...extraOverrides]);
   addTearDown(container.dispose);

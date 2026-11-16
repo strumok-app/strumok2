@@ -35,10 +35,12 @@ dependencies:
   path_provider: ^2.1.6
   rhttp: ^0.18.0
   riverpod_annotation: ^4.0.8
+  screen_brightness: ^2.1.11
   sembast: ^3.10.1
   shared_preferences: ^2.5.6
   url_launcher: ^6.3.3
   # 0.5.x: 0.6 is a rewrite on top of nativeapi with a different API.
+  volume_controller: ^3.7.1
   window_manager: ^0.5.1
 
 dev_dependencies:

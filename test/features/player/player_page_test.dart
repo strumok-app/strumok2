@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/router.dart';
+import 'package:strumok/app/widgets/side_sheet.dart';
 import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/features/player/presentation/player_controller.dart';
+import 'package:strumok/features/player/presentation/widgets/player_widgets.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 
 import '../../helpers/fake_player.dart';
@@ -90,14 +92,14 @@ void main() {
     final height = tester.getSize(bar).height;
     expect(theme().thumbShape, SliderComponentShape.noThumb);
     expect(theme().overlayShape, SliderComponentShape.noOverlay);
-    final thin = theme().trackHeight!;
+    expect(theme().trackHeight, PlayerSeekBar.hoverTrackHeight);
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: tester.getCenter(bar));
     addTearDown(mouse.removePointer);
     await tester.pumpAndSettle();
     expect(theme().thumbShape, isA<RoundSliderThumbShape>());
-    expect(theme().trackHeight, thin * 2);
+    expect(theme().trackHeight, PlayerSeekBar.hoverActiveTrackHeight);
     expect(tester.getSize(bar).height, height, reason: 'controls below must not move');
 
     final label = find.byKey(const Key('seekHoverTime'));
@@ -196,6 +198,18 @@ void main() {
     expect(backend.opened.last.link.toString(), 'https://cdn.example.com/B.m3u8');
   });
 
+  testAppWidgets('desktop: S opens the source side sheet focused on the current source', (tester) async {
+    await openPlayer(tester);
+    await press(tester, LogicalKeyboardKey.keyS);
+    expect(find.byType(SideSheet), findsOneWidget);
+    final focused = FocusManager.instance.primaryFocus!.context!;
+    expect(focused.findAncestorWidgetOfExactType<ListTile>()?.key, const ValueKey('source-0'));
+
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    await press(tester, LogicalKeyboardKey.enter);
+    expect(backend.opened.last.link.toString(), 'https://cdn.example.com/B.m3u8');
+  });
+
   testAppWidgets('playback failure offers Retry and Change source', (tester) async {
     await openPlayer(tester);
     backend.emit(position: const Duration(seconds: 30));
@@ -208,18 +222,5 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Помилка відтворення'), findsNothing);
     expect(backend.opened.last.start, const Duration(seconds: 30));
-  });
-
-  testAppWidgets('tv: hidden controls; Select toggles playback, arrows reveal and focus Play', (tester) async {
-    await openPlayer(tester, deviceClass: DeviceClass.tv);
-    await tester.pump(const Duration(seconds: 4));
-    await tester.pumpAndSettle();
-
-    await press(tester, LogicalKeyboardKey.select);
-    expect(backend.calls.last, 'playOrPause');
-
-    await press(tester, LogicalKeyboardKey.arrowDown);
-    final focused = FocusManager.instance.primaryFocus!.context!;
-    expect(focused.findAncestorWidgetOfExactType<IconButton>()?.key, const Key('playPauseButton'));
   });
 }

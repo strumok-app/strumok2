@@ -84,6 +84,9 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
       LogicalKeyboardKey.keyP when !repeat && widget.session.items.length > 1 => _run(
         () => showPlaylistPanel(context, widget.session),
       ),
+      LogicalKeyboardKey.keyS when !repeat && widget.session.sources.length > 1 => _run(
+        () => showSourceSelector(context, widget.session, _controller.selectSource),
+      ),
       _ => false,
     };
     if (handled) _visibility.show();
@@ -150,7 +153,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                                 status: status,
                                 onSeek: _controller.seekTo,
                                 focusable: false,
-                                expandOnHover: true,
+                                style: SeekBarStyle.hover,
                               ),
                               Row(
                                 children: [
@@ -172,6 +175,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                                   if (session.sources.length > 1)
                                     SourceButton(session: session, onSelected: _controller.selectSource),
                                   if (session.items.length > 1) PlaylistButton(session: session),
+                                  const SizedBox(width: 16),
                                   IconButton(
                                     key: const Key('fullscreenButton'),
                                     tooltip: fullscreen ? l10n.playerExitFullscreen : l10n.playerFullscreen,

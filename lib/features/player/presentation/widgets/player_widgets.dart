@@ -63,23 +63,41 @@ class ControlsVisibility extends ChangeNotifier {
   }
 }
 
+enum SeekBarStyle {
+  /// Desktop: thin track that thickens and shows a small thumb only while hovered or dragged; hover shows the time.
+  hover,
+
+  /// Touch: thick track flush with the screen edges, no thumb; the drag target is reported via `onDragTarget`.
+  edge,
+}
+
 /// Seek bar with the buffered range; seeks when the drag ends.
 class PlayerSeekBar extends StatefulWidget {
+  static const hoverTrackHeight = 3.0;
+  static const hoverActiveTrackHeight = 6.0;
+  static const edgeTrackHeight = 12.0;
+
+  /// Edge style: whole touchable height, the track included.
+  static const edgeTouchHeight = 26.0;
+
   final ValueListenable<PlaybackStatus> status;
   final ValueChanged<Duration> onSeek;
+
+  /// Target position while dragging; `null` when the drag ends.
+  final ValueChanged<Duration?>? onDragTarget;
 
   /// Keyboard-focusable; desktop turns it off so the arrow keys keep seeking by the key map.
   final bool focusable;
 
-  /// Desktop look: thin track that thickens and shows a small thumb only while hovered or dragged.
-  final bool expandOnHover;
+  final SeekBarStyle style;
 
   const PlayerSeekBar({
     super.key,
     required this.status,
     required this.onSeek,
+    this.onDragTarget,
     this.focusable = true,
-    this.expandOnHover = false,
+    required this.style,
   });
 
   @override
@@ -87,8 +105,6 @@ class PlayerSeekBar extends StatefulWidget {
 }
 
 class _PlayerSeekBarState extends State<PlayerSeekBar> {
-  static const _sidePadding = 8.0;
-
   late final _focusNode = FocusNode(canRequestFocus: widget.focusable, skipTraversal: !widget.focusable);
   double? _dragValue;
   bool _hovered = false;
@@ -114,26 +130,77 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
               max: max,
               value: _dragValue ?? clamp(status.position),
               secondaryTrackValue: clamp(status.buffered),
-              onChanged: (v) => setState(() => _dragValue = v),
+              onChanged: (v) {
+                setState(() => _dragValue = v);
+                widget.onDragTarget?.call(Duration(milliseconds: v.round()));
+              },
               onChangeEnd: (v) {
                 widget.onSeek(Duration(milliseconds: v.round()));
                 setState(() => _dragValue = null);
+                widget.onDragTarget?.call(null);
               },
             );
-      if (!widget.expandOnHover) return slider;
 
-      final active = _hovered || _dragValue != null;
+      final edge = widget.style == SeekBarStyle.edge;
+      final side = edge ? 0.0 : 8.0;
+      final dragging = _dragValue != null;
+      final active = _hovered || dragging;
       final themed = SliderTheme(
         data: SliderTheme.of(context).copyWith(
-          trackHeight: active ? 6 : 3,
-          thumbShape: active
+          trackHeight: edge
+              ? PlayerSeekBar.edgeTrackHeight
+              : (active ? PlayerSeekBar.hoverActiveTrackHeight : PlayerSeekBar.hoverTrackHeight),
+          thumbShape: !edge && active
               ? const RoundSliderThumbShape(enabledThumbRadius: 6, elevation: 0, pressedElevation: 0)
               : SliderComponentShape.noThumb,
-          overlayShape: SliderComponentShape.noOverlay,
-          padding: const EdgeInsets.symmetric(horizontal: _sidePadding, vertical: 12),
+          overlayShape: edge
+              ? const _TouchAreaShape(Size(0, PlayerSeekBar.edgeTouchHeight))
+              : SliderComponentShape.noOverlay,
+          trackShape: edge ? const _BottomTrackShape() : null,
+          // Edge: sizing comes from the overlay shape, since Slider theme padding is not touchable.
+          padding: edge ? null : EdgeInsets.symmetric(horizontal: side, vertical: 12),
         ),
         child: slider,
       );
+      final content = LayoutBuilder(
+        builder: (context, constraints) {
+          final track = constraints.maxWidth - 2 * side;
+          final x = dragging ? side + _dragValue! / max * track : _hoverX;
+          final show = x != null && max > 0 && track > 0;
+          final time = show ? Duration(milliseconds: ((x - side) / track * max).clamp(0, max).round()) : Duration.zero;
+          // Always a Stack, so the slider keeps its state when the indicator appears.
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              themed,
+              if (show && !dragging)
+                Positioned(
+                  left: x - 1,
+                  top: 0,
+                  bottom: 0,
+                  child: const IgnorePointer(
+                    child: Center(
+                      child: SizedBox(width: 2, height: 14, child: ColoredBox(color: Colors.white)),
+                    ),
+                  ),
+                ),
+              // Kept inside the bar so the label never leaves the screen at the ends.
+              if (show && !edge)
+                Positioned(
+                  left: x.clamp(28.0, constraints.maxWidth - 28),
+                  top: 4,
+                  child: IgnorePointer(
+                    child: FractionalTranslation(
+                      translation: const Offset(-0.5, -1),
+                      child: _SeekTimeLabel(time: time),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      );
+      if (edge) return content;
       return MouseRegion(
         onEnter: (event) => setState(() {
           _hovered = true;
@@ -144,50 +211,52 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
           _hovered = false;
           _hoverX = null;
         }),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final track = constraints.maxWidth - 2 * _sidePadding;
-            final dragging = _dragValue != null;
-            final x = dragging ? _sidePadding + _dragValue! / max * track : _hoverX;
-            final show = x != null && max > 0 && track > 0;
-            final time = show
-                ? Duration(milliseconds: ((x - _sidePadding) / track * max).clamp(0, max).round())
-                : Duration.zero;
-            // Always a Stack, so the slider keeps its state when the hover indicator appears.
-            return Stack(
-              clipBehavior: Clip.none,
-              children: [
-                themed,
-                if (show && !dragging)
-                  Positioned(
-                    left: x - 1,
-                    top: 0,
-                    bottom: 0,
-                    child: const IgnorePointer(
-                      child: Center(
-                        child: SizedBox(width: 2, height: 14, child: ColoredBox(color: Colors.white)),
-                      ),
-                    ),
-                  ),
-                // Kept inside the bar so the label never leaves the screen at the ends.
-                if (show)
-                  Positioned(
-                    left: x.clamp(28.0, constraints.maxWidth - 28),
-                    top: 4,
-                    child: IgnorePointer(
-                      child: FractionalTranslation(
-                        translation: const Offset(-0.5, -1),
-                        child: _SeekTimeLabel(time: time),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
+        child: content,
       );
     },
   );
+}
+
+class _TouchAreaShape extends SliderComponentShape {
+  final Size size;
+
+  const _TouchAreaShape(this.size);
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) => size;
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {}
+}
+
+/// Full-width track on the bottom edge of the slider's touch area.
+class _BottomTrackShape extends RectangularSliderTrackShape {
+  const _BottomTrackShape();
+
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+    bool isDiscrete = false,
+  }) {
+    final height = sliderTheme.trackHeight!;
+    return Rect.fromLTWH(offset.dx, offset.dy + parentBox.size.height - height, parentBox.size.width, height);
+  }
 }
 
 class _SeekTimeLabel extends StatelessWidget {
@@ -210,6 +279,39 @@ class _SeekTimeLabel extends StatelessWidget {
   );
 }
 
+/// Seek target with the offset from where seeking started, e.g. "12:30  +25 с".
+class SeekTargetLabel extends StatelessWidget {
+  final Duration from;
+  final Duration to;
+
+  const SeekTargetLabel({super.key, required this.from, required this.to});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final offset = (to - from).inSeconds;
+    return DecoratedBox(
+      decoration: const ShapeDecoration(color: Color(0x99000000), shape: StadiumBorder()),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: formatPlaybackTime(to), style: theme.textTheme.titleMedium),
+              TextSpan(
+                text: '  ${offset >= 0 ? l10n.playerSeekForward(offset) : l10n.playerSeekBackward(-offset)}',
+                style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70),
+              ),
+            ],
+          ),
+          style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()]),
+        ),
+      ),
+    );
+  }
+}
+
 class PlayerTimeLabel extends StatelessWidget {
   final ValueListenable<PlaybackStatus> status;
 
@@ -230,8 +332,16 @@ class PlayPauseButton extends StatelessWidget {
   final VoidCallback onPressed;
   final FocusNode? focusNode;
   final double? iconSize;
+  final ButtonStyle? style;
 
-  const PlayPauseButton({super.key, required this.status, required this.onPressed, this.focusNode, this.iconSize});
+  const PlayPauseButton({
+    super.key,
+    required this.status,
+    required this.onPressed,
+    this.focusNode,
+    this.iconSize,
+    this.style,
+  });
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
@@ -240,6 +350,7 @@ class PlayPauseButton extends StatelessWidget {
       key: const Key('playPauseButton'),
       focusNode: focusNode,
       iconSize: iconSize,
+      style: style,
       tooltip: status.playing ? context.l10n.playerPause : context.l10n.playerPlay,
       onPressed: onPressed,
       icon: Icon(status.playing ? Icons.pause : Icons.play_arrow),
@@ -271,19 +382,29 @@ class PlayerTopBar extends StatelessWidget {
   final PlayerSession session;
   final List<Widget> actions;
 
-  const PlayerTopBar({super.key, required this.session, this.actions = const []});
+  /// TV leaves it out: the remote's Back key already hides the controls, then exits.
+  final bool back;
+
+  // Close to the shell rail's back button (rail: 80 wide, 8 from the top), so back navigation doesn't jump.
+  final EdgeInsetsGeometry padding;
+
+  const PlayerTopBar({
+    super.key,
+    required this.session,
+    this.actions = const [],
+    this.back = true,
+    this.padding = const EdgeInsets.fromLTRB(20, 12, 0, 0),
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final itemTitle = session.items.length > 1 ? session.item?.title : null;
     return Padding(
-      // Close to the shell rail's back button (rail: 80 wide, 8 from the top), so back navigation doesn't jump.
-      padding: const EdgeInsets.fromLTRB(20, 12, 0, 0),
+      padding: padding,
       child: Row(
         children: [
-          const BackButton(),
-          const SizedBox(width: 8),
+          if (back) ...[const BackButton(), const SizedBox(width: 8)],
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +447,10 @@ class ControlsScrim extends StatelessWidget {
 class PlayerFailureView extends ConsumerWidget {
   final PlayerSession session;
 
-  const PlayerFailureView({super.key, required this.session});
+  /// For D-pad controls, which move focus to Retry themselves.
+  final FocusNode? retryFocus;
+
+  const PlayerFailureView({super.key, required this.session, this.retryFocus});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -351,7 +475,12 @@ class PlayerFailureView extends ConsumerWidget {
                 runSpacing: 8,
                 alignment: WrapAlignment.center,
                 children: [
-                  FilledButton(autofocus: true, onPressed: controller.retry, child: Text(l10n.commonRetry)),
+                  FilledButton(
+                    focusNode: retryFocus,
+                    autofocus: true,
+                    onPressed: controller.retry,
+                    child: Text(l10n.commonRetry),
+                  ),
                   if (session.sources.length > 1)
                     FilledButton.tonal(
                       onPressed: () => showSourceSelector(context, session, controller.selectSource),
@@ -381,22 +510,21 @@ class SourceButton extends StatelessWidget {
   );
 }
 
+/// Sources in a side sheet, opened with focus on the current one.
 Future<void> showSourceSelector(BuildContext context, PlayerSession session, ValueChanged<int> onSelected) async {
-  final selected = await showDialog<int>(
-    context: context,
-    builder: (context) => SimpleDialog(
-      title: Text(context.l10n.playerSource),
+  final selected = await showSideSheet<int>(
+    context,
+    title: context.l10n.playerSource,
+    builder: (context) => ListView(
       children: [
         for (final (index, source) in session.sources.indexed)
-          SimpleDialogOption(
+          ListTile(
             key: ValueKey('source-$index'),
-            onPressed: () => Navigator.of(context).pop(index),
-            child: Row(
-              children: [
-                Expanded(child: Text(source.description)),
-                if (index == session.sourceIndex) const Icon(Icons.check),
-              ],
-            ),
+            autofocus: index == session.sourceIndex,
+            selected: index == session.sourceIndex,
+            title: Text(source.description),
+            trailing: index == session.sourceIndex ? const Icon(Icons.check) : null,
+            onTap: () => Navigator.of(context).pop(index),
           ),
       ],
     ),

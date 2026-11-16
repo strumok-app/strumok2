@@ -158,11 +158,13 @@ class _MediaItemsButton extends ConsumerWidget {
     };
     if (!visible) return const SizedBox.shrink();
 
-    return FilledButton.tonalIcon(
+    return IconButton.filledTonal(
       key: const Key('mediaItemsButton'),
+      tooltip: details.mediaType == MediaType.video ? l10n.detailsEpisodes : l10n.detailsChapters,
+      // M3 icon buttons ignore the theme density; match the filled buttons next to it.
+      visualDensity: Theme.of(context).visualDensity,
       onPressed: () => showMediaItemsSheet(context, details),
       icon: const Icon(Icons.format_list_bulleted),
-      label: Text(details.mediaType == MediaType.video ? l10n.detailsEpisodes : l10n.detailsChapters),
     );
   }
 }

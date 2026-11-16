@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/platform/device_class.dart';
-import 'controls/basic_controls.dart';
 import 'controls/desktop/desktop_controls.dart';
+import 'controls/mobile/mobile_controls.dart';
+import 'controls/tv/tv_controls.dart';
 import 'player_controller.dart';
 import 'player_fullscreen.dart';
 
@@ -78,8 +79,8 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
             else
               switch (deviceClass) {
                 DeviceClass.desktop => DesktopControls(session: session),
-                // SPEC: phone/tablet (M5.5) and TV (M5.6) get dedicated controls in their stages.
-                _ => BasicControls(session: session),
+                DeviceClass.phone || DeviceClass.tablet => MobileControls(session: session),
+                DeviceClass.tv => TvControls(session: session),
               },
           ],
         ),

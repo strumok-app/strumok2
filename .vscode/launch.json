@@ -9,7 +9,6 @@
             "request": "launch",
             "type": "dart",
             "toolArgs": [
-                "FORCE_TV_MODE=false",
                 "--dart-define-from-file",
                 "secrets.env"
             ],

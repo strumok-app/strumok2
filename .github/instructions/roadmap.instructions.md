@@ -79,7 +79,7 @@ M5.1–M5.2 are pure Dart and also unblock M8 (HLS downloads).
 - Tests: one widget test per hotkey against the fake backend; auto-hide timing.
 
 ### M5.5 — Mobile controls (spec-06 §6.7)
-- `controls/mobile/`: tap toggles controls, double-tap left/right accumulating ±10 s, vertical drag brightness (left) /
+- `controls/mobile/`: tap toggles controls, double-tap left/right accumulating ±10 s, horizontal swipe seek, vertical drag brightness (left) /
   volume (right) with indicator, lock mode, forced landscape + immersive mode restored on exit, subtitle padding hook.
 - Deps: `screen_brightness`, `volume_controller` behind `core/platform` interfaces (no-op off Android).
 - Tests: gesture widget tests with fake brightness/volume implementations.
@@ -87,21 +87,24 @@ M5.1–M5.2 are pure Dart and also unblock M8 (HLS downloads).
 
 ### M5.6 — TV controls (spec-06 §6.8)
 - `controls/tv/`: hidden state ←/→ accumulating seek preview (500 ms debounce → single seek), OK = play/pause,
-  ↑/↓ show controls; visible state top bar (back, title, source, settings) + bottom bar (prev, play, next, seek bar,
-  playlist) with focus traversal; focusable seek bar (±10 s); Back hides controls, then exits; large focus indicators.
+  ↑/↓ show controls; visible state title-only top bar + bottom bar (seek bar; prev, play, next, source, episodes as
+  labeled-on-focus pills) per spec-06 §6.5.1/§6.8; focusable seek bar (±10 s); Back hides controls, then exits.
 - Tests: key-only widget tests in TV mode asserting focus moves and backend calls; manual session on a TV emulator.
 
 ### M5.7 — Subtitles and tracks (spec-06 §6.5)
 - External subtitles: fetch with source headers via the shared client, UTF-8 decode with fallback, WebVTT + SRT
   parsers, tag sanitizing, cache per (supplier, id, item, name); Flutter overlay with size and ± offset.
-- Embedded subtitle tracks, "off", persisted `currentSubtitleName`; audio track and video quality selectors.
-- Selectors added to desktop, mobile and TV controls (TV top bar gets the subtitles button).
+- Embedded subtitle tracks, "off", persisted `currentSubtitleName`; audio track selector (subtitles panel) and video
+  quality selector (introduces the Settings gear with its Quality page).
+- Subtitles button (+ desktop `C`) opening the subtitles & audio side sheet in desktop, mobile and TV controls, placed
+  first in the bottom-bar action group (spec-06 §6.5.1).
 - Tests: parser fixtures (VTT, SRT, BOM, non-UTF-8, tags, malformed cues), cue lookup with offset.
 
 ### M5.8 — Speed, equalizer, player settings (spec-06 §6.5, spec-09 §5)
 - Speed 0.5–2.0; 5-band equalizer via mpv `af` with presets (persisted `video_player_equalizer_bands`).
-- Shuffle, on-end action, start-from (+ fixed seconds), subtitle size — player settings sheet in all control sets and
-  the "Video player" section in Settings (floating-player switch arrives with M6, max parallel downloads with M8).
+- Shuffle, on-end action, start-from (+ fixed seconds) as Settings (gear) pages next to Quality, Speed and
+  Equalizer (desktop popup with sub-pages, mobile/TV side sheet), and the "Video player" section in Settings
+  (floating-player switch arrives with M6, max parallel downloads with M8).
 - Tests: `af` string builder, presets, settings persistence, shuffle/on-end playlist logic.
 
 ### M5 exit

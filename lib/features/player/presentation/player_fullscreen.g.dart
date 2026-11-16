@@ -40,7 +40,7 @@ final class PlayerFullscreenProvider extends $NotifierProvider<PlayerFullscreen,
   }
 }
 
-String _$playerFullscreenHash() => r'a24e6adaeada604b205b6fa780761a078b3bb9d6';
+String _$playerFullscreenHash() => r'3d00cff2912e2f64c0d550f57655cd3dc477598d';
 
 /// Desktop window full screen while in the player; left when the player closes.
 

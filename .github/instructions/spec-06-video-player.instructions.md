@@ -74,6 +74,25 @@ to media_kit together with the source headers, stop the proxy when the backend i
 - Volume persisted (0–100, default 100). Keep screen awake while playing.
 - Progress → collection per spec-03 §3.3; mark `complete` is user-driven (don't auto-complete).
 
+### 6.5.1 Control placement (all device classes)
+
+Buttons by frequency of use:
+
+| Button | Contents | Placement |
+|--------|----------|-----------|
+| Play/pause, prev/next, seek bar | — | per device (below) |
+| **Subtitles** (CC) | subtitle tracks + off, audio tracks (section hidden with one track), subtitle size and offset | own button |
+| **Source** (server) | sources, current checked | own button; also "Change source" in the error view |
+| **Episodes** | playlist grouped by section | own button |
+| **Settings** (gear) | quality, speed, equalizer, playback (on-end, shuffle, start-from) | own button, sub-pages |
+| PiP, fullscreen, volume, lock | — | device-specific |
+
+- Order is fixed everywhere: **subtitles → source → episodes → settings**, then window/mode buttons.
+- A button with nothing to choose (one source, one episode, no subtitles) is **hidden**, not disabled.
+- The top bar is identity only (back, title, episode) plus rare mode switches; actions live in the bottom bar.
+- Panels open as side sheets from the trailing edge, focused on the current choice (desktop settings: popup above
+  the gear with sub-pages).
+
 ## 6.6 Desktop controls (keyboard map — MUST)
 
 | Key | Action |
@@ -88,13 +107,23 @@ to media_kit together with the source headers, stop the proxy when the backend i
 | `[`, MediaTrackPrevious | previous item |
 | F | toggle fullscreen; Enter → enter fullscreen; Esc → exit fullscreen |
 | P | open playlist |
+| S | open source selector |
+| C | open subtitles panel (with subtitles, M5.7) |
+
+Layout: top bar = back, title, episode. Bottom bar = seek bar; row: prev, play, next, volume, time … subtitles,
+source, episodes, settings, gap, PiP, fullscreen (far right).
 
 Mouse: hover shows controls, auto-hide after inactivity (hide cursor too), double-click toggles fullscreen,
 scroll on volume. PiP button (specs §6.9).
 
 ## 6.7 Mobile controls (phone/tablet)
 
+- Layout (landscape): top bar = back, title, episode … PiP, lock (rare mode switches, away from the thumbs);
+  center = prev, play/pause, next at the exact screen center; bottom row = time … subtitles, source, episodes,
+  settings; seek bar flush with the bottom edge. All panels are side sheets.
 - Tap toggles controls; double-tap left/right half → seek −10/+10 s (accumulating).
+- Horizontal swipe → seek; a full-width swipe covers 120 s, the target time and offset are shown while swiping and
+  the seek happens on release.
 - Vertical drag: left half = screen brightness, right half = system volume, with on-screen indicator.
 - **Lock** button: when locked only the unlock button is shown, gestures disabled.
 - Force landscape + immersive full screen in the player; restore on exit.
@@ -106,10 +135,12 @@ scroll on volume. PiP button (specs §6.9).
 - No touch/hover assumptions; large, high-contrast focus indicators; controls auto-hide.
 - Hidden state: ←/→ = seek −10/+10 s with **accumulating seek preview** (500 ms debounce, then single seek);
   OK/Enter/Select = play/pause; ↑/↓ = show controls.
-- Visible state: focus traverses top bar (back, title, source, subtitles, settings) and bottom bar (prev, play, next,
-  seek bar, playlist). Seek bar is focusable; ←/→ on it moves by 10 s units.
+- Visible state: top bar is title + episode only (no focusable items; the remote's Back does what a back button
+  would). Bottom bar: focusable seek bar; one row prev, play, next, time … subtitles, source, episodes, settings.
+  Buttons expand into a labeled pill (icon + text, inverted colors) while focused. Seek bar is focusable; ←/→ on it
+  moves by 10 s units, ↓ returns to Play.
 - Back: hide controls if visible; otherwise exit player.
-- No floating player and no PiP on TV.
+- No floating player, no PiP, no fullscreen or volume buttons on TV.
 
 ## 6.9 Floating player (phone/tablet/desktop; setting, default **on**)
 

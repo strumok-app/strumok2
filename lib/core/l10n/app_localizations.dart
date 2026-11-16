@@ -758,6 +758,42 @@ abstract class AppLocalizations {
   /// **'Увімкнути звук'**
   String get playerUnmute;
 
+  /// Mobile player: lock controls and gestures
+  ///
+  /// In uk, this message translates to:
+  /// **'Заблокувати керування'**
+  String get playerLock;
+
+  /// Mobile player: unlock controls
+  ///
+  /// In uk, this message translates to:
+  /// **'Розблокувати керування'**
+  String get playerUnlock;
+
+  /// Double-tap seek indicator, forward
+  ///
+  /// In uk, this message translates to:
+  /// **'+{seconds} с'**
+  String playerSeekForward(int seconds);
+
+  /// Double-tap seek indicator, backward
+  ///
+  /// In uk, this message translates to:
+  /// **'−{seconds} с'**
+  String playerSeekBackward(int seconds);
+
+  /// Brightness gesture indicator
+  ///
+  /// In uk, this message translates to:
+  /// **'Яскравість'**
+  String get playerBrightness;
+
+  /// Volume gesture indicator
+  ///
+  /// In uk, this message translates to:
+  /// **'Гучність'**
+  String get playerVolume;
+
   /// Settings sub-page: content suppliers
   ///
   /// In uk, this message translates to:

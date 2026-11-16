@@ -353,6 +353,28 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playerUnmute => 'Увімкнути звук';
 
   @override
+  String get playerLock => 'Заблокувати керування';
+
+  @override
+  String get playerUnlock => 'Розблокувати керування';
+
+  @override
+  String playerSeekForward(int seconds) {
+    return '+$seconds с';
+  }
+
+  @override
+  String playerSeekBackward(int seconds) {
+    return '−$seconds с';
+  }
+
+  @override
+  String get playerBrightness => 'Яскравість';
+
+  @override
+  String get playerVolume => 'Гучність';
+
+  @override
   String get settingsSuppliers => 'Постачальники';
 
   @override

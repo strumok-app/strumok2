@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:content_suppliers_api/content_suppliers_api.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,6 +44,18 @@ void main() {
     await tester.pumpAndSettle();
     return (container, supplier);
   }
+
+  testAppWidgets('desktop density: episodes icon button is as tall as the action buttons', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => items));
+
+    final button = find.byKey(const Key('mediaItemsButton'));
+    final height = tester.getSize(find.widgetWithText(FilledButton, 'Дивитися')).height;
+    expect(tester.getSize(button).height, height);
+    expect(find.byTooltip('Епізоди'), findsOneWidget);
+    debugDefaultTargetPlatformOverride = null;
+  });
 
   testAppWidgets('video details: info, autofocused Watch, episodes sheet with season tabs', (tester) async {
     final (container, _) = await open(

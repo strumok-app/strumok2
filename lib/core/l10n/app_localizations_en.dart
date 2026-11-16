@@ -352,6 +352,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerUnmute => 'Unmute';
 
   @override
+  String get playerLock => 'Lock controls';
+
+  @override
+  String get playerUnlock => 'Unlock controls';
+
+  @override
+  String playerSeekForward(int seconds) {
+    return '+$seconds s';
+  }
+
+  @override
+  String playerSeekBackward(int seconds) {
+    return '−$seconds s';
+  }
+
+  @override
+  String get playerBrightness => 'Brightness';
+
+  @override
+  String get playerVolume => 'Volume';
+
+  @override
   String get settingsSuppliers => 'Suppliers';
 
   @override

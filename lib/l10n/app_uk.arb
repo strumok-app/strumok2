@@ -464,6 +464,40 @@
   "@playerUnmute": {
     "description": "Player unmute button"
   },
+  "playerLock": "Заблокувати керування",
+  "@playerLock": {
+    "description": "Mobile player: lock controls and gestures"
+  },
+  "playerUnlock": "Розблокувати керування",
+  "@playerUnlock": {
+    "description": "Mobile player: unlock controls"
+  },
+  "playerSeekForward": "+{seconds} с",
+  "@playerSeekForward": {
+    "description": "Double-tap seek indicator, forward",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "playerSeekBackward": "−{seconds} с",
+  "@playerSeekBackward": {
+    "description": "Double-tap seek indicator, backward",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "playerBrightness": "Яскравість",
+  "@playerBrightness": {
+    "description": "Brightness gesture indicator"
+  },
+  "playerVolume": "Гучність",
+  "@playerVolume": {
+    "description": "Volume gesture indicator"
+  },
   "settingsSuppliers": "Постачальники",
   "@settingsSuppliers": {
     "description": "Settings sub-page: content suppliers"

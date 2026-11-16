@@ -13,6 +13,7 @@ import 'package:strumok/core/network/http_client.dart';
 import 'package:strumok/core/network/image_cache.dart';
 import 'package:strumok/core/platform/app_paths.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/features/collection/data/collection_repository.dart';
@@ -191,6 +192,8 @@ Future<List<Override>> testOverrides({
   String appVersion = '1.0.0',
   VideoBackend Function()? videoBackend,
   WindowFullscreen? windowFullscreen,
+  BrightnessControl? brightness,
+  VolumeControl? volume,
 }) async {
   final tmp = Directory.systemTemp.createTempSync('strumok_test');
   final paths = AppPaths(support: tmp, cache: Directory('${tmp.path}/cache'), temp: Directory('${tmp.path}/tmp'));
@@ -206,5 +209,7 @@ Future<List<Override>> testOverrides({
     collectionDatabaseFactoryProvider.overrideWithValue(newDatabaseFactoryMemory()),
     videoBackendFactoryProvider.overrideWithValue(videoBackend ?? FakeVideoBackend.new),
     windowFullscreenProvider.overrideWithValue(windowFullscreen ?? FakeWindowFullscreen()),
+    brightnessControlProvider.overrideWithValue(brightness ?? FakeBrightnessControl()),
+    volumeControlProvider.overrideWithValue(volume ?? FakeVolumeControl()),
   ];
 }
