@@ -25,6 +25,12 @@ int startPosition(StartFrom mode, {MediaItemPosition? remembered, int fixedSecon
 int chooseSource(List<VideoMediaItemSource> sources, String? preferred) =>
     max(0, sources.indexWhere((s) => s.description == preferred));
 
+/// Index of the subtitles named [preferred] (`currentSubtitleName` = description); null (off) when absent.
+int? chooseSubtitles(List<SubtitleMediaItemSource> subtitles, String? preferred) {
+  final index = subtitles.indexWhere((s) => s.description == preferred);
+  return index < 0 ? null : index;
+}
+
 /// What the player is showing; playback ticks are not part of it (see `PlaybackStatus`).
 final class PlayerSession {
   final String supplier;
@@ -34,6 +40,22 @@ final class PlayerSession {
   final int itemIndex;
   final List<VideoMediaItemSource> sources;
   final int sourceIndex;
+  final List<SubtitleMediaItemSource> subtitles;
+
+  /// Selected supplier subtitles; null = off.
+  final int? subtitleIndex;
+
+  /// The selected supplier subtitles are being fetched and parsed.
+  final bool subtitleLoading;
+
+  /// The selected supplier subtitles could not be loaded.
+  final bool subtitleFailed;
+
+  /// Positive shows subtitles later.
+  final Duration subtitleOffset;
+
+  /// Playback rate (spec-06 §6.5).
+  final double speed;
   final bool loading;
   final PlayerFailure? failure;
 
@@ -45,12 +67,19 @@ final class PlayerSession {
     this.itemIndex = 0,
     this.sources = const [],
     this.sourceIndex = 0,
+    this.subtitles = const [],
+    this.subtitleIndex,
+    this.subtitleLoading = false,
+    this.subtitleFailed = false,
+    this.subtitleOffset = Duration.zero,
+    this.speed = 1,
     this.loading = true,
     this.failure,
   });
 
   ContentMediaItem? get item => itemIndex < items.length ? items[itemIndex] : null;
   VideoMediaItemSource? get source => sourceIndex < sources.length ? sources[sourceIndex] : null;
+  SubtitleMediaItemSource? get subtitle => subtitleIndex == null ? null : subtitles[subtitleIndex!];
   bool get hasPrevious => itemIndex > 0;
   bool get hasNext => itemIndex + 1 < items.length;
 
@@ -60,6 +89,13 @@ final class PlayerSession {
     int? itemIndex,
     List<VideoMediaItemSource>? sources,
     int? sourceIndex,
+    List<SubtitleMediaItemSource>? subtitles,
+    int? subtitleIndex,
+    bool clearSubtitle = false,
+    bool? subtitleLoading,
+    bool? subtitleFailed,
+    Duration? subtitleOffset,
+    double? speed,
     bool? loading,
     PlayerFailure? failure,
     bool clearFailure = false,
@@ -71,6 +107,12 @@ final class PlayerSession {
     itemIndex: itemIndex ?? this.itemIndex,
     sources: sources ?? this.sources,
     sourceIndex: sourceIndex ?? this.sourceIndex,
+    subtitles: subtitles ?? this.subtitles,
+    subtitleIndex: clearSubtitle ? null : subtitleIndex ?? this.subtitleIndex,
+    subtitleLoading: subtitleLoading ?? this.subtitleLoading,
+    subtitleFailed: subtitleFailed ?? this.subtitleFailed,
+    subtitleOffset: subtitleOffset ?? this.subtitleOffset,
+    speed: speed ?? this.speed,
     loading: loading ?? this.loading,
     failure: clearFailure ? null : failure ?? this.failure,
   );

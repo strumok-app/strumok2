@@ -10,7 +10,9 @@ import '../../../../../core/localization.dart';
 import '../../../data/video_backend.dart';
 import '../../../domain/player_session.dart';
 import '../../player_controller.dart';
+import '../../widgets/player_panels.dart';
 import '../../widgets/player_widgets.dart';
+import '../../widgets/subtitle_overlay.dart';
 
 /// D-pad controls for Android TV (spec-06 §6.8). While nothing in the overlay is focused: ←/→ accumulate a seek
 /// preview committed after 500 ms, OK plays/pauses, ↑/↓ open the controls on Play. Back hides the controls first.
@@ -213,6 +215,7 @@ class _TvControlsState extends ConsumerState<TvControls> {
         fit: StackFit.expand,
         children: [
           PlayerBufferingIndicator(session: session, status: status),
+          SubtitleOverlay(bottom: visible ? 150 : 48),
           if ((_seekFrom, _seekTo) case (final from?, final to?)) ...[
             Align(
               alignment: const Alignment(0, 0.4),
@@ -264,45 +267,61 @@ class _TvControlsState extends ConsumerState<TvControls> {
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Row(
-                                spacing: 8,
-                                children: [
-                                  _TvButton(
-                                    icon: Icons.skip_previous,
-                                    label: l10n.playerPrevious,
-                                    onPressed: session.hasPrevious ? _controller.previous : null,
-                                  ),
-                                  ValueListenableBuilder(
-                                    valueListenable: status,
-                                    builder: (context, status, _) => _TvButton(
-                                      key: const Key('playPauseButton'),
-                                      focusNode: _playFocus,
-                                      icon: status.playing ? Icons.pause : Icons.play_arrow,
-                                      label: status.playing ? l10n.playerPause : l10n.playerPlay,
-                                      onPressed: _controller.playOrPause,
-                                    ),
-                                  ),
-                                  _TvButton(
-                                    icon: Icons.skip_next,
-                                    label: l10n.playerNext,
-                                    onPressed: session.hasNext ? _controller.next : null,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  PlayerTimeLabel(status: status),
-                                  const Spacer(),
-                                  if (session.sources.length > 1)
+                              ValueListenableBuilder(
+                                valueListenable: _controller.tracks,
+                                builder: (context, tracks, _) => Row(
+                                  spacing: 8,
+                                  children: [
                                     _TvButton(
-                                      icon: Icons.dns_outlined,
-                                      label: l10n.playerSource,
-                                      onPressed: () => showSourceSelector(context, session, _controller.selectSource),
+                                      icon: Icons.skip_previous,
+                                      label: l10n.playerPrevious,
+                                      onPressed: session.hasPrevious ? _controller.previous : null,
                                     ),
-                                  if (session.items.length > 1)
+                                    ValueListenableBuilder(
+                                      valueListenable: status,
+                                      builder: (context, status, _) => _TvButton(
+                                        key: const Key('playPauseButton'),
+                                        focusNode: _playFocus,
+                                        icon: status.playing ? Icons.pause : Icons.play_arrow,
+                                        label: status.playing ? l10n.playerPause : l10n.playerPlay,
+                                        onPressed: _controller.playOrPause,
+                                      ),
+                                    ),
                                     _TvButton(
-                                      icon: Icons.playlist_play,
-                                      label: l10n.detailsEpisodes,
-                                      onPressed: () => showPlaylistPanel(context, session),
+                                      icon: Icons.skip_next,
+                                      label: l10n.playerNext,
+                                      onPressed: session.hasNext ? _controller.next : null,
                                     ),
-                                ],
+                                    const SizedBox(width: 8),
+                                    PlayerTimeLabel(status: status),
+                                    const Spacer(),
+                                    if (subtitlesPanelKind(session, tracks) case final kind?)
+                                      _TvButton(
+                                        key: const Key('subtitlesButton'),
+                                        icon: subtitlesPanelIcon,
+                                        label: subtitlesPanelLabel(context, kind),
+                                        onPressed: () => showSubtitlesPanel(context, session, tracks),
+                                      ),
+                                    if (session.sources.length > 1)
+                                      _TvButton(
+                                        icon: Icons.dns_outlined,
+                                        label: l10n.playerSource,
+                                        onPressed: () => showSourceSelector(context, session, _controller.selectSource),
+                                      ),
+                                    _TvButton(
+                                      key: const Key('settingsButton'),
+                                      icon: Icons.settings_outlined,
+                                      label: l10n.playerSettings,
+                                      onPressed: () => showPlayerSettings(context),
+                                    ),
+                                    if (session.items.length > 1)
+                                      _TvButton(
+                                        icon: Icons.playlist_play,
+                                        label: l10n.detailsEpisodes,
+                                        onPressed: () => showPlaylistPanel(context, session),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -371,9 +390,14 @@ class _TvButtonState extends State<_TvButton> {
             if (_focused)
               Padding(
                 padding: const EdgeInsets.only(left: 8, right: 4),
-                child: Text(
-                  widget.label,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 200),
+                  child: Text(
+                    widget.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.black),
+                  ),
                 ),
               ),
           ],

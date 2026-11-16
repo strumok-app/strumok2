@@ -22,11 +22,26 @@ class FakeVideoSource extends VideoMediaItemSource {
   Future<Uri> get link async => Uri.parse(url);
 }
 
+class FakeSubtitleSource extends SubtitleMediaItemSource {
+  @override
+  final String description;
+  @override
+  final Map<String, String>? headers;
+  final String url;
+
+  FakeSubtitleSource(this.description, {String? url, this.headers})
+    : url = url ?? 'https://subs.example.com/$description.vtt';
+
+  @override
+  Future<Uri> get link async => Uri.parse(url);
+}
+
 /// Records calls; tests drive [status], [ended] and [errors].
 class FakeVideoBackend implements VideoBackend {
   final calls = <String>[];
   final opened = <VideoOpenRequest>[];
   final _status = ValueNotifier(const PlaybackStatus());
+  final _tracks = ValueNotifier(const PlaybackTracks());
   final _ended = StreamController<void>.broadcast(sync: true);
   final _errors = StreamController<String>.broadcast(sync: true);
   var disposed = false;
@@ -40,6 +55,9 @@ class FakeVideoBackend implements VideoBackend {
   @override
   Stream<String> get errors => _errors.stream;
 
+  @override
+  ValueNotifier<PlaybackTracks> get tracks => _tracks;
+
   void end() => _ended.add(null);
 
   void fail(String message) => _errors.add(message);
@@ -52,6 +70,8 @@ class FakeVideoBackend implements VideoBackend {
     opened.add(request);
     calls.add('open:${request.link}@${request.start.inSeconds}');
     _status.value = PlaybackStatus(position: request.start, volume: _status.value.volume, playing: true);
+    final tracks = _tracks.value;
+    _tracks.value = PlaybackTracks(video: tracks.video, audio: tracks.audio);
   }
 
   @override
@@ -86,6 +106,36 @@ class FakeVideoBackend implements VideoBackend {
 
   @override
   Future<void> frameStep({required bool forward}) async => calls.add(forward ? 'frameStep' : 'frameBackStep');
+
+  PlaybackTracks _select({Object? video = _keep, Object? audio = _keep}) {
+    final t = _tracks.value;
+    return PlaybackTracks(
+      video: t.video,
+      audio: t.audio,
+      videoId: video == _keep ? t.videoId : video as String?,
+      audioId: audio == _keep ? t.audioId : audio as String?,
+    );
+  }
+
+  static const _keep = Object();
+
+  @override
+  Future<void> selectVideoTrack(String? id) async {
+    calls.add('video:$id');
+    _tracks.value = _select(video: id);
+  }
+
+  @override
+  Future<void> selectAudioTrack(String? id) async {
+    calls.add('audio:$id');
+    _tracks.value = _select(audio: id);
+  }
+
+  @override
+  Future<void> setSpeed(double speed) async => calls.add('speed:$speed');
+
+  @override
+  Future<void> setAudioFilter(String filter) async => calls.add('af:$filter');
 
   @override
   Widget buildView() => const SizedBox.expand(key: Key('fakeVideo'));

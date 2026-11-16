@@ -229,4 +229,37 @@ void main() {
     expect(find.text('Контент не знайдено'), findsOneWidget);
     expect(find.text('Повторити'), findsOneWidget);
   });
+
+  testAppWidgets('retry shows loading until details arrive', (tester) async {
+    final supplier = _GatedSupplier('alpha', FakeDetails('alpha', 'm1'));
+    final container = await pumpApp(tester, bundle: SupplierBundleReady(FakeBundle([supplier]), bundleInfo('4.0.0')));
+    unawaited(container.read(routerProvider).push(AppRoutes.details('alpha', 'm1')));
+    await tester.pump();
+    supplier.gate.completeError(StateError('x'));
+    await tester.pumpAndSettle();
+    expect(find.text('Повторити'), findsOneWidget);
+
+    supplier.gate = Completer();
+    await tester.tap(find.text('Повторити'));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('Повторити'), findsNothing);
+
+    supplier.gate.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Fake title'), findsOneWidget);
+  });
+}
+
+class _GatedSupplier extends FakeSupplier {
+  final ContentDetails item;
+  Completer<void> gate = Completer();
+
+  _GatedSupplier(super.name, this.item);
+
+  @override
+  Future<ContentDetails?> detailsById(String id) async {
+    await gate.future;
+    return item;
+  }
 }

@@ -92,9 +92,10 @@ M5.1–M5.2 are pure Dart and also unblock M8 (HLS downloads).
 - Tests: key-only widget tests in TV mode asserting focus moves and backend calls; manual session on a TV emulator.
 
 ### M5.7 — Subtitles and tracks (spec-06 §6.5)
-- External subtitles: fetch with source headers via the shared client, UTF-8 decode with fallback, WebVTT + SRT
-  parsers, tag sanitizing, cache per (supplier, id, item, name); Flutter overlay with size and ± offset.
-- Embedded subtitle tracks, "off", persisted `currentSubtitleName`; audio track selector (subtitles panel) and video
+- Supplier subtitles: fetch with source headers via the shared client; decode (BOM, UTF-8, Windows-1251 fallback) and
+  WebVTT + SRT parsing in a separate isolate; tag sanitizing, cache per (supplier, id, item, name); Flutter overlay
+  with size and ± offset. No subtitles through media_kit (mpv `sid=no`, no embedded tracks).
+- "Off", persisted `currentSubtitleName`; audio track selector (subtitles panel) and video
   quality selector (introduces the Settings gear with its Quality page).
 - Subtitles button (+ desktop `C`) opening the subtitles & audio side sheet in desktop, mobile and TV controls, placed
   first in the bottom-bar action group (spec-06 §6.5.1).
@@ -103,7 +104,7 @@ M5.1–M5.2 are pure Dart and also unblock M8 (HLS downloads).
 ### M5.8 — Speed, equalizer, player settings (spec-06 §6.5, spec-09 §5)
 - Speed 0.5–2.0; 5-band equalizer via mpv `af` with presets (persisted `video_player_equalizer_bands`).
 - Shuffle, on-end action, start-from (+ fixed seconds) as Settings (gear) pages next to Quality, Speed and
-  Equalizer (desktop popup with sub-pages, mobile/TV side sheet), and the "Video player" section in Settings
+  Equalizer (side sheet pages, spec-06 §6.5.1), and the "Video player" section in Settings
   (floating-player switch arrives with M6, max parallel downloads with M8).
 - Tests: `af` string builder, presets, settings persistence, shuffle/on-end playlist logic.
 

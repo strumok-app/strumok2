@@ -29,6 +29,8 @@ class MediaKitVideoBackend implements VideoBackend {
     'demuxer-max-back-bytes': '32M',
     'cache-pause-wait': '3',
     'network-timeout': '30',
+    // Embedded subtitle tracks are never selected or decoded.
+    'sid': 'no',
   };
   // No reconnect on 4xx: expired links must fail fast.
   static const _reconnect = [
@@ -42,10 +44,17 @@ class MediaKitVideoBackend implements VideoBackend {
   final http.Client _client;
   final Player _player;
   late final VideoController _video = VideoController(_player);
-  late final Widget _view = Video(controller: _video, controls: NoVideoControls, fill: Colors.black);
+  late final Widget _view = Video(
+    controller: _video,
+    controls: NoVideoControls,
+    fill: Colors.black,
+    // Subtitles are loaded, parsed and rendered by the player itself, never by mpv.
+    subtitleViewConfiguration: const SubtitleViewConfiguration(visible: false),
+  );
   late final Future<void> _configured = _configure();
 
   final _status = ValueNotifier(const PlaybackStatus());
+  final _tracks = ValueNotifier(const PlaybackTracks());
   final _ended = StreamController<void>.broadcast();
   final _errors = StreamController<String>.broadcast();
   final _subscriptions = <StreamSubscription<Object?>>[];
@@ -69,6 +78,8 @@ class MediaKitVideoBackend implements VideoBackend {
       stream.playing.listen((v) => _update(_status.value.copyWith(playing: v))),
       stream.buffering.listen((v) => _update(_status.value.copyWith(buffering: v))),
       stream.volume.listen((v) => _update(_status.value.copyWith(volume: v))),
+      stream.tracks.listen((_) => _updateTracks()),
+      stream.track.listen((_) => _updateTracks()),
       stream.completed.listen((completed) {
         if (completed) _finish();
       }),
@@ -103,6 +114,31 @@ class MediaKitVideoBackend implements VideoBackend {
     if (!_disposed) _status.value = next;
   }
 
+  static bool _real(String id) => id != 'auto' && id != 'no';
+
+  static MediaTrack _track(String id, String? title, String? language, {int? height, int? bitrate}) =>
+      MediaTrack(id, title: title, language: language, height: height, bitrate: bitrate);
+
+  void _updateTracks() {
+    if (_disposed) return;
+    final state = _player.state;
+    final tracks = state.tracks;
+    final selected = state.track;
+    String? id(String value) => _real(value) ? value : null;
+    _tracks.value = PlaybackTracks(
+      video: [
+        for (final t in tracks.video)
+          if (_real(t.id) && t.albumart != true) _track(t.id, t.title, t.language, height: t.h, bitrate: t.bitrate),
+      ],
+      audio: [
+        for (final t in tracks.audio)
+          if (_real(t.id)) _track(t.id, t.title, t.language),
+      ],
+      videoId: id(selected.video.id),
+      audioId: id(selected.audio.id),
+    );
+  }
+
   void _onStopped() {
     final status = _status.value;
     final nearEnd = status.duration > Duration.zero && status.duration - status.position <= _endTolerance;
@@ -128,6 +164,9 @@ class MediaKitVideoBackend implements VideoBackend {
 
   @override
   Stream<String> get errors => _errors.stream;
+
+  @override
+  ValueListenable<PlaybackTracks> get tracks => _tracks;
 
   @override
   Future<void> open(VideoOpenRequest request) async {
@@ -168,6 +207,23 @@ class MediaKitVideoBackend implements VideoBackend {
   Future<void> frameStep({required bool forward}) => _native.command([forward ? 'frame-step' : 'frame-back-step']);
 
   @override
+  Future<void> selectVideoTrack(String? id) =>
+      _player.setVideoTrack(_player.state.tracks.video.firstWhere((t) => t.id == id, orElse: VideoTrack.auto));
+
+  @override
+  Future<void> selectAudioTrack(String? id) =>
+      _player.setAudioTrack(_player.state.tracks.audio.firstWhere((t) => t.id == id, orElse: AudioTrack.auto));
+
+  @override
+  Future<void> setSpeed(double speed) => _player.setRate(speed);
+
+  @override
+  Future<void> setAudioFilter(String filter) async {
+    await _configured;
+    await _native.setProperty('af', filter);
+  }
+
+  @override
   Widget buildView() => _view;
 
   @override
@@ -181,5 +237,6 @@ class MediaKitVideoBackend implements VideoBackend {
     await _ended.close();
     await _errors.close();
     _status.dispose();
+    _tracks.dispose();
   }
 }

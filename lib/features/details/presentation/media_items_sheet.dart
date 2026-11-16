@@ -42,7 +42,7 @@ class MediaItemsSheet extends ConsumerWidget {
           router.push(mediaItemRoute(details, item: item.number));
         },
       ),
-      AsyncError() => LoadErrorView(autofocus: true, onRetry: () => ref.invalidate(provider)),
+      AsyncError(isLoading: false) => LoadErrorView(autofocus: true, onRetry: () => ref.invalidate(provider)),
       _ => const Center(child: CircularProgressIndicator()),
     };
   }

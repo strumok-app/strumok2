@@ -53,11 +53,15 @@ class SideSheet extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(child: Text(title, style: theme.textTheme.titleLarge)),
-                      const CloseButton(),
+                      // pop, not maybePop: Back may step back inside the sheet, the close button always closes it.
+                      CloseButton(onPressed: () => Navigator.of(context).pop()),
                     ],
                   ),
                 ),
-                Expanded(child: child),
+                // Tile backgrounds are ink on the nearest Material: clip it so scrolled tiles never paint over the title.
+                Expanded(
+                  child: Material(type: MaterialType.transparency, clipBehavior: Clip.hardEdge, child: child),
+                ),
               ],
             ),
           ),

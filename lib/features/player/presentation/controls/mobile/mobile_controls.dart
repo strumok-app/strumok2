@@ -8,7 +8,9 @@ import '../../../../../core/localization.dart';
 import '../../../../../core/platform/device_levels.dart';
 import '../../../domain/player_session.dart';
 import '../../player_controller.dart';
+import '../../widgets/player_panels.dart';
 import '../../widgets/player_widgets.dart';
+import '../../widgets/subtitle_overlay.dart';
 
 enum _Level { brightness, volume }
 
@@ -202,6 +204,7 @@ class _MobileControlsState extends ConsumerState<MobileControls> {
           onHorizontalDragCancel: _onSwipeEnd,
         ),
         PlayerBufferingIndicator(session: session, status: status),
+        SubtitleOverlay(bottom: visible && !_locked ? 72 : 24),
         if (_seekForward case final forward?) _SeekIndicator(forward: forward, seconds: _seekSeconds),
         if (_level case final level? when _levelReady) _LevelIndicator(level: level, value: _levelValue),
         if ((_swipeFrom, _swipeTo) case (final from?, final to?)) _SwipeIndicator(from: from, to: to),
@@ -307,8 +310,10 @@ class _MobileControlsState extends ConsumerState<MobileControls> {
                       children: [
                         IgnorePointer(child: PlayerTimeLabel(status: status)),
                         const Spacer(),
+                        SubtitlesButton(session: session),
                         if (session.sources.length > 1)
                           SourceButton(session: session, onSelected: _controller.selectSource),
+                        const PlayerSettingsButton(),
                         if (session.items.length > 1) PlaylistButton(session: session),
                       ],
                     ),

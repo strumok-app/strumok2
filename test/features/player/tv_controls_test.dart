@@ -188,6 +188,8 @@ void main() {
     expect(find.text('Джерело'), findsOneWidget, reason: 'the focused button shows its label');
     expect(find.text('Епізоди'), findsNothing);
     await press(tester, LogicalKeyboardKey.arrowRight);
+    expect(hasFocus(tester, find.byTooltip('Налаштування')), isTrue, reason: 'settings sit before episodes');
+    await press(tester, LogicalKeyboardKey.arrowRight);
     expect(hasFocus(tester, find.byTooltip('Епізоди')), isTrue);
     await press(tester, LogicalKeyboardKey.select);
     await tester.pumpAndSettle();

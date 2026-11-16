@@ -51,6 +51,52 @@ final class PlaybackStatus {
   int get hashCode => Object.hash(position, duration, buffered, playing, buffering, volume);
 }
 
+/// A video or audio track of the current media.
+@immutable
+final class MediaTrack {
+  final String id;
+  final String? title;
+  final String? language;
+  final int? height;
+  final int? bitrate;
+
+  const MediaTrack(this.id, {this.title, this.language, this.height, this.bitrate});
+
+  @override
+  bool operator ==(Object other) =>
+      other is MediaTrack &&
+      other.id == id &&
+      other.title == title &&
+      other.language == language &&
+      other.height == height &&
+      other.bitrate == bitrate;
+
+  @override
+  int get hashCode => Object.hash(id, title, language, height, bitrate);
+}
+
+/// Video and audio tracks of the current media; a null selected id means automatic.
+@immutable
+final class PlaybackTracks {
+  final List<MediaTrack> video;
+  final List<MediaTrack> audio;
+  final String? videoId;
+  final String? audioId;
+
+  const PlaybackTracks({this.video = const [], this.audio = const [], this.videoId, this.audioId});
+
+  @override
+  bool operator ==(Object other) =>
+      other is PlaybackTracks &&
+      listEquals(other.video, video) &&
+      listEquals(other.audio, audio) &&
+      other.videoId == videoId &&
+      other.audioId == audioId;
+
+  @override
+  int get hashCode => Object.hash(Object.hashAll(video), Object.hashAll(audio), videoId, audioId);
+}
+
 final class VideoOpenRequest {
   final Uri link;
   final Map<String, String>? headers;
@@ -82,7 +128,10 @@ abstract interface class VideoBackend {
   /// Playback of the current media stopped with an error.
   Stream<String> get errors;
 
-  /// Replaces the current media and starts playing.
+  ValueListenable<PlaybackTracks> get tracks;
+
+  /// Replaces the current media and starts playing. Subtitles are not the backend's concern: the player loads and
+  /// renders supplier subtitles itself.
   Future<void> open(VideoOpenRequest request);
 
   Future<void> play();
@@ -91,6 +140,18 @@ abstract interface class VideoBackend {
   Future<void> seek(Duration position);
   Future<void> setVolume(double volume);
   Future<void> frameStep({required bool forward});
+
+  /// Null selects automatically.
+  Future<void> selectVideoTrack(String? id);
+
+  /// Null selects automatically (by the preferred languages).
+  Future<void> selectAudioTrack(String? id);
+
+  /// Playback rate, 0.5–2.0.
+  Future<void> setSpeed(double speed);
+
+  /// mpv `af` filter chain (see `equalizerFilter`); empty removes it.
+  Future<void> setAudioFilter(String filter);
 
   /// The video surface; build it in one place per backend.
   Widget buildView();

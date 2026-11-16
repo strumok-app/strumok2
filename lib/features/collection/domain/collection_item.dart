@@ -115,6 +115,7 @@ final class CollectionItem {
     CollectionStatus? status,
     CollectionPriority? priority,
     int? lastSeen,
+    bool clearSubtitleName = false,
   }) => CollectionItem(
     id: id,
     supplier: supplier,
@@ -123,7 +124,7 @@ final class CollectionItem {
     mediaType: mediaType,
     currentItem: currentItem ?? this.currentItem,
     currentSourceName: currentSourceName ?? this.currentSourceName,
-    currentSubtitleName: currentSubtitleName ?? this.currentSubtitleName,
+    currentSubtitleName: clearSubtitleName ? null : currentSubtitleName ?? this.currentSubtitleName,
     positions: positions ?? this.positions,
     status: status ?? this.status,
     priority: priority ?? this.priority,

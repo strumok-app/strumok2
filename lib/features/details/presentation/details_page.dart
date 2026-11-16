@@ -30,7 +30,7 @@ class DetailsPage extends ConsumerWidget {
             ? _WideDetails(details: value, viewport: constraints.biggest)
             : _NarrowDetails(details: value),
       ),
-      AsyncError(:final error) => LoadErrorView(
+      AsyncError(:final error, isLoading: false) => LoadErrorView(
         autofocus: true,
         message: error is ContentNotFoundException ? context.l10n.detailsNotFound : null,
         onRetry: () => ref.invalidate(provider),

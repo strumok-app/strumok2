@@ -38,7 +38,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
     final groups = ref.watch(collectionGroupsProvider);
 
     final Widget body = switch (items) {
-      AsyncError() => LoadErrorView(onRetry: () => ref.invalidate(collectionItemsProvider)),
+      AsyncError(isLoading: false) => LoadErrorView(onRetry: () => ref.invalidate(collectionItemsProvider)),
       AsyncData(:final value) when value.isEmpty => EmptyStateView(
         icon: Icons.favorite_border,
         message: l10n.collectionEmpty,

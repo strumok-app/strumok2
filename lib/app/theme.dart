@@ -145,16 +145,8 @@ ThemeData _flatTheme(ColorScheme cs) {
         side: WidgetStatePropertyAll(BorderSide(color: cs.outlineVariant)),
       ),
     ),
-    // Selected tab is a tonal pill; no underline or divider.
-    tabBarTheme: TabBarThemeData(
-      dividerColor: Colors.transparent,
-      indicatorSize: TabBarIndicatorSize.tab,
-      indicator: BoxDecoration(color: cs.secondaryContainer, borderRadius: _controlRadius),
-      labelColor: cs.onSecondaryContainer,
-      unselectedLabelColor: cs.onSurfaceVariant,
-      splashBorderRadius: _controlRadius,
-      labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-    ),
+    // Material 3 underline indicator, without the full-width divider (flat design: no separator lines).
+    tabBarTheme: const TabBarThemeData(dividerColor: Colors.transparent),
     chipTheme: ChipThemeData(
       backgroundColor: cs.surfaceContainerHighest,
       selectedColor: cs.secondaryContainer,

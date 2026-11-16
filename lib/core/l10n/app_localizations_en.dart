@@ -548,4 +548,133 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suppliersChannels => 'Recommendation channels';
+
+  @override
+  String get playerSubtitles => 'Subtitles';
+
+  @override
+  String get playerSubtitlesOff => 'Off';
+
+  @override
+  String get playerSubtitlesFailed => 'Couldn\'t load the subtitles';
+
+  @override
+  String get playerAudio => 'Audio';
+
+  @override
+  String get playerAuto => 'Auto';
+
+  @override
+  String playerTrack(int number) {
+    return 'Track $number';
+  }
+
+  @override
+  String get playerSubtitleSize => 'Subtitle size';
+
+  @override
+  String get playerSubtitleOffset => 'Subtitle offset';
+
+  @override
+  String playerSubtitleOffsetValue(String seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get playerDecrease => 'Decrease';
+
+  @override
+  String get playerIncrease => 'Increase';
+
+  @override
+  String get playerSettings => 'Settings';
+
+  @override
+  String get playerQuality => 'Quality';
+
+  @override
+  String get playerSubtitlesLoading => 'Loading subtitles…';
+
+  @override
+  String get playerSubtitlesAndAudio => 'Audio & subtitles';
+
+  @override
+  String get playerSpeed => 'Speed';
+
+  @override
+  String get playerSpeedNormal => 'Normal';
+
+  @override
+  String playerSpeedValue(String value) {
+    return '$value×';
+  }
+
+  @override
+  String get playerEqualizer => 'Equalizer';
+
+  @override
+  String get playerEqualizerOff => 'Off';
+
+  @override
+  String get playerEqualizerClearDialogue => 'Clear dialogue';
+
+  @override
+  String get playerEqualizerCinema => 'Cinema';
+
+  @override
+  String get playerEqualizerNight => 'Night';
+
+  @override
+  String get playerEqualizerAction => 'Action';
+
+  @override
+  String get playerEqualizerCustom => 'Custom';
+
+  @override
+  String playerHertz(String value) {
+    return '$value Hz';
+  }
+
+  @override
+  String playerKilohertz(String value) {
+    return '$value kHz';
+  }
+
+  @override
+  String playerDecibels(String value) {
+    return '$value dB';
+  }
+
+  @override
+  String get playerStartFrom => 'Start from';
+
+  @override
+  String get playerStartFromRemembered => 'Where I left off';
+
+  @override
+  String get playerStartFromBeginning => 'The beginning';
+
+  @override
+  String get playerStartFromFixed => 'A fixed position';
+
+  @override
+  String get playerFixedPosition => 'Fixed position';
+
+  @override
+  String get playerOnEnd => 'When it ends';
+
+  @override
+  String get playerOnEndNext => 'Play the next one';
+
+  @override
+  String get playerOnEndAgain => 'Play again';
+
+  @override
+  String get playerOnEndNothing => 'Do nothing';
+
+  @override
+  String get playerShuffle => 'Shuffle';
+
+  @override
+  String get settingsVideoPlayerSection => 'Video player';
 }

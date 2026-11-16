@@ -249,11 +249,11 @@
   },
   "languageUk": "Українська",
   "@languageUk": {
-    "description": "Language name"
+    "description": "Ukrainian language name, always in Ukrainian"
   },
-  "languageEn": "Англійська",
+  "languageEn": "English",
   "@languageEn": {
-    "description": "Language name"
+    "description": "English language name, always in English"
   },
   "detailsWatch": "Дивитися",
   "@detailsWatch": {
@@ -534,14 +534,6 @@
   "@settingsLanguageHint": {
     "description": "Explains what the language setting affects"
   },
-  "languageUk": "Українська",
-  "@languageUk": {
-    "description": "Ukrainian language name, always in Ukrainian"
-  },
-  "languageEn": "English",
-  "@languageEn": {
-    "description": "English language name, always in English"
-  },
   "settingsThemeSection": "Тема",
   "@settingsThemeSection": {
     "description": "Settings section: theme"
@@ -757,5 +749,191 @@
   "suppliersChannels": "Канали рекомендацій",
   "@suppliersChannels": {
     "description": "Suppliers settings: recommendation channels"
+  },
+  "playerSubtitles": "Субтитри",
+  "@playerSubtitles": {
+    "description": "Player: subtitles button and panel title"
+  },
+  "playerSubtitlesOff": "Вимкнено",
+  "@playerSubtitlesOff": {
+    "description": "Subtitles panel: no subtitles"
+  },
+  "playerSubtitlesFailed": "Не вдалося завантажити субтитри",
+  "@playerSubtitlesFailed": {
+    "description": "Subtitles panel: selected subtitles failed to load"
+  },
+  "playerAudio": "Аудіо",
+  "@playerAudio": {
+    "description": "Subtitles panel: audio tracks section"
+  },
+  "playerAuto": "Авто",
+  "@playerAuto": {
+    "description": "Automatic audio track or video quality"
+  },
+  "playerTrack": "Доріжка {number}",
+  "@playerTrack": {
+    "description": "Unnamed audio track",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "playerSubtitleSize": "Розмір субтитрів",
+  "@playerSubtitleSize": {
+    "description": "Subtitles panel: font size"
+  },
+  "playerSubtitleOffset": "Зсув субтитрів",
+  "@playerSubtitleOffset": {
+    "description": "Subtitles panel: timing offset; positive shows subtitles later"
+  },
+  "playerSubtitleOffsetValue": "{seconds} с",
+  "@playerSubtitleOffsetValue": {
+    "description": "Subtitle offset value, signed seconds like +0.5",
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "playerDecrease": "Зменшити",
+  "@playerDecrease": {
+    "description": "Stepper button"
+  },
+  "playerIncrease": "Збільшити",
+  "@playerIncrease": {
+    "description": "Stepper button"
+  },
+  "playerSettings": "Налаштування",
+  "@playerSettings": {
+    "description": "Player: settings (gear) button and panel title"
+  },
+  "playerQuality": "Якість",
+  "@playerQuality": {
+    "description": "Player settings: video quality"
+  },
+  "playerSubtitlesLoading": "Завантаження субтитрів…",
+  "@playerSubtitlesLoading": {
+    "description": "Subtitle overlay placeholder while the selected subtitles load"
+  },
+  "playerSubtitlesAndAudio": "Субтитри та аудіо",
+  "@playerSubtitlesAndAudio": {
+    "description": "Player: subtitles button and panel title when audio tracks can be chosen too"
+  },
+  "playerSpeed": "Швидкість",
+  "@playerSpeed": {
+    "description": "Player settings: playback speed"
+  },
+  "playerSpeedNormal": "Звичайна",
+  "@playerSpeedNormal": {
+    "description": "Playback speed 1.0"
+  },
+  "playerSpeedValue": "{value}×",
+  "@playerSpeedValue": {
+    "description": "Playback speed value, e.g. 1.25×",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerEqualizer": "Еквалайзер",
+  "@playerEqualizer": {
+    "description": "Player settings: 5-band equalizer"
+  },
+  "playerEqualizerOff": "Вимкнено",
+  "@playerEqualizerOff": {
+    "description": "Equalizer preset: flat"
+  },
+  "playerEqualizerClearDialogue": "Чіткі діалоги",
+  "@playerEqualizerClearDialogue": {
+    "description": "Equalizer preset"
+  },
+  "playerEqualizerCinema": "Кіно",
+  "@playerEqualizerCinema": {
+    "description": "Equalizer preset"
+  },
+  "playerEqualizerNight": "Нічний",
+  "@playerEqualizerNight": {
+    "description": "Equalizer preset"
+  },
+  "playerEqualizerAction": "Бойовик",
+  "@playerEqualizerAction": {
+    "description": "Equalizer preset"
+  },
+  "playerEqualizerCustom": "Власний",
+  "@playerEqualizerCustom": {
+    "description": "Equalizer: gains that match no preset"
+  },
+  "playerHertz": "{value} Гц",
+  "@playerHertz": {
+    "description": "Equalizer band frequency",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerKilohertz": "{value} кГц",
+  "@playerKilohertz": {
+    "description": "Equalizer band frequency",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerDecibels": "{value} дБ",
+  "@playerDecibels": {
+    "description": "Equalizer band gain, signed",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playerStartFrom": "Починати з",
+  "@playerStartFrom": {
+    "description": "Player setting: where playback starts"
+  },
+  "playerStartFromRemembered": "Місця зупинки",
+  "@playerStartFromRemembered": {
+    "description": "Start from: remembered position"
+  },
+  "playerStartFromBeginning": "Початку",
+  "@playerStartFromBeginning": {
+    "description": "Start from: 0"
+  },
+  "playerStartFromFixed": "Фіксованої позиції",
+  "@playerStartFromFixed": {
+    "description": "Start from: configured seconds"
+  },
+  "playerFixedPosition": "Фіксована позиція",
+  "@playerFixedPosition": {
+    "description": "Start position for \"a fixed position\""
+  },
+  "playerOnEnd": "Після завершення",
+  "@playerOnEnd": {
+    "description": "Player setting: on-end action"
+  },
+  "playerOnEndNext": "Наступний епізод",
+  "@playerOnEndNext": {
+    "description": "On-end action"
+  },
+  "playerOnEndAgain": "Повторити",
+  "@playerOnEndAgain": {
+    "description": "On-end action"
+  },
+  "playerOnEndNothing": "Нічого не робити",
+  "@playerOnEndNothing": {
+    "description": "On-end action"
+  },
+  "playerShuffle": "Випадковий порядок",
+  "@playerShuffle": {
+    "description": "Player setting: the next item after the end is random"
+  },
+  "settingsVideoPlayerSection": "Відеоплеєр",
+  "@settingsVideoPlayerSection": {
+    "description": "Settings section title"
   }
 }

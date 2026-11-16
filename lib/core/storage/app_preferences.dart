@@ -31,6 +31,12 @@ class AppPreferences {
   static const themeBrightness = 'theme_brightness';
   static const themeColorScheme = 'theme_color_scheme';
   static const volume = 'volume';
+  static const videoPlayerSubtitlesSize = 'video_player_subtitles_size';
+  static const videoPlayerShuffleMode = 'video_player_setting_shuffle_mode';
+  static const videoPlayerEndsAction = 'video_player_setting_ends_action';
+  static const videoPlayerStartFrom = 'video_player_setting_start_from';
+  static const videoPlayerFixedPosition = 'video_player_setting_fixed_position';
+  static const videoPlayerEqualizerBands = 'video_player_equalizer_bands';
 
   static String profileSearchHistory(String profileId) => '$searchHistory.$profileId';
   static const ffiUpdateLastCheck = 'ffi_update_last_check';
@@ -51,6 +57,9 @@ class AppPreferences {
 
   double? getDouble(String key) => _prefs.getDouble(key);
   Future<void> setDouble(String key, double value) => _prefs.setDouble(key, value);
+
+  int? getInt(String key) => _prefs.getInt(key);
+  Future<void> setInt(String key, int value) => _prefs.setInt(key, value);
 
   List<String>? getStringList(String key) => _prefs.getStringList(key);
   Future<void> setStringList(String key, List<String> value) => _prefs.setStringList(key, value);

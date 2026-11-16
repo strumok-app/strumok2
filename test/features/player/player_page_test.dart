@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/app/router.dart';
 import 'package:strumok/app/widgets/side_sheet.dart';
 import 'package:strumok/core/platform/device_class.dart';
+import 'package:strumok/features/player/data/video_backend.dart';
 import 'package:strumok/features/player/presentation/player_controller.dart';
 import 'package:strumok/features/player/presentation/widgets/player_widgets.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
@@ -187,6 +188,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(container.read(playerControllerProvider)!.itemIndex, 2);
     expect(backend.opened.last.link.toString(), 'https://a.example/2.m3u8');
+  });
+
+  testAppWidgets('desktop: media tracks arriving later do not move the episodes button', (tester) async {
+    await openPlayer(tester);
+    final episodes = find.byTooltip('Епізоди');
+    final before = tester.getRect(episodes);
+
+    backend.tracks.value = const PlaybackTracks(video: [MediaTrack('1', height: 480), MediaTrack('2', height: 1080)]);
+    await tester.pumpAndSettle();
+    expect(tester.getRect(episodes), before);
+    expect(tester.getRect(find.byKey(const Key('settingsButton'))).right, lessThanOrEqualTo(before.left));
   });
 
   testAppWidgets('desktop: source selector switches the server', (tester) async {

@@ -1111,6 +1111,240 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Канали рекомендацій'**
   String get suppliersChannels;
+
+  /// Player: subtitles button and panel title
+  ///
+  /// In uk, this message translates to:
+  /// **'Субтитри'**
+  String get playerSubtitles;
+
+  /// Subtitles panel: no subtitles
+  ///
+  /// In uk, this message translates to:
+  /// **'Вимкнено'**
+  String get playerSubtitlesOff;
+
+  /// Subtitles panel: selected subtitles failed to load
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося завантажити субтитри'**
+  String get playerSubtitlesFailed;
+
+  /// Subtitles panel: audio tracks section
+  ///
+  /// In uk, this message translates to:
+  /// **'Аудіо'**
+  String get playerAudio;
+
+  /// Automatic audio track or video quality
+  ///
+  /// In uk, this message translates to:
+  /// **'Авто'**
+  String get playerAuto;
+
+  /// Unnamed audio track
+  ///
+  /// In uk, this message translates to:
+  /// **'Доріжка {number}'**
+  String playerTrack(int number);
+
+  /// Subtitles panel: font size
+  ///
+  /// In uk, this message translates to:
+  /// **'Розмір субтитрів'**
+  String get playerSubtitleSize;
+
+  /// Subtitles panel: timing offset; positive shows subtitles later
+  ///
+  /// In uk, this message translates to:
+  /// **'Зсув субтитрів'**
+  String get playerSubtitleOffset;
+
+  /// Subtitle offset value, signed seconds like +0.5
+  ///
+  /// In uk, this message translates to:
+  /// **'{seconds} с'**
+  String playerSubtitleOffsetValue(String seconds);
+
+  /// Stepper button
+  ///
+  /// In uk, this message translates to:
+  /// **'Зменшити'**
+  String get playerDecrease;
+
+  /// Stepper button
+  ///
+  /// In uk, this message translates to:
+  /// **'Збільшити'**
+  String get playerIncrease;
+
+  /// Player: settings (gear) button and panel title
+  ///
+  /// In uk, this message translates to:
+  /// **'Налаштування'**
+  String get playerSettings;
+
+  /// Player settings: video quality
+  ///
+  /// In uk, this message translates to:
+  /// **'Якість'**
+  String get playerQuality;
+
+  /// Subtitle overlay placeholder while the selected subtitles load
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантаження субтитрів…'**
+  String get playerSubtitlesLoading;
+
+  /// Player: subtitles button and panel title when audio tracks can be chosen too
+  ///
+  /// In uk, this message translates to:
+  /// **'Субтитри та аудіо'**
+  String get playerSubtitlesAndAudio;
+
+  /// Player settings: playback speed
+  ///
+  /// In uk, this message translates to:
+  /// **'Швидкість'**
+  String get playerSpeed;
+
+  /// Playback speed 1.0
+  ///
+  /// In uk, this message translates to:
+  /// **'Звичайна'**
+  String get playerSpeedNormal;
+
+  /// Playback speed value, e.g. 1.25×
+  ///
+  /// In uk, this message translates to:
+  /// **'{value}×'**
+  String playerSpeedValue(String value);
+
+  /// Player settings: 5-band equalizer
+  ///
+  /// In uk, this message translates to:
+  /// **'Еквалайзер'**
+  String get playerEqualizer;
+
+  /// Equalizer preset: flat
+  ///
+  /// In uk, this message translates to:
+  /// **'Вимкнено'**
+  String get playerEqualizerOff;
+
+  /// Equalizer preset
+  ///
+  /// In uk, this message translates to:
+  /// **'Чіткі діалоги'**
+  String get playerEqualizerClearDialogue;
+
+  /// Equalizer preset
+  ///
+  /// In uk, this message translates to:
+  /// **'Кіно'**
+  String get playerEqualizerCinema;
+
+  /// Equalizer preset
+  ///
+  /// In uk, this message translates to:
+  /// **'Нічний'**
+  String get playerEqualizerNight;
+
+  /// Equalizer preset
+  ///
+  /// In uk, this message translates to:
+  /// **'Бойовик'**
+  String get playerEqualizerAction;
+
+  /// Equalizer: gains that match no preset
+  ///
+  /// In uk, this message translates to:
+  /// **'Власний'**
+  String get playerEqualizerCustom;
+
+  /// Equalizer band frequency
+  ///
+  /// In uk, this message translates to:
+  /// **'{value} Гц'**
+  String playerHertz(String value);
+
+  /// Equalizer band frequency
+  ///
+  /// In uk, this message translates to:
+  /// **'{value} кГц'**
+  String playerKilohertz(String value);
+
+  /// Equalizer band gain, signed
+  ///
+  /// In uk, this message translates to:
+  /// **'{value} дБ'**
+  String playerDecibels(String value);
+
+  /// Player setting: where playback starts
+  ///
+  /// In uk, this message translates to:
+  /// **'Починати з'**
+  String get playerStartFrom;
+
+  /// Start from: remembered position
+  ///
+  /// In uk, this message translates to:
+  /// **'Місця зупинки'**
+  String get playerStartFromRemembered;
+
+  /// Start from: 0
+  ///
+  /// In uk, this message translates to:
+  /// **'Початку'**
+  String get playerStartFromBeginning;
+
+  /// Start from: configured seconds
+  ///
+  /// In uk, this message translates to:
+  /// **'Фіксованої позиції'**
+  String get playerStartFromFixed;
+
+  /// Start position for "a fixed position"
+  ///
+  /// In uk, this message translates to:
+  /// **'Фіксована позиція'**
+  String get playerFixedPosition;
+
+  /// Player setting: on-end action
+  ///
+  /// In uk, this message translates to:
+  /// **'Після завершення'**
+  String get playerOnEnd;
+
+  /// On-end action
+  ///
+  /// In uk, this message translates to:
+  /// **'Наступний епізод'**
+  String get playerOnEndNext;
+
+  /// On-end action
+  ///
+  /// In uk, this message translates to:
+  /// **'Повторити'**
+  String get playerOnEndAgain;
+
+  /// On-end action
+  ///
+  /// In uk, this message translates to:
+  /// **'Нічого не робити'**
+  String get playerOnEndNothing;
+
+  /// Player setting: the next item after the end is random
+  ///
+  /// In uk, this message translates to:
+  /// **'Випадковий порядок'**
+  String get playerShuffle;
+
+  /// Settings section title
+  ///
+  /// In uk, this message translates to:
+  /// **'Відеоплеєр'**
+  String get settingsVideoPlayerSection;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

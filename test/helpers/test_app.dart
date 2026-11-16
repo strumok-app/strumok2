@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:strumok/app/app.dart';
 import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/core/platform/device_levels.dart';
@@ -22,6 +23,7 @@ Future<ProviderContainer> pumpApp(
   WindowFullscreen? windowFullscreen,
   BrightnessControl? brightness,
   VolumeControl? volume,
+  http.Client? client,
   List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
@@ -36,6 +38,7 @@ Future<ProviderContainer> pumpApp(
     windowFullscreen: windowFullscreen,
     brightness: brightness,
     volume: volume,
+    client: client,
   );
   final container = ProviderContainer(overrides: [...overrides, ...extraOverrides]);
   addTearDown(container.dispose);

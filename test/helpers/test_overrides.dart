@@ -17,7 +17,10 @@ import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/features/collection/data/collection_repository.dart';
+import 'package:strumok/features/player/data/subtitle_decoding.dart';
+import 'package:strumok/features/player/data/subtitle_repository.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
+import 'package:strumok/features/player/domain/subtitles.dart';
 import 'package:strumok/features/player/presentation/player_controller.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 import 'package:strumok/features/suppliers/domain/ffi_bundle_info.dart';
@@ -211,5 +214,12 @@ Future<List<Override>> testOverrides({
     windowFullscreenProvider.overrideWithValue(windowFullscreen ?? FakeWindowFullscreen()),
     brightnessControlProvider.overrideWithValue(brightness ?? FakeBrightnessControl()),
     volumeControlProvider.overrideWithValue(volume ?? FakeVolumeControl()),
+    // Real isolates never complete under the widget tests' fake async.
+    subtitleRepositoryProvider.overrideWith(
+      (ref) => SubtitleRepository(
+        ref.watch(httpClientProvider),
+        (bytes) async => parseSubtitles(decodeSubtitleBytes(bytes)),
+      ),
+    ),
   ];
 }

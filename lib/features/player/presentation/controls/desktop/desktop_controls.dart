@@ -11,7 +11,9 @@ import '../../../data/video_backend.dart';
 import '../../../domain/player_session.dart';
 import '../../player_controller.dart';
 import '../../player_fullscreen.dart';
+import '../../widgets/player_panels.dart';
 import '../../widgets/player_widgets.dart';
+import '../../widgets/subtitle_overlay.dart';
 
 /// Mouse + keyboard controls (spec-06 §6.6): the keyboard map works regardless of overlay visibility; the overlay
 /// shows on hover/keys and hides (with the cursor) after inactivity while playing.
@@ -87,6 +89,9 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
       LogicalKeyboardKey.keyS when !repeat && widget.session.sources.length > 1 => _run(
         () => showSourceSelector(context, widget.session, _controller.selectSource),
       ),
+      LogicalKeyboardKey.keyC when !repeat && hasSubtitlesPanel(widget.session, _controller.tracks.value) => _run(
+        () => showSubtitlesPanel(context, widget.session, _controller.tracks.value),
+      ),
       _ => false,
     };
     if (handled) _visibility.show();
@@ -133,6 +138,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                 onDoubleTap: _fullscreen.toggle,
               ),
               PlayerBufferingIndicator(session: session, status: status),
+              SubtitleOverlay(bottom: visible ? 96 : 32),
               IgnorePointer(
                 ignoring: !visible,
                 child: AnimatedOpacity(
@@ -172,8 +178,10 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                                   const SizedBox(width: 8),
                                   PlayerTimeLabel(status: status),
                                   const Spacer(),
+                                  SubtitlesButton(session: session),
                                   if (session.sources.length > 1)
                                     SourceButton(session: session, onSelected: _controller.selectSource),
+                                  const PlayerSettingsButton(),
                                   if (session.items.length > 1) PlaylistButton(session: session),
                                   const SizedBox(width: 16),
                                   IconButton(

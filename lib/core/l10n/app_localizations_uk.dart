@@ -549,4 +549,133 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get suppliersChannels => 'Канали рекомендацій';
+
+  @override
+  String get playerSubtitles => 'Субтитри';
+
+  @override
+  String get playerSubtitlesOff => 'Вимкнено';
+
+  @override
+  String get playerSubtitlesFailed => 'Не вдалося завантажити субтитри';
+
+  @override
+  String get playerAudio => 'Аудіо';
+
+  @override
+  String get playerAuto => 'Авто';
+
+  @override
+  String playerTrack(int number) {
+    return 'Доріжка $number';
+  }
+
+  @override
+  String get playerSubtitleSize => 'Розмір субтитрів';
+
+  @override
+  String get playerSubtitleOffset => 'Зсув субтитрів';
+
+  @override
+  String playerSubtitleOffsetValue(String seconds) {
+    return '$seconds с';
+  }
+
+  @override
+  String get playerDecrease => 'Зменшити';
+
+  @override
+  String get playerIncrease => 'Збільшити';
+
+  @override
+  String get playerSettings => 'Налаштування';
+
+  @override
+  String get playerQuality => 'Якість';
+
+  @override
+  String get playerSubtitlesLoading => 'Завантаження субтитрів…';
+
+  @override
+  String get playerSubtitlesAndAudio => 'Субтитри та аудіо';
+
+  @override
+  String get playerSpeed => 'Швидкість';
+
+  @override
+  String get playerSpeedNormal => 'Звичайна';
+
+  @override
+  String playerSpeedValue(String value) {
+    return '$value×';
+  }
+
+  @override
+  String get playerEqualizer => 'Еквалайзер';
+
+  @override
+  String get playerEqualizerOff => 'Вимкнено';
+
+  @override
+  String get playerEqualizerClearDialogue => 'Чіткі діалоги';
+
+  @override
+  String get playerEqualizerCinema => 'Кіно';
+
+  @override
+  String get playerEqualizerNight => 'Нічний';
+
+  @override
+  String get playerEqualizerAction => 'Бойовик';
+
+  @override
+  String get playerEqualizerCustom => 'Власний';
+
+  @override
+  String playerHertz(String value) {
+    return '$value Гц';
+  }
+
+  @override
+  String playerKilohertz(String value) {
+    return '$value кГц';
+  }
+
+  @override
+  String playerDecibels(String value) {
+    return '$value дБ';
+  }
+
+  @override
+  String get playerStartFrom => 'Починати з';
+
+  @override
+  String get playerStartFromRemembered => 'Місця зупинки';
+
+  @override
+  String get playerStartFromBeginning => 'Початку';
+
+  @override
+  String get playerStartFromFixed => 'Фіксованої позиції';
+
+  @override
+  String get playerFixedPosition => 'Фіксована позиція';
+
+  @override
+  String get playerOnEnd => 'Після завершення';
+
+  @override
+  String get playerOnEndNext => 'Наступний епізод';
+
+  @override
+  String get playerOnEndAgain => 'Повторити';
+
+  @override
+  String get playerOnEndNothing => 'Нічого не робити';
+
+  @override
+  String get playerShuffle => 'Випадковий порядок';
+
+  @override
+  String get settingsVideoPlayerSection => 'Відеоплеєр';
 }

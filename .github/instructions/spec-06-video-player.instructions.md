@@ -62,15 +62,21 @@ to media_kit together with the source headers, stop the proxy when the backend i
 ## 6.5 Features (all device classes unless noted)
 
 - Play/pause, seek bar with buffered range, time labels, next/prev item, playlist panel (episodes grouped by section).
-- Source (server) selector; subtitle selector (supplier subtitle sources + embedded tracks); "subtitles off".
-- External subtitles: fetch with headers, decode (UTF-8 with fallback), parse **WebVTT and SRT**, sanitize tags,
-  render as Flutter overlay; size setting; offset (± seconds); cache parsed tracks per (supplier, id, item, name).
+- Source (server) selector; subtitle selector (supplier subtitle sources); "subtitles off".
+- Subtitles never go through media_kit/mpv: mpv runs with `sid=no` and the media_kit subtitle view is hidden; embedded
+  subtitle tracks are not offered.
+- Supplier subtitles: fetch with headers over the shared HTTP client, then decode (BOM-aware UTF-8/UTF-16, fallback
+  Windows-1251) and parse **WebVTT and SRT** in a **separate isolate**; sanitize tags; render as Flutter overlay;
+  size setting; offset (± seconds, 0.5 s steps); cache parsed tracks per (supplier, id, item, name).
 - Audio track and video quality track selection.
-- Playback speed (0.5–2.0).
+- Playback speed (0.5–2.0, steps of 0.25); kept for the app session across items and titles, not persisted.
 - 5-band equalizer via mpv `af` (bands 60, 230, 910, 4000, 14000 Hz; range ±12 dB) with presets:
   Reset `[0,0,0,0,0]`, Clear dialogue `[0,2,4,5,1]`, Cinema `[4,2,0,2,4]`, Night `[-3,0,3,4,-2]`, Action `[5,3,-1,1,3]`.
+  Filter: `lavfi=[equalizer=f=<Hz>:width_type=o:width=2:g=<dB>,…]` for non-zero bands; empty when flat. Gains
+  step by 1 dB; gains matching no preset show as "Custom".
 - Settings: shuffle mode; on-end action (`playNext` default / `playAgain` / `doNothing`); start-from
-  (`fromRemembered` default / `fromBeginning` / `fromFixedPosition` + seconds).
+  (`fromRemembered` default / `fromBeginning` / `fromFixedPosition` + seconds, 10 s steps). Shuffle applies to
+  the automatic advance at the end (`playNext`): a random other item; the Next button stays sequential.
 - Volume persisted (0–100, default 100). Keep screen awake while playing.
 - Progress → collection per spec-03 §3.3; mark `complete` is user-driven (don't auto-complete).
 
@@ -81,17 +87,20 @@ Buttons by frequency of use:
 | Button | Contents | Placement |
 |--------|----------|-----------|
 | Play/pause, prev/next, seek bar | — | per device (below) |
-| **Subtitles** (CC) | subtitle tracks + off, audio tracks (section hidden with one track), subtitle size and offset | own button |
+| **Subtitles** (CC) | supplier subtitles + off, audio tracks (section hidden with one track), subtitle size and offset | own button, one icon (subtitles); the label follows the content: "Subtitles", "Audio" when only audio tracks can be chosen, "Audio & subtitles" with Subtitles / Audio tabs when both; subtitle size and offset stay pinned below the scrolling subtitles list |
 | **Source** (server) | sources, current checked | own button; also "Change source" in the error view |
 | **Episodes** | playlist grouped by section | own button |
-| **Settings** (gear) | quality, speed, equalizer, playback (on-end, shuffle, start-from) | own button, sub-pages |
+| **Settings** (gear) | rows: Quality (with several qualities), Speed, Equalizer, Start from, When it ends → pages; Shuffle switch | own button, always shown |
 | PiP, fullscreen, volume, lock | — | device-specific |
 
-- Order is fixed everywhere: **subtitles → source → episodes → settings**, then window/mode buttons.
+- Order is fixed everywhere: **subtitles → source → settings → episodes**, then window/mode buttons. Episodes is
+  known as soon as the items load while settings appear with the media tracks: keeping episodes last (rightmost)
+  means a late button never shifts it.
 - A button with nothing to choose (one source, one episode, no subtitles) is **hidden**, not disabled.
 - The top bar is identity only (back, title, episode) plus rare mode switches; actions live in the bottom bar.
-- Panels open as side sheets from the trailing edge, focused on the current choice (desktop settings: popup above
-  the gear with sub-pages).
+- Panels open as side sheets from the trailing edge on every device, focused on the current choice. Settings: the
+  root lists one row per setting with its current value; a row opens its page in place under a pinned back header;
+  Back returns to the root (focus on that row), choosing a value returns too, the close button closes the sheet.
 
 ## 6.6 Desktop controls (keyboard map — MUST)
 
@@ -108,10 +117,10 @@ Buttons by frequency of use:
 | F | toggle fullscreen; Enter → enter fullscreen; Esc → exit fullscreen |
 | P | open playlist |
 | S | open source selector |
-| C | open subtitles panel (with subtitles, M5.7) |
+| C | open subtitles panel |
 
 Layout: top bar = back, title, episode. Bottom bar = seek bar; row: prev, play, next, volume, time … subtitles,
-source, episodes, settings, gap, PiP, fullscreen (far right).
+source, settings, episodes, gap, PiP, fullscreen (far right).
 
 Mouse: hover shows controls, auto-hide after inactivity (hide cursor too), double-click toggles fullscreen,
 scroll on volume. PiP button (specs §6.9).
@@ -119,8 +128,8 @@ scroll on volume. PiP button (specs §6.9).
 ## 6.7 Mobile controls (phone/tablet)
 
 - Layout (landscape): top bar = back, title, episode … PiP, lock (rare mode switches, away from the thumbs);
-  center = prev, play/pause, next at the exact screen center; bottom row = time … subtitles, source, episodes,
-  settings; seek bar flush with the bottom edge. All panels are side sheets.
+  center = prev, play/pause, next at the exact screen center; bottom row = time … subtitles, source, settings,
+  episodes; seek bar flush with the bottom edge. All panels are side sheets.
 - Tap toggles controls; double-tap left/right half → seek −10/+10 s (accumulating).
 - Horizontal swipe → seek; a full-width swipe covers 120 s, the target time and offset are shown while swiping and
   the seek happens on release.
@@ -136,7 +145,7 @@ scroll on volume. PiP button (specs §6.9).
 - Hidden state: ←/→ = seek −10/+10 s with **accumulating seek preview** (500 ms debounce, then single seek);
   OK/Enter/Select = play/pause; ↑/↓ = show controls.
 - Visible state: top bar is title + episode only (no focusable items; the remote's Back does what a back button
-  would). Bottom bar: focusable seek bar; one row prev, play, next, time … subtitles, source, episodes, settings.
+  would). Bottom bar: focusable seek bar; one row prev, play, next, time … subtitles, source, settings, episodes.
   Buttons expand into a labeled pill (icon + text, inverted colors) while focused. Seek bar is focusable; ←/→ on it
   moves by 10 s units, ↓ returns to Play.
 - Back: hide controls if visible; otherwise exit player.
