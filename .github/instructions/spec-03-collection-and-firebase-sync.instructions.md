@@ -69,7 +69,8 @@ Reading MUST be tolerant:
 - Save = write locally first (UI updates immediately), then `set()` the full item JSON at its RTDB path.
 - Delete = remove locally and `remove()` the RTDB path.
 - Progress update rules (reduce write volume):
-  - Video: persist position only when `position > 10s` **and** differs from stored position by `> 10s`;
+  - Video: persist position only when `position > 10s` **and** differs from stored position by `> 10s`,
+    excluding the final `60s` when length is known (fixed constant; preserve the previously saved position);
     doing so sets `status = inProgress` (legacy behavior: regardless of previous status).
   - Video length: when known (`> 0`), store it; clamp position to `length - 1`; set `status = inProgress`.
   - Manga: persist when page index changes.

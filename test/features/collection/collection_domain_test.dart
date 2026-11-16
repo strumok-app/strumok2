@@ -64,13 +64,55 @@ void main() {
       expect(updateVideoProgress(first, itemIndex: 0, position: 22)!.positions[0]!.position, 22);
     });
 
-    test('known length is stored and clamps the position', () {
+    test('video saves backward movement only when it exceeds 10 s', () {
+      final base = item(positions: {0: const MediaItemPosition(position: 100, length: 1000)});
+      expect(updateVideoProgress(base, itemIndex: 0, position: 90), isNull);
+      expect(
+        updateVideoProgress(base, itemIndex: 0, position: 89)!.positions[0],
+        const MediaItemPosition(position: 89, length: 1000),
+      );
+    });
+
+    test('known length is stored without saving positions in the final 60 s', () {
       final withLength = updateVideoProgress(item(), itemIndex: 1, position: 5, length: 1400)!;
       expect(withLength.positions[1], const MediaItemPosition(position: 0, length: 1400));
       expect(withLength.status, CollectionStatus.inProgress);
 
-      final end = updateVideoProgress(withLength, itemIndex: 1, position: 2000)!;
-      expect(end.positions[1], const MediaItemPosition(position: 1399, length: 1400));
+      expect(updateVideoProgress(withLength, itemIndex: 1, position: 2000), isNull);
+    });
+
+    test('video position persists with 61 s remaining but not 60 s or less', () {
+      final base = item(positions: {0: const MediaItemPosition(position: 1200, length: 1400)});
+      expect(updateVideoProgress(base, itemIndex: 0, position: 1339)!.positions[0]!.position, 1339);
+      for (final position in [1340, 1341, 1400, 2000]) {
+        expect(updateVideoProgress(base, itemIndex: 0, position: position), isNull);
+        expect(updateVideoProgress(base, itemIndex: 0, position: position, length: 1400), isNull);
+      }
+    });
+
+    test('learning or changing length in the tail preserves the stored position', () {
+      final base = item(positions: {0: const MediaItemPosition(position: 1200)});
+      final updated = updateVideoProgress(base, itemIndex: 0, position: 1350, length: 1400)!;
+      expect(updated.positions[0], const MediaItemPosition(position: 1200, length: 1400));
+      expect(updated.status, CollectionStatus.inProgress);
+      expect(
+        updateVideoProgress(updated, itemIndex: 0, position: 1380, length: 1420)!.positions[0],
+        const MediaItemPosition(position: 1200, length: 1420),
+      );
+      expect(
+        updateVideoProgress(item(), itemIndex: 0, position: 1350, length: 1400)!.positions[0],
+        const MediaItemPosition(position: 0, length: 1400),
+      );
+    });
+
+    test('the saving tail is a fixed 60 s even for short videos', () {
+      final base = item(positions: {0: const MediaItemPosition(position: 0, length: 120)});
+      expect(updateVideoProgress(base, itemIndex: 0, position: 59)!.positions[0]!.position, 59);
+      expect(updateVideoProgress(base, itemIndex: 0, position: 60), isNull);
+      expect(
+        updateVideoProgress(item(), itemIndex: 0, position: 20, length: 60)!.positions[0],
+        const MediaItemPosition(position: 0, length: 60),
+      );
     });
 
     test('manga persists on page change', () {
@@ -79,6 +121,39 @@ void main() {
       expect(page3.positions[0], const MediaItemPosition(position: 3, length: 20));
       expect(updateMangaProgress(page3, itemIndex: 0, page: 3), isNull);
       expect(updateMangaProgress(page3, itemIndex: 0, page: 4)!.positions[0]!.length, 20);
+    });
+
+    test('manga persists page count changes even when the page stays the same', () {
+      final base = item(
+        mediaType: MediaType.manga,
+        status: CollectionStatus.complete,
+        positions: {
+          0: const MediaItemPosition(position: 3, length: 20),
+          1: const MediaItemPosition(position: 5, length: 12),
+        },
+      );
+      expect(updateMangaProgress(base, itemIndex: 0, page: 3, pageCount: 20), isNull);
+      expect(updateMangaProgress(base, itemIndex: 0, page: 3), isNull);
+
+      final updated = updateMangaProgress(base, itemIndex: 0, page: 3, pageCount: 21)!;
+      expect(updated.positions[0], const MediaItemPosition(position: 3, length: 21));
+      expect(updated.positions[1], base.positions[1]);
+      expect(updated.status, CollectionStatus.inProgress);
+    });
+
+    test('manga creates first-page progress and preserves length for non-positive page counts', () {
+      final firstPage = updateMangaProgress(item(mediaType: MediaType.manga), itemIndex: 0, page: 0)!;
+      expect(firstPage.positions[0], const MediaItemPosition(position: 0, length: 0));
+
+      final base = item(mediaType: MediaType.manga, positions: {0: const MediaItemPosition(position: 3, length: 20)});
+      expect(
+        updateMangaProgress(base, itemIndex: 0, page: 4, pageCount: 0)!.positions[0],
+        const MediaItemPosition(position: 4, length: 20),
+      );
+      expect(
+        updateMangaProgress(base, itemIndex: 0, page: 3, pageCount: -1)!.positions[0],
+        const MediaItemPosition(position: 3, length: 20),
+      );
     });
 
     test('priority requires the item to be in the collection', () {

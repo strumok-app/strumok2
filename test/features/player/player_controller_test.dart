@@ -119,7 +119,7 @@ void main() {
     expect(c.read(playerControllerProvider)!.itemIndex, 2);
     expect(backend.opened.last.link.toString(), 'https://b.example/2.mp4');
     expect(stored()!.currentItem, 2);
-    expect(stored()!.positions[1]!.position, 2998);
+    expect(stored()!.positions[1]!.position, 300, reason: 'the final 60 s do not overwrite saved progress');
   });
 
   test('playback error shows a failure; retry resumes at the last position', () async {
@@ -166,13 +166,24 @@ void main() {
   test('close saves progress and disposes the backend', () async {
     await setUpWith([episode(0)]);
     await controller.open('alpha', 'm1');
-    backend.emit(position: const Duration(seconds: 50), duration: const Duration(seconds: 100), playing: true);
+    backend.emit(position: const Duration(seconds: 50), duration: const Duration(seconds: 120), playing: true);
     await controller.close();
     await pumpEventQueue();
 
     expect(c.read(playerControllerProvider), isNull);
     expect(backend.disposed, isTrue);
     expect(stored()!.positions[0]!.position, 50);
+  });
+
+  test('close in the final 60 s preserves the saved position', () async {
+    await setUpWith([episode(0), episode(1)], item: inCollection);
+    await controller.open('alpha', 'm1');
+    backend.emit(position: const Duration(seconds: 2940), duration: const Duration(seconds: 3000));
+    await controller.close();
+    await pumpEventQueue();
+
+    expect(backend.disposed, isTrue);
+    expect(stored()!.positions[1], const MediaItemPosition(position: 300, length: 3000));
   });
 
   test('volume changes are persisted', () async {

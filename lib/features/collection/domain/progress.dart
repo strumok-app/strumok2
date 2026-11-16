@@ -9,8 +9,10 @@ import 'collection_item.dart';
 
 const _minVideoPosition = 10;
 const _minVideoPositionDelta = 10;
+const _videoPositionSaveTail = 60;
 
-/// Persists only past 10 s and when moved more than 10 s; known length is stored and clamps the position.
+/// Persists only past 10 s, when moved more than 10 s, and outside the final 60 s of a known length.
+/// Known length is stored even when the position is not saved.
 /// Legacy behavior: a persisted position always sets `inProgress`.
 CollectionItem? updateVideoProgress(
   CollectionItem item, {
@@ -19,19 +21,22 @@ CollectionItem? updateVideoProgress(
   int length = 0,
 }) {
   final stored = item.positions[itemIndex];
-  final newLength = length > 0 ? length : (stored?.length ?? 0);
-  final clamped = newLength > 0 ? position.clamp(0, newLength - 1) : position;
+  final effectiveLength = length > 0 ? length : (stored?.length ?? 0);
+  final clampedPosition = effectiveLength > 0 ? position.clamp(0, effectiveLength - 1) : position;
 
-  final lengthChanged = length > 0 && length != stored?.length;
-  final positionChanged =
-      clamped > _minVideoPosition && (stored == null || (clamped - stored.position).abs() > _minVideoPositionDelta);
-  if (!lengthChanged && !positionChanged) return null;
+  final shouldSaveLength = length > 0 && length != stored?.length;
+  final isPastMinimumPosition = clampedPosition > _minVideoPosition;
+  final isInExcludedTail = effectiveLength > 0 && effectiveLength - clampedPosition <= _videoPositionSaveTail;
+  final hasMovedEnough = stored == null || (clampedPosition - stored.position).abs() > _minVideoPositionDelta;
+  final shouldSavePosition = isPastMinimumPosition && !isInExcludedTail && hasMovedEnough;
+  if (!shouldSaveLength && !shouldSavePosition) return null;
 
-  final next = MediaItemPosition(position: positionChanged ? clamped : (stored?.position ?? 0), length: newLength);
+  final positionToSave = shouldSavePosition ? clampedPosition : (stored?.position ?? 0);
+  final next = MediaItemPosition(position: positionToSave, length: effectiveLength);
   return item.copyWith(positions: {...item.positions, itemIndex: next}, status: CollectionStatus.inProgress);
 }
 
-/// Persists whenever the page index changes.
+/// Persists when the page index or provided page count changes.
 CollectionItem? updateMangaProgress(
   CollectionItem item, {
   required int itemIndex,
@@ -39,8 +44,12 @@ CollectionItem? updateMangaProgress(
   int pageCount = 0,
 }) {
   final stored = item.positions[itemIndex];
-  if (stored?.position == page && (pageCount == 0 || stored?.length == pageCount)) return null;
-  final next = MediaItemPosition(position: page, length: pageCount > 0 ? pageCount : (stored?.length ?? 0));
+  final pageChanged = stored?.position != page;
+  final pageCountChanged = pageCount != 0 && pageCount != stored?.length;
+  if (!pageChanged && !pageCountChanged) return null;
+
+  final lengthToSave = pageCount > 0 ? pageCount : (stored?.length ?? 0);
+  final next = MediaItemPosition(position: page, length: lengthToSave);
   return item.copyWith(positions: {...item.positions, itemIndex: next}, status: CollectionStatus.inProgress);
 }
 
