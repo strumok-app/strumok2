@@ -3,19 +3,40 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-/// Pinch / double-tap / ctrl+wheel zoom with panning over the whole reader viewport (spec-07). The content keeps
-/// covering the viewport (no zooming out below 1). Taps are reported in viewport coordinates for tap zones.
+/// Which single-finger drags pan the zoomed content; the rest stay with the scrollable inside.
+enum ReaderPanAxis {
+  /// Long strip: the list scrolls vertically, so only horizontal drags pan.
+  horizontal,
+
+  /// Paged: the pager is locked while zoomed, so drags pan in any direction.
+  free,
+}
+
+/// Pinch / double-tap / ctrl+wheel / trackpad-pinch zoom with panning over the whole reader viewport (spec-07).
+/// The content keeps covering the viewport (no zooming out below 1). Taps are reported in viewport coordinates
+/// for tap zones.
+///
+/// Gestures never compete with the scrollable inside for the same movement: pinches are tracked from raw pointers
+/// (outside the gesture arena) and reported through [onPinchChanged], so the view stops scrolling meanwhile;
+/// single-finger panning exists only while zoomed, along [panAxis].
 class ReaderZoom extends StatefulWidget {
   static const maxScale = 4.0;
   static const doubleTapScale = 2.5;
 
   final Widget child;
+  final ReaderPanAxis panAxis;
   final void Function(Offset position, Size size)? onTap;
   final ValueChanged<bool>? onZoomChanged;
+  final ValueChanged<bool>? onPinchChanged;
 
-  const ReaderZoom({super.key, required this.child, this.onTap, this.onZoomChanged});
-
-  static ReaderZoomState? maybeOf(BuildContext context) => context.findAncestorStateOfType<ReaderZoomState>();
+  const ReaderZoom({
+    super.key,
+    required this.child,
+    required this.panAxis,
+    this.onTap,
+    this.onZoomChanged,
+    this.onPinchChanged,
+  });
 
   @override
   State<ReaderZoom> createState() => ReaderZoomState();
@@ -29,8 +50,12 @@ class ReaderZoomState extends State<ReaderZoom> with SingleTickerProviderStateMi
   Offset _offset = Offset.zero;
   Size _size = Size.zero;
 
-  double _gestureScale = 1;
-  Offset _gestureScene = Offset.zero;
+  /// Touch pointers down, in viewport coordinates.
+  final _touches = <int, Offset>{};
+
+  /// Pinch (or trackpad pinch) in progress: the scale and content point under the focal point at its start.
+  ({double span, double scale, Offset scene})? _pinch;
+  ({double scale, Offset scene})? _trackpad;
   Offset? _doubleTapAt;
   ({double scale, Offset offset})? _from;
   ({double scale, Offset offset})? _to;
@@ -38,6 +63,8 @@ class ReaderZoomState extends State<ReaderZoom> with SingleTickerProviderStateMi
   bool get zoomed => _scale > 1.001;
 
   double get scale => _scale;
+
+  Offset get offset => _offset;
 
   @override
   void dispose() {
@@ -69,10 +96,11 @@ class ReaderZoomState extends State<ReaderZoom> with SingleTickerProviderStateMi
     zoomAt(box.globalToLocal(event.position), _scale * math.exp(-event.scrollDelta.dy / 200));
   }
 
+  Offset _scene(Offset focal) => (focal - _offset) / _scale;
+
   ({double scale, Offset offset}) _target(Offset focal, double scale) {
     final clamped = scale.clamp(1.0, ReaderZoom.maxScale);
-    final scene = (focal - _offset) / _scale;
-    return (scale: clamped, offset: focal - scene * clamped);
+    return (scale: clamped, offset: focal - _scene(focal) * clamped);
   }
 
   void _set(double scale, Offset offset) {
@@ -103,17 +131,6 @@ class ReaderZoomState extends State<ReaderZoom> with SingleTickerProviderStateMi
     _set(from.scale + (to.scale - from.scale) * t, Offset.lerp(from.offset, to.offset, t)!);
   }
 
-  void _onScaleStart(ScaleStartDetails details) {
-    _animation.stop();
-    _gestureScale = _scale;
-    _gestureScene = (details.localFocalPoint - _offset) / _scale;
-  }
-
-  void _onScaleUpdate(ScaleUpdateDetails details) {
-    final scale = (_gestureScale * details.scale).clamp(1.0, ReaderZoom.maxScale);
-    _set(scale, details.localFocalPoint - _gestureScene * scale);
-  }
-
   void _onDoubleTap() {
     final at = _doubleTapAt ?? _size.center(Offset.zero);
     if (zoomed) {
@@ -124,23 +141,93 @@ class ReaderZoomState extends State<ReaderZoom> with SingleTickerProviderStateMi
     }
   }
 
+  // Pinch from raw touch pointers: the first two fingers down.
+
+  (Offset, double) get _focalAndSpan {
+    final [a, b, ...] = _touches.values.toList();
+    return ((a + b) / 2, (a - b).distance);
+  }
+
+  void _onPointerDown(PointerDownEvent event) {
+    if (event.kind != PointerDeviceKind.touch && event.kind != PointerDeviceKind.stylus) return;
+    _touches[event.pointer] = event.localPosition;
+    if (_touches.length == 2) _startPinch();
+  }
+
+  void _onPointerMove(PointerMoveEvent event) {
+    if (!_touches.containsKey(event.pointer)) return;
+    _touches[event.pointer] = event.localPosition;
+    final pinch = _pinch;
+    if (pinch == null) return;
+    final (focal, span) = _focalAndSpan;
+    final scale = (pinch.scale * span / pinch.span).clamp(1.0, ReaderZoom.maxScale);
+    _set(scale, focal - pinch.scene * scale);
+  }
+
+  void _onPointerEnd(PointerEvent event) {
+    if (_touches.remove(event.pointer) == null || _pinch == null) return;
+    if (_touches.length >= 2) {
+      _startPinch(); // A third finger lifted: continue with the remaining two.
+    } else {
+      _pinch = null;
+      widget.onPinchChanged?.call(false);
+    }
+  }
+
+  void _startPinch() {
+    _animation.stop();
+    final (focal, span) = _focalAndSpan;
+    final started = _pinch == null;
+    _pinch = (span: math.max(span, 1), scale: _scale, scene: _scene(focal));
+    if (started) widget.onPinchChanged?.call(true);
+  }
+
+  void _onPanZoomStart(PointerPanZoomStartEvent event) {
+    _animation.stop();
+    _trackpad = (scale: _scale, scene: _scene(event.localPosition));
+  }
+
+  /// Trackpad pinch; two-finger scrolling (scale 1) is left to the scrollable and the drag recognizers.
+  void _onPanZoomUpdate(PointerPanZoomUpdateEvent event) {
+    final trackpad = _trackpad;
+    if (trackpad == null || event.scale == 1) return;
+    final scale = (trackpad.scale * event.scale).clamp(1.0, ReaderZoom.maxScale);
+    _set(scale, event.localPosition - trackpad.scene * scale);
+  }
+
+  void _onPan(Offset delta) {
+    if (_pinch == null) panBy(delta);
+  }
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       _size = constraints.biggest;
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapUp: widget.onTap == null ? null : (details) => widget.onTap!(details.localPosition, _size),
-        onDoubleTapDown: (details) => _doubleTapAt = details.localPosition,
-        onDoubleTap: _onDoubleTap,
-        onScaleStart: _onScaleStart,
-        onScaleUpdate: _onScaleUpdate,
-        child: ClipRect(
-          child: Transform(
-            transform: Matrix4.identity()
-              ..translateByDouble(_offset.dx, _offset.dy, 0, 1)
-              ..scaleByDouble(_scale, _scale, 1, 1),
-            child: widget.child,
+      final pan = zoomed ? widget.panAxis : null;
+      return Listener(
+        onPointerDown: _onPointerDown,
+        onPointerMove: _onPointerMove,
+        onPointerUp: _onPointerEnd,
+        onPointerCancel: _onPointerEnd,
+        onPointerPanZoomStart: _onPanZoomStart,
+        onPointerPanZoomUpdate: _onPanZoomUpdate,
+        onPointerPanZoomEnd: (_) => _trackpad = null,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapUp: widget.onTap == null ? null : (details) => widget.onTap!(details.localPosition, _size),
+          onDoubleTapDown: (details) => _doubleTapAt = details.localPosition,
+          onDoubleTap: _onDoubleTap,
+          onPanUpdate: pan == ReaderPanAxis.free ? (details) => _onPan(details.delta) : null,
+          onHorizontalDragUpdate: pan == ReaderPanAxis.horizontal
+              ? (details) => _onPan(Offset(details.delta.dx, 0))
+              : null,
+          child: ClipRect(
+            child: Transform(
+              transform: Matrix4.identity()
+                ..translateByDouble(_offset.dx, _offset.dy, 0, 1)
+                ..scaleByDouble(_scale, _scale, 1, 1),
+              child: widget.child,
+            ),
           ),
         ),
       );

@@ -29,4 +29,28 @@ void main() {
       }
     }
   });
+
+  test('crimson uses the seed as primary with white text on it in both brightnesses', () {
+    for (final brightness in Brightness.values) {
+      final cs = buildColorScheme(AppColorScheme.crimson, brightness);
+      expect(cs.primary, AppColorScheme.crimson.seed, reason: '$brightness');
+      expect(cs.onPrimary, Colors.white, reason: '$brightness');
+    }
+  });
+
+  test('selected switch thumb stays onPrimary (distinct from the track) in interactive states', () {
+    for (final scheme in AppColorScheme.values) {
+      for (final brightness in Brightness.values) {
+        final theme = buildTheme(scheme, brightness);
+        final cs = theme.colorScheme;
+        for (final state in [WidgetState.hovered, WidgetState.focused, WidgetState.pressed]) {
+          final thumb = theme.switchTheme.thumbColor!.resolve({WidgetState.selected, state});
+          expect(thumb, cs.onPrimary, reason: '$scheme $brightness $state');
+          expect(thumb, isNot(cs.primary), reason: '$scheme $brightness $state');
+        }
+        expect(theme.switchTheme.thumbColor!.resolve({WidgetState.selected, WidgetState.disabled}), isNull);
+        expect(theme.switchTheme.thumbColor!.resolve({WidgetState.hovered}), isNull);
+      }
+    }
+  });
 }

@@ -10,7 +10,8 @@ import 'reader_view.dart';
 import 'reader_zoom.dart';
 
 /// One page at a time: vertical, left-to-right or right-to-left (spec-07). An extra page past the ends offers the
-/// neighboring chapter. While zoomed, swiping pans instead of turning pages; a page turn resets the zoom.
+/// neighboring chapter. While zoomed, swiping pans instead of turning pages; a page turn resets the zoom. The pager
+/// is locked while pinching, so a pinch never turns the page.
 class PagedReaderView extends StatefulWidget {
   final MangaReaderState state;
   final MangaReaderMode mode;
@@ -42,6 +43,7 @@ class _PagedReaderViewState extends State<PagedReaderView> implements ReaderView
   final _zoom = GlobalKey<ReaderZoomState>();
   late int _index = widget.state.page + _leading;
   var _zoomed = false;
+  var _pinching = false;
   double _wheel = 0;
   var _lastWheelTurn = DateTime(0);
 
@@ -156,7 +158,10 @@ class _PagedReaderViewState extends State<PagedReaderView> implements ReaderView
   Widget build(BuildContext context) => ReaderZoom(
     key: _zoom,
     onTap: widget.callbacks.onTap,
+    panAxis: ReaderPanAxis.free,
     onZoomChanged: (zoomed) => setState(() => _zoomed = zoomed),
+    // Locking the pager cancels a swipe the first finger may have started; it settles on the nearest page.
+    onPinchChanged: (pinching) => setState(() => _pinching = pinching),
     child: ReaderWheelListener(
       resolve: _resolveWheel,
       child: PageView.builder(
@@ -164,7 +169,7 @@ class _PagedReaderViewState extends State<PagedReaderView> implements ReaderView
         controller: _pager,
         scrollDirection: widget.mode.horizontal ? Axis.horizontal : Axis.vertical,
         reverse: widget.mode == MangaReaderMode.rightToLeft,
-        physics: _zoomed ? const NeverScrollableScrollPhysics() : null,
+        physics: _zoomed || _pinching ? const NeverScrollableScrollPhysics() : null,
         allowImplicitScrolling: true,
         onPageChanged: _onPageChanged,
         itemCount: _count,

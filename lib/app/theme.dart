@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 enum AppColorScheme {
   olive(Color(0xFF6B7A2F)),
   // YouTube-like: vivid red accents on neutral surfaces.
-  crimson(Color(0xFFE62117), variant: DynamicSchemeVariant.fidelity, neutralSurfaces: true, seedPrimary: true),
+  crimson(Color(0xFFE62117), variant: DynamicSchemeVariant.fidelity),
   monochrome(Color(0xFF808080), variant: DynamicSchemeVariant.monochrome),
   khaki(Color(0xFFC3B091), variant: DynamicSchemeVariant.fidelity),
   amber(Color(0xFFFFB300), variant: DynamicSchemeVariant.fidelity),
@@ -14,23 +14,16 @@ enum AppColorScheme {
 
   final Color seed;
   final DynamicSchemeVariant variant;
-  final bool neutralSurfaces;
-  // Use the seed itself as primary and error color (M3 would lighten them to pastel in dark mode).
-  final bool seedPrimary;
 
-  const AppColorScheme(
-    this.seed, {
-    this.variant = DynamicSchemeVariant.tonalSpot,
-    this.neutralSurfaces = false,
-    this.seedPrimary = false,
-  });
+  const AppColorScheme(this.seed, {this.variant = DynamicSchemeVariant.tonalSpot});
 
   static const defaultScheme = AppColorScheme.olive;
 }
 
 ColorScheme buildColorScheme(AppColorScheme scheme, Brightness brightness) {
   var cs = ColorScheme.fromSeed(seedColor: scheme.seed, brightness: brightness, dynamicSchemeVariant: scheme.variant);
-  if (scheme.neutralSurfaces) {
+  // Crimson: neutral surfaces, and the seed itself as primary (M3 would lighten it to pastel in dark mode).
+  if (scheme == AppColorScheme.crimson) {
     final neutral = ColorScheme.fromSeed(
       seedColor: AppColorScheme.monochrome.seed,
       brightness: brightness,
@@ -53,10 +46,10 @@ ColorScheme buildColorScheme(AppColorScheme scheme, Brightness brightness) {
       onInverseSurface: neutral.onInverseSurface,
       secondaryContainer: neutral.secondaryContainer,
       onSecondaryContainer: neutral.onSecondaryContainer,
+      primary: scheme.seed,
+      onPrimary: Colors.white,
+      onError: neutral.onSurface,
     );
-  }
-  if (scheme.seedPrimary) {
-    cs = cs.copyWith(primary: scheme.seed, onPrimary: cs.onSurface, onError: cs.onSurface);
   }
   return cs;
 }
@@ -154,6 +147,14 @@ ThemeData _flatTheme(ColorScheme cs) {
       shape: const RoundedRectangleBorder(borderRadius: _controlRadius),
       elevation: 0,
       pressElevation: 0,
+    ),
+    // M3 paints the selected thumb with primaryContainer on hover/focus/press, which can match the primary
+    // track (e.g. crimson) and make the thumb vanish; keep it on onPrimary in every interactive state.
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) && !states.contains(WidgetState.disabled) ? cs.onPrimary : null,
+      ),
     ),
     textSelectionTheme: TextSelectionThemeData(cursorColor: cs.onSurface),
     inputDecorationTheme: InputDecorationTheme(

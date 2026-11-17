@@ -12,7 +12,8 @@ import 'reader_zoom.dart';
 
 /// Continuous vertical scroll (spec-07). The list is anchored at the page it was opened (or jumped) at: pages above
 /// it grow upwards as they load, so the page being read never shifts. The current page is the one crossing a line
-/// at 30% of the screen, or the last page once the end is reached.
+/// at 30% of the screen, or the last page once the end is reached. Zoomed, vertical drags still scroll and
+/// horizontal drags pan; the list is locked while pinching.
 class LongStripReaderView extends StatefulWidget {
   /// Pages are not stretched beyond this width on wide screens.
   static const maxPageWidth = 800.0;
@@ -49,6 +50,8 @@ class _LongStripReaderViewState extends State<LongStripReaderView> implements Re
   var _anchorGeneration = 0;
   late int _current = widget.state.page;
   double? _scrollTarget;
+  var _pinching = false;
+  var _updateScheduled = false;
 
   @override
   void initState() {
@@ -111,8 +114,20 @@ class _LongStripReaderViewState extends State<LongStripReaderView> implements Re
   bool _onScroll(ScrollNotification notification) {
     if (notification.depth != 0) return false;
     if (notification is ScrollEndNotification) _scrollTarget = null;
-    if (notification is ScrollUpdateNotification || notification is ScrollEndNotification) _updateCurrent();
+    if (notification is ScrollUpdateNotification || notification is ScrollEndNotification) _scheduleUpdateCurrent();
     return false;
+  }
+
+  /// After layout: notifications also arrive mid-layout (e.g. when the scroll position is recreated), when page
+  /// sizes cannot be read yet.
+  void _scheduleUpdateCurrent() {
+    if (_updateScheduled) return;
+    _updateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScheduled = false;
+      if (mounted) _updateCurrent();
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   void _updateCurrent() {
@@ -184,7 +199,10 @@ class _LongStripReaderViewState extends State<LongStripReaderView> implements Re
         final width = min(constraints.maxWidth, LongStripReaderView.maxPageWidth);
         return ReaderZoom(
           key: _zoom,
+          panAxis: ReaderPanAxis.horizontal,
           onTap: widget.callbacks.onTap,
+          // Locking the list cancels a scroll the first finger may have started.
+          onPinchChanged: (pinching) => setState(() => _pinching = pinching),
           child: ReaderWheelListener(
             resolve: _resolveWheel,
             child: NotificationListener<ScrollNotification>(
@@ -194,6 +212,7 @@ class _LongStripReaderViewState extends State<LongStripReaderView> implements Re
                 child: CustomScrollView(
                   key: ValueKey(('readerStrip', _anchorGeneration)),
                   controller: _scroll,
+                  physics: _pinching ? const NeverScrollableScrollPhysics() : null,
                   center: _centerKey,
                   slivers: [
                     // Laid out upwards from the anchor: index 0 is the page just above it.

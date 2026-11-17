@@ -238,6 +238,91 @@ void main() {
     expect(zoom.zoomed, isFalse);
   });
 
+  group('touch gestures', () {
+    Future<void> pinch(WidgetTester tester, Offset center, {double spread = 80}) async {
+      final a = await tester.startGesture(center - const Offset(0, 40), pointer: 1);
+      final b = await tester.startGesture(center + const Offset(0, 40), pointer: 2);
+      for (var i = 0; i < 4; i++) {
+        await a.moveBy(Offset(0, -spread / 4));
+        await b.moveBy(Offset(0, spread / 4));
+        await tester.pump();
+      }
+      await a.up();
+      await b.up();
+      await tester.pumpAndSettle();
+    }
+
+    double stripOffset(WidgetTester tester) => tester
+        .state<ScrollableState>(
+          find.descendant(of: find.byType(LongStripReaderView), matching: find.byType(Scrollable)).first,
+        )
+        .position
+        .pixels;
+
+    testAppWidgets('long strip: a slanted swipe scrolls instead of being taken as a pan', (tester) async {
+      await openReader(tester, mode: MangaReaderMode.longStrip, deviceClass: DeviceClass.phone);
+      // Small steps like a real finger: 36 px of travel come before 18 px of vertical travel.
+      final finger = await tester.startGesture(tester.getCenter(find.byType(LongStripReaderView)));
+      for (var i = 0; i < 20; i++) {
+        await finger.moveBy(const Offset(-6, -2));
+        await tester.pump();
+      }
+      await finger.up();
+      await tester.pumpAndSettle();
+      expect(stripOffset(tester), greaterThan(0));
+    });
+
+    testAppWidgets('long strip: pinch zooms without scrolling; zoomed, drags scroll and pan', (tester) async {
+      await openReader(tester, mode: MangaReaderMode.longStrip, deviceClass: DeviceClass.phone);
+      final center = tester.getCenter(find.byType(LongStripReaderView));
+      final zoom = tester.state<ReaderZoomState>(find.byType(ReaderZoom));
+
+      await pinch(tester, center);
+      expect(zoom.scale, greaterThan(1.5));
+      expect(stripOffset(tester), 0, reason: 'the pinch moved fingers vertically but must not scroll');
+
+      final scaled = zoom.scale;
+      await tester.dragFrom(center, const Offset(0, -150));
+      await tester.pumpAndSettle();
+      expect(stripOffset(tester), greaterThan(0));
+      expect(zoom.scale, scaled);
+
+      final before = zoom.offset;
+      await tester.dragFrom(center, const Offset(100, 0));
+      await tester.pumpAndSettle();
+      expect(zoom.offset.dx, greaterThan(before.dx));
+    });
+
+    testAppWidgets('paged: pinch zooms without turning the page; zoomed, drags pan', (tester) async {
+      await openReader(tester, mode: MangaReaderMode.leftToRight, deviceClass: DeviceClass.phone);
+      final center = tester.getCenter(find.byType(PagedReaderView));
+      final zoom = tester.state<ReaderZoomState>(find.byType(ReaderZoom));
+      final pager = tester.widget<PageView>(find.byType(PageView)).controller!;
+
+      // A horizontal spread: the same direction a swipe would turn the page in.
+      final a = await tester.startGesture(center - const Offset(40, 0), pointer: 1);
+      final b = await tester.startGesture(center + const Offset(40, 0), pointer: 2);
+      for (var i = 0; i < 4; i++) {
+        await a.moveBy(const Offset(-30, 0));
+        await b.moveBy(const Offset(10, 0));
+        await tester.pump();
+      }
+      await a.up();
+      await b.up();
+      await tester.pumpAndSettle();
+      expect(zoom.scale, greaterThan(1.2));
+      expect(pager.page, 0);
+
+      final before = zoom.offset;
+      await tester.dragFrom(center, const Offset(-150, -60));
+      await tester.pumpAndSettle();
+      expect(zoom.offset.dx, lessThan(before.dx));
+      expect(zoom.offset.dy, lessThan(before.dy));
+      expect(pager.page, 0, reason: 'zoomed: drags pan instead of turning the page');
+      expect(reader().page, 0);
+    });
+  });
+
   testAppWidgets('paged: the mouse wheel turns pages', (tester) async {
     await openReader(tester, mode: MangaReaderMode.vertical);
     final pointer = TestPointer(1, PointerDeviceKind.mouse);
