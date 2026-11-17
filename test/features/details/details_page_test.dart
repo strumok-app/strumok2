@@ -197,8 +197,8 @@ void main() {
     expect(poster.bottom, pane.bottom);
 
     final similar = find.ancestor(of: find.text('Схоже', findRichText: true), matching: find.byType(ShaderMask));
-    expect(similar, findsOneWidget, reason: 'rows fade out before the poster');
-    expect(poster.left - tester.getRect(similar).right, greaterThanOrEqualTo(16));
+    expect(similar, findsOneWidget, reason: 'rows fade out at the poster');
+    expect(tester.getRect(similar).right, poster.left, reason: 'rows end flush with the poster, never under it');
   });
 
   testAppWidgets('narrow layout renders', (tester) async {

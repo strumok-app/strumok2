@@ -976,5 +976,112 @@
   "playerClose": "Закрити плеєр",
   "@playerClose": {
     "description": "Floating mini player: stop playback and close it"
+  },
+  "readerSettings": "Налаштування читалки",
+  "@readerSettings": {
+    "description": "Reader: settings side sheet title and button"
+  },
+  "readerModeTitle": "Режим читання",
+  "@readerModeTitle": {
+    "description": "Reader settings: reading mode group"
+  },
+  "readerModeLongStrip": "Стрічка",
+  "@readerModeLongStrip": {
+    "description": "Reader mode: continuous vertical scroll"
+  },
+  "readerModeVertical": "Посторінково вертикально",
+  "@readerModeVertical": {
+    "description": "Reader mode: one page at a time, turned vertically"
+  },
+  "readerModeLeftToRight": "Зліва направо",
+  "@readerModeLeftToRight": {
+    "description": "Reader mode: paged, horizontal"
+  },
+  "readerModeRightToLeft": "Справа наліво",
+  "@readerModeRightToLeft": {
+    "description": "Reader mode: paged, horizontal reversed (manga)"
+  },
+  "readerBackground": "Фон",
+  "@readerBackground": {
+    "description": "Reader settings: background group"
+  },
+  "readerBackgroundDark": "Темний",
+  "@readerBackgroundDark": {
+    "description": "Reader background: dark"
+  },
+  "readerBackgroundLight": "Світлий",
+  "@readerBackgroundLight": {
+    "description": "Reader background: light"
+  },
+  "readerAutoCrop": "Обрізати поля",
+  "@readerAutoCrop": {
+    "description": "Reader settings: auto-crop switch"
+  },
+  "readerAutoCropDescription": "Прибирати білі та чорні поля сторінок",
+  "@readerAutoCropDescription": {
+    "description": "Reader settings: auto-crop switch subtitle"
+  },
+  "readerTranslation": "Переклад",
+  "@readerTranslation": {
+    "description": "Reader: translation (manga source) selector"
+  },
+  "readerChangeTranslation": "Змінити переклад",
+  "@readerChangeTranslation": {
+    "description": "Reader error: pick another translation"
+  },
+  "readerLoadFailed": "Не вдалося завантажити розділ",
+  "@readerLoadFailed": {
+    "description": "Reader error: chapter or pages failed to load"
+  },
+  "readerNoPages": "У цьому розділі немає сторінок",
+  "@readerNoPages": {
+    "description": "Reader error: no pages available"
+  },
+  "readerPageFailed": "Не вдалося завантажити сторінку {number}",
+  "@readerPageFailed": {
+    "description": "Reader: a page image failed to load",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "readerPageCounter": "{page} / {total}",
+  "@readerPageCounter": {
+    "description": "Reader: current page and page count",
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "readerChapterEnd": "Кінець: {title}",
+  "@readerChapterEnd": {
+    "description": "Reader: page after the last page; title of the finished chapter",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "readerChapterStart": "Початок: {title}",
+  "@readerChapterStart": {
+    "description": "Reader: page before the first page; title of the current chapter",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "readerNextChapter": "Наступний розділ",
+  "@readerNextChapter": {
+    "description": "Reader: open the next chapter"
+  },
+  "readerPreviousChapter": "Попередній розділ",
+  "@readerPreviousChapter": {
+    "description": "Reader: open the previous chapter"
   }
 }

@@ -38,6 +38,9 @@ class AppPreferences {
   static const videoPlayerFixedPosition = 'video_player_setting_fixed_position';
   static const videoPlayerEqualizerBands = 'video_player_equalizer_bands';
   static const floatingVideoPlayerEnabled = 'floating_video_player_enabled';
+  static const mangaReaderBackground = 'manga_reader_background';
+  static const mangaReaderMode = 'manga_reader_mode';
+  static const mangaReaderAutoCrop = 'manga_reader_auto_crop';
 
   static String profileSearchHistory(String profileId) => '$searchHistory.$profileId';
   static const ffiUpdateLastCheck = 'ffi_update_last_check';

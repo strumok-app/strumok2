@@ -707,4 +707,75 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get playerClose => 'Закрити плеєр';
+
+  @override
+  String get readerSettings => 'Налаштування читалки';
+
+  @override
+  String get readerModeTitle => 'Режим читання';
+
+  @override
+  String get readerModeLongStrip => 'Стрічка';
+
+  @override
+  String get readerModeVertical => 'Посторінково вертикально';
+
+  @override
+  String get readerModeLeftToRight => 'Зліва направо';
+
+  @override
+  String get readerModeRightToLeft => 'Справа наліво';
+
+  @override
+  String get readerBackground => 'Фон';
+
+  @override
+  String get readerBackgroundDark => 'Темний';
+
+  @override
+  String get readerBackgroundLight => 'Світлий';
+
+  @override
+  String get readerAutoCrop => 'Обрізати поля';
+
+  @override
+  String get readerAutoCropDescription => 'Прибирати білі та чорні поля сторінок';
+
+  @override
+  String get readerTranslation => 'Переклад';
+
+  @override
+  String get readerChangeTranslation => 'Змінити переклад';
+
+  @override
+  String get readerLoadFailed => 'Не вдалося завантажити розділ';
+
+  @override
+  String get readerNoPages => 'У цьому розділі немає сторінок';
+
+  @override
+  String readerPageFailed(int number) {
+    return 'Не вдалося завантажити сторінку $number';
+  }
+
+  @override
+  String readerPageCounter(int page, int total) {
+    return '$page / $total';
+  }
+
+  @override
+  String readerChapterEnd(String title) {
+    return 'Кінець: $title';
+  }
+
+  @override
+  String readerChapterStart(String title) {
+    return 'Початок: $title';
+  }
+
+  @override
+  String get readerNextChapter => 'Наступний розділ';
+
+  @override
+  String get readerPreviousChapter => 'Попередній розділ';
 }

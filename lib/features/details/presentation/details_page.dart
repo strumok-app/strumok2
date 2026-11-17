@@ -82,8 +82,8 @@ class _DetailsError extends ConsumerWidget {
 }
 
 /// Two zones: scrolling content on the left, poster pinned on the right. The poster is flush with the
-/// pane's top, trailing and bottom edges; the pane's rounded clip shapes its corners. Horizontal rows fade out
-/// before a gap, so cards scrolling under the poster dissolve instead of being cut by it.
+/// pane's top, trailing and bottom edges; the pane's rounded clip shapes its corners. Horizontal rows end at the
+/// poster's edge and fade out there, so cards scrolling towards the poster dissolve instead of being cut by it.
 class _WideDetails extends StatelessWidget {
   final ContentDetails details;
   final Size viewport;

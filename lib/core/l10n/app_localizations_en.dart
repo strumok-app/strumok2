@@ -706,4 +706,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playerClose => 'Close player';
+
+  @override
+  String get readerSettings => 'Reader settings';
+
+  @override
+  String get readerModeTitle => 'Reading mode';
+
+  @override
+  String get readerModeLongStrip => 'Long strip';
+
+  @override
+  String get readerModeVertical => 'Paged, vertical';
+
+  @override
+  String get readerModeLeftToRight => 'Left to right';
+
+  @override
+  String get readerModeRightToLeft => 'Right to left';
+
+  @override
+  String get readerBackground => 'Background';
+
+  @override
+  String get readerBackgroundDark => 'Dark';
+
+  @override
+  String get readerBackgroundLight => 'Light';
+
+  @override
+  String get readerAutoCrop => 'Crop borders';
+
+  @override
+  String get readerAutoCropDescription => 'Remove white and black page margins';
+
+  @override
+  String get readerTranslation => 'Translation';
+
+  @override
+  String get readerChangeTranslation => 'Change translation';
+
+  @override
+  String get readerLoadFailed => 'Could not load the chapter';
+
+  @override
+  String get readerNoPages => 'This chapter has no pages';
+
+  @override
+  String readerPageFailed(int number) {
+    return 'Couldn\'t load page $number';
+  }
+
+  @override
+  String readerPageCounter(int page, int total) {
+    return '$page / $total';
+  }
+
+  @override
+  String readerChapterEnd(String title) {
+    return 'End of $title';
+  }
+
+  @override
+  String readerChapterStart(String title) {
+    return 'Start of $title';
+  }
+
+  @override
+  String get readerNextChapter => 'Next chapter';
+
+  @override
+  String get readerPreviousChapter => 'Previous chapter';
 }

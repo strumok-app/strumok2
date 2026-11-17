@@ -211,6 +211,7 @@ Future<List<Override>> testOverrides({
     bundleDownloadKeyProvider.overrideWithValue('linux'),
     initialSupplierBundleProvider.overrideWithValue(bundle ?? defaultTestBundle),
     imageCacheManagerProvider.overrideWithValue(FakeCacheManager()),
+    mangaPageCacheManagerProvider.overrideWithValue(FakeCacheManager()),
     collectionDatabaseFactoryProvider.overrideWithValue(newDatabaseFactoryMemory()),
     videoBackendFactoryProvider.overrideWithValue(videoBackend ?? FakeVideoBackend.new),
     windowFullscreenProvider.overrideWithValue(windowFullscreen ?? FakeWindowFullscreen()),

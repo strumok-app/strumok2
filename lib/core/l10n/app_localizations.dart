@@ -1399,6 +1399,132 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Закрити плеєр'**
   String get playerClose;
+
+  /// Reader: settings side sheet title and button
+  ///
+  /// In uk, this message translates to:
+  /// **'Налаштування читалки'**
+  String get readerSettings;
+
+  /// Reader settings: reading mode group
+  ///
+  /// In uk, this message translates to:
+  /// **'Режим читання'**
+  String get readerModeTitle;
+
+  /// Reader mode: continuous vertical scroll
+  ///
+  /// In uk, this message translates to:
+  /// **'Стрічка'**
+  String get readerModeLongStrip;
+
+  /// Reader mode: one page at a time, turned vertically
+  ///
+  /// In uk, this message translates to:
+  /// **'Посторінково вертикально'**
+  String get readerModeVertical;
+
+  /// Reader mode: paged, horizontal
+  ///
+  /// In uk, this message translates to:
+  /// **'Зліва направо'**
+  String get readerModeLeftToRight;
+
+  /// Reader mode: paged, horizontal reversed (manga)
+  ///
+  /// In uk, this message translates to:
+  /// **'Справа наліво'**
+  String get readerModeRightToLeft;
+
+  /// Reader settings: background group
+  ///
+  /// In uk, this message translates to:
+  /// **'Фон'**
+  String get readerBackground;
+
+  /// Reader background: dark
+  ///
+  /// In uk, this message translates to:
+  /// **'Темний'**
+  String get readerBackgroundDark;
+
+  /// Reader background: light
+  ///
+  /// In uk, this message translates to:
+  /// **'Світлий'**
+  String get readerBackgroundLight;
+
+  /// Reader settings: auto-crop switch
+  ///
+  /// In uk, this message translates to:
+  /// **'Обрізати поля'**
+  String get readerAutoCrop;
+
+  /// Reader settings: auto-crop switch subtitle
+  ///
+  /// In uk, this message translates to:
+  /// **'Прибирати білі та чорні поля сторінок'**
+  String get readerAutoCropDescription;
+
+  /// Reader: translation (manga source) selector
+  ///
+  /// In uk, this message translates to:
+  /// **'Переклад'**
+  String get readerTranslation;
+
+  /// Reader error: pick another translation
+  ///
+  /// In uk, this message translates to:
+  /// **'Змінити переклад'**
+  String get readerChangeTranslation;
+
+  /// Reader error: chapter or pages failed to load
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося завантажити розділ'**
+  String get readerLoadFailed;
+
+  /// Reader error: no pages available
+  ///
+  /// In uk, this message translates to:
+  /// **'У цьому розділі немає сторінок'**
+  String get readerNoPages;
+
+  /// Reader: a page image failed to load
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося завантажити сторінку {number}'**
+  String readerPageFailed(int number);
+
+  /// Reader: current page and page count
+  ///
+  /// In uk, this message translates to:
+  /// **'{page} / {total}'**
+  String readerPageCounter(int page, int total);
+
+  /// Reader: page after the last page; title of the finished chapter
+  ///
+  /// In uk, this message translates to:
+  /// **'Кінець: {title}'**
+  String readerChapterEnd(String title);
+
+  /// Reader: page before the first page; title of the current chapter
+  ///
+  /// In uk, this message translates to:
+  /// **'Початок: {title}'**
+  String readerChapterStart(String title);
+
+  /// Reader: open the next chapter
+  ///
+  /// In uk, this message translates to:
+  /// **'Наступний розділ'**
+  String get readerNextChapter;
+
+  /// Reader: open the previous chapter
+  ///
+  /// In uk, this message translates to:
+  /// **'Попередній розділ'**
+  String get readerPreviousChapter;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
