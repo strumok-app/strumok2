@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/localization.dart';
+import '../features/player/presentation/floating_player_overlay.dart';
 import 'router.dart';
 import 'theme.dart';
 import 'theme_settings.dart';
@@ -40,6 +41,13 @@ class StrumokApp extends ConsumerWidget {
       },
       actions: {...WidgetsApp.defaultActions, _BackIntent: _BackAction(router)},
       routerConfig: router,
+      // The floating video player stays above every route (spec-01, spec-06 §6.9).
+      builder: (context, child) => Stack(
+        children: [
+          Positioned.fill(child: child ?? const SizedBox.shrink()),
+          const FloatingPlayerOverlay(),
+        ],
+      ),
     );
   }
 }

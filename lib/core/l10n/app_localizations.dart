@@ -500,6 +500,12 @@ abstract class AppLocalizations {
   /// **'Контент не знайдено'**
   String get detailsNotFound;
 
+  /// Details: the content's supplier is not in the installed suppliers library
+  ///
+  /// In uk, this message translates to:
+  /// **'Постачальник «{supplier}» недоступний'**
+  String detailsSupplierUnavailable(String supplier);
+
   /// Application name
   ///
   /// In uk, this message translates to:
@@ -1196,12 +1202,6 @@ abstract class AppLocalizations {
   /// **'Завантаження субтитрів…'**
   String get playerSubtitlesLoading;
 
-  /// Player: subtitles button and panel title when audio tracks can be chosen too
-  ///
-  /// In uk, this message translates to:
-  /// **'Субтитри та аудіо'**
-  String get playerSubtitlesAndAudio;
-
   /// Player settings: playback speed
   ///
   /// In uk, this message translates to:
@@ -1340,11 +1340,65 @@ abstract class AppLocalizations {
   /// **'Випадковий порядок'**
   String get playerShuffle;
 
-  /// Settings section title
+  /// Player: subtitles toggle while they are off
   ///
   /// In uk, this message translates to:
-  /// **'Відеоплеєр'**
-  String get settingsVideoPlayerSection;
+  /// **'Показати субтитри'**
+  String get playerShowSubtitles;
+
+  /// Player: subtitles toggle while they are on
+  ///
+  /// In uk, this message translates to:
+  /// **'Сховати субтитри'**
+  String get playerHideSubtitles;
+
+  /// Equalizer preset: full +12 dB boost on every band
+  ///
+  /// In uk, this message translates to:
+  /// **'Максимум'**
+  String get playerEqualizerMax;
+
+  /// Player: enter picture-in-picture (Android PiP / compact desktop window)
+  ///
+  /// In uk, this message translates to:
+  /// **'Картинка в картинці'**
+  String get playerPip;
+
+  /// Desktop picture-in-picture window: back to the full player
+  ///
+  /// In uk, this message translates to:
+  /// **'Повернутися до повного плеєра'**
+  String get playerExitPip;
+
+  /// Desktop picture-in-picture window: stop playback and close the app
+  ///
+  /// In uk, this message translates to:
+  /// **'Закрити застосунок'**
+  String get playerCloseApp;
+
+  /// Player setting: keep playing in a mini player after leaving the player
+  ///
+  /// In uk, this message translates to:
+  /// **'Плаваючий плеєр'**
+  String get playerFloating;
+
+  /// Player setting: floating player switch subtitle
+  ///
+  /// In uk, this message translates to:
+  /// **'Продовжувати перегляд у міні-плеєрі після виходу з плеєра'**
+  String get playerFloatingDescription;
+
+  /// Floating mini player: reopen the full-screen player
+  ///
+  /// In uk, this message translates to:
+  /// **'Відкрити плеєр'**
+  String get playerOpen;
+
+  /// Floating mini player: stop playback and close it
+  ///
+  /// In uk, this message translates to:
+  /// **'Закрити плеєр'**
+  String get playerClose;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

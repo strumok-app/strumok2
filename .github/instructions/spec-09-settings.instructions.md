@@ -5,6 +5,9 @@ applyTo: 'lib/features/settings/**, lib/core/storage/**'
 
 # Spec 09 — Settings
 
+Player settings (start position, on-end action, shuffle, subtitle size, equalizer, floating player switch) live only
+in the player's settings sheet (spec-06 §6.5.1), not on this page.
+
 Sections (order):
 
 1. **Application version** (mandatory) — current version, latest version, "Check for update", "Update" with
@@ -14,12 +17,10 @@ Sections (order):
    point to the app update (spec-11 §11.1).
 3. **Language** — `uk` / `en` (app UI + preferred audio language).
 4. **Theme** — brightness (light / system / dark), color scheme picker.
-5. **Video player** — floating player on/off (hidden on TV), default start position, on-end action, shuffle,
-   subtitle size, max parallel downloads.
-6. **Downloads** — downloads directory picker (desktop only), offline mode switch.
-7. **Suppliers & recommendations** → sub-page: reorder suppliers (drag on touch/mouse; move up/down buttons on TV),
+5. **Downloads** — downloads directory picker (desktop only), max parallel downloads, offline mode switch.
+6. **Suppliers & recommendations** → sub-page: reorder suppliers (drag on touch/mouse; move up/down buttons on TV),
    enable/disable each supplier, choose recommendation channels per supplier.
-8. **Profiles** → manage profiles (spec-05), "ask for profile on startup".
+7. **Profiles** → manage profiles (spec-05), "ask for profile on startup".
 
 ## Preference keys
 

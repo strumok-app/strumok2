@@ -78,6 +78,8 @@ class MediaKitVideoBackend implements VideoBackend {
       stream.playing.listen((v) => _update(_status.value.copyWith(playing: v))),
       stream.buffering.listen((v) => _update(_status.value.copyWith(buffering: v))),
       stream.volume.listen((v) => _update(_status.value.copyWith(volume: v))),
+      stream.width.listen((_) => _updateAspectRatio()),
+      stream.height.listen((_) => _updateAspectRatio()),
       stream.tracks.listen((_) => _updateTracks()),
       stream.track.listen((_) => _updateTracks()),
       stream.completed.listen((completed) {
@@ -112,6 +114,13 @@ class MediaKitVideoBackend implements VideoBackend {
 
   void _update(PlaybackStatus next) {
     if (!_disposed) _status.value = next;
+  }
+
+  void _updateAspectRatio() {
+    final PlayerState(:width, :height) = _player.state;
+    if (width != null && height != null && width > 0 && height > 0) {
+      _update(_status.value.copyWith(aspectRatio: width / height));
+    }
   }
 
   static bool _real(String id) => id != 'auto' && id != 'no';

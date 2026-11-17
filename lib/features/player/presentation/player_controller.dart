@@ -50,6 +50,9 @@ class PlayerController extends _$PlayerController {
   int _token = 0;
   double _speed = 1;
 
+  /// Subtitles the show/hide toggle turns back on.
+  String? _lastSubtitleName;
+
   /// Item index the backend is currently playing; null while loading, so stale positions are never saved.
   int? _playingIndex;
   CollectionItem? _base;
@@ -71,7 +74,17 @@ class PlayerController extends _$PlayerController {
 
   Widget? buildVideoView() => _backend?.buildView();
 
+  /// Reopening the title of a running session (floating player → full screen) keeps it: no reload, no re-buffering.
   Future<void> open(String supplier, String id, {int? item}) async {
+    final current = state;
+    if (current != null &&
+        current.supplier == supplier &&
+        current.id == id &&
+        current.failure == null &&
+        (current.loading || _backend != null)) {
+      if (item != null && item != current.itemIndex && current.items.isNotEmpty) await selectItem(item);
+      return;
+    }
     await _saveProgress();
     final token = ++_token;
     _playingIndex = null;
@@ -136,11 +149,21 @@ class PlayerController extends _$PlayerController {
     final session = state;
     if (session == null || (index != null && (index < 0 || index >= session.subtitles.length))) return;
     state = session.copyWith(subtitleIndex: index, clearSubtitle: index == null, subtitleFailed: false);
+    if (index != null) _lastSubtitleName = session.subtitles[index].description;
     // Loading starts (and shows) before the collection write finishes.
     final load = _loadSubtitles();
     final name = index == null ? null : session.subtitles[index].description;
     await _updateItem((item) => item.copyWith(currentSubtitleName: name, clearSubtitleName: name == null));
     await load;
+  }
+
+  /// Show/hide: off when on; otherwise the last chosen subtitles of this session (the first when none match).
+  Future<void> toggleSubtitles() async {
+    final session = state;
+    if (session == null || session.subtitles.isEmpty) return;
+    if (session.subtitleIndex != null) return selectSubtitles(null);
+    final last = session.subtitles.indexWhere((s) => s.description == _lastSubtitleName);
+    await selectSubtitles(last < 0 ? 0 : last);
   }
 
   /// Positive shows subtitles later.
@@ -247,7 +270,10 @@ class PlayerController extends _$PlayerController {
         subtitles: subtitles,
         subtitleIndex: subtitleIndex,
       );
-      if (subtitleIndex != null) unawaited(_loadSubtitles());
+      if (subtitleIndex != null) {
+        _lastSubtitleName = subtitles[subtitleIndex].description;
+        unawaited(_loadSubtitles());
+      }
       final settings = ref.read(playerSettingsProvider);
       final start = startPosition(
         settings.startFrom,

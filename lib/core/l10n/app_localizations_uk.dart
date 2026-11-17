@@ -220,6 +220,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get detailsNotFound => 'Контент не знайдено';
 
   @override
+  String detailsSupplierUnavailable(String supplier) {
+    return 'Постачальник «$supplier» недоступний';
+  }
+
+  @override
   String get appTitle => 'Струмок';
 
   @override
@@ -597,9 +602,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playerSubtitlesLoading => 'Завантаження субтитрів…';
 
   @override
-  String get playerSubtitlesAndAudio => 'Субтитри та аудіо';
-
-  @override
   String get playerSpeed => 'Швидкість';
 
   @override
@@ -677,5 +679,32 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playerShuffle => 'Випадковий порядок';
 
   @override
-  String get settingsVideoPlayerSection => 'Відеоплеєр';
+  String get playerShowSubtitles => 'Показати субтитри';
+
+  @override
+  String get playerHideSubtitles => 'Сховати субтитри';
+
+  @override
+  String get playerEqualizerMax => 'Максимум';
+
+  @override
+  String get playerPip => 'Картинка в картинці';
+
+  @override
+  String get playerExitPip => 'Повернутися до повного плеєра';
+
+  @override
+  String get playerCloseApp => 'Закрити застосунок';
+
+  @override
+  String get playerFloating => 'Плаваючий плеєр';
+
+  @override
+  String get playerFloatingDescription => 'Продовжувати перегляд у міні-плеєрі після виходу з плеєра';
+
+  @override
+  String get playerOpen => 'Відкрити плеєр';
+
+  @override
+  String get playerClose => 'Закрити плеєр';
 }

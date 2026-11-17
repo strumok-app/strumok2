@@ -13,6 +13,7 @@ import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
 import 'package:strumok/features/player/domain/player_preferences.dart';
 import 'package:strumok/features/player/domain/player_session.dart';
+import 'package:strumok/features/player/presentation/player_controller.dart';
 import 'package:strumok/features/player/presentation/player_settings.dart';
 import 'package:strumok/features/player/presentation/subtitle_size.dart';
 import 'package:strumok/features/player/presentation/widgets/subtitle_overlay.dart';
@@ -134,42 +135,75 @@ void main() {
     video: [MediaTrack('1', height: 480), MediaTrack('2', height: 1080), MediaTrack('3', height: 720)],
   );
 
-  testAppWidgets('no subtitles, one audio track: no subtitles button; the settings gear is always there', (
-    tester,
-  ) async {
+  Future<void> openSettingsPage(WidgetTester tester, String page) async {
+    await tester.tap(find.byKey(const Key('settingsButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(ValueKey('settings-$page')));
+    await tester.pumpAndSettle();
+  }
+
+  testAppWidgets('no subtitles: no show/hide button and no subtitles row; the gear is always there', (tester) async {
     await openPlayer(tester, subtitles: false);
     expect(find.byKey(const Key('subtitlesButton')), findsNothing);
-    expect(find.byKey(const Key('settingsButton')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('settingsButton')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('settings-subtitles')), findsNothing);
+    expect(find.byKey(const ValueKey('settings-audio')), findsNothing, reason: 'a single audio track');
   });
 
-  testAppWidgets('desktop: C opens the panel on Off; picking subtitles shows them over the video', (tester) async {
-    await openPlayer(tester);
-    expect(find.byKey(const Key('subtitlesButton')), findsOneWidget);
+  testAppWidgets('show/hide: the button and C turn subtitles on (the last chosen) and off', (tester) async {
+    final container = await openPlayer(tester);
+    expect(find.byTooltip('Показати субтитри'), findsOneWidget);
+    expect(find.byIcon(Icons.closed_caption_off_outlined), findsOneWidget);
 
-    await press(tester, LogicalKeyboardKey.keyC);
-    expect(find.byType(SideSheet), findsOneWidget);
-    expect(focusedKey(), const ValueKey('subtitle-off'));
-
-    await press(tester, LogicalKeyboardKey.arrowDown);
-    await press(tester, LogicalKeyboardKey.enter);
-    expect(find.byIcon(Icons.check), findsOneWidget);
-    expect(focusedKey(), const ValueKey('subtitle-0'));
-    await press(tester, LogicalKeyboardKey.escape);
-
-    expect(find.byKey(const Key('subtitleText')), findsNothing);
+    await tester.tap(find.byKey(const Key('subtitlesButton')));
+    await tester.pumpAndSettle();
+    expect(container.read(playerControllerProvider)!.subtitle!.description, 'UA', reason: 'nothing chosen yet: first');
+    expect(find.byTooltip('Сховати субтитри'), findsOneWidget);
     backend.emit(position: const Duration(seconds: 12));
     await tester.pump();
     final line = find.descendant(of: find.byKey(const Key('subtitleText')), matching: find.byType(Text));
     expect(tester.widget<Text>(line).data, 'Привіт');
     final box = tester.widget<DecoratedBox>(find.ancestor(of: line, matching: find.byType(DecoratedBox)).first);
     expect((box.decoration as BoxDecoration).color, const Color(0x99000000), reason: 'translucent box per line');
+
+    await press(tester, LogicalKeyboardKey.keyC);
+    expect(container.read(playerControllerProvider)!.subtitleIndex, isNull);
+    expect(find.byKey(const Key('subtitleText')), findsNothing);
+
+    await openSettingsPage(tester, 'subtitles');
+    await tester.tap(find.byKey(const ValueKey('subtitle-1')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(CloseButton));
+    await tester.pumpAndSettle();
+    await press(tester, LogicalKeyboardKey.keyC);
+    await press(tester, LogicalKeyboardKey.keyC);
+    expect(container.read(playerControllerProvider)!.subtitle!.description, 'EN', reason: 'the last chosen');
+  });
+
+  testAppWidgets('settings: Subtitles row and page; choosing stays on the page for size and offset', (tester) async {
+    await openPlayer(tester);
+    await tester.tap(find.byKey(const Key('settingsButton')));
+    await tester.pumpAndSettle();
+    final row = find.byKey(const ValueKey('settings-subtitles'));
+    expect(find.descendant(of: row, matching: find.text('Вимкнено')), findsOneWidget);
+    expect(focusedKey(), const ValueKey('settings-subtitles'), reason: 'first row');
+
+    await press(tester, LogicalKeyboardKey.enter);
+    expect(focusedKey(), const ValueKey('subtitle-off'));
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    await press(tester, LogicalKeyboardKey.enter);
+    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(find.byKey(const ValueKey('subtitleSize')), findsOneWidget, reason: 'still on the page');
+
+    await press(tester, LogicalKeyboardKey.escape);
+    expect(find.descendant(of: row, matching: find.text('UA')), findsOneWidget);
   });
 
   testAppWidgets('a placeholder shows while the selected subtitles load', (tester) async {
     final response = Completer<http.Response>();
     await openPlayer(tester, client: MockClient((_) => response.future));
-    await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
+    await openSettingsPage(tester, 'subtitles');
     await tester.tap(find.byKey(const ValueKey('subtitle-0')));
     await tester.pump();
     await tester.pump();
@@ -188,8 +222,7 @@ void main() {
 
   testAppWidgets('size and offset steppers', (tester) async {
     final container = await openPlayer(tester);
-    await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
+    await openSettingsPage(tester, 'subtitles');
     await tester.tap(find.byKey(const ValueKey('subtitle-0')));
     await tester.pumpAndSettle();
 
@@ -205,7 +238,7 @@ void main() {
       await tester.pumpAndSettle();
     }
     expect(find.descendant(of: offset, matching: find.text('−1.5 с')), findsOneWidget);
-    await tester.tapAt(const Offset(10, 360));
+    await tester.tap(find.byType(CloseButton));
     await tester.pumpAndSettle();
 
     backend.emit(position: const Duration(seconds: 9));
@@ -220,49 +253,24 @@ void main() {
     );
   });
 
-  testAppWidgets('audio tracks alone: an "Audio" button; picking one switches the track', (tester) async {
+  testAppWidgets('settings: Audio row with several tracks; picking one switches and returns to the root', (
+    tester,
+  ) async {
     await openPlayer(tester, subtitles: false, tracks: audio);
-    expect(find.byTooltip('Аудіо'), findsOneWidget);
-    expect(find.byIcon(Icons.subtitles_outlined), findsOneWidget);
-    await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
-    expect(
-      find.descendant(of: find.byType(SideSheet), matching: find.text('Аудіо')),
-      findsOneWidget,
-      reason: 'title only',
-    );
+    await openSettingsPage(tester, 'audio');
     expect(find.text('uk'), findsOneWidget);
-    expect(find.text('Original'), findsOneWidget);
-    expect(find.byKey(const ValueKey('subtitleSize')), findsNothing);
-
     await tester.tap(find.text('Original'));
     await tester.pumpAndSettle();
     expect(backend.calls.last, 'audio:2');
-  });
-
-  testAppWidgets('subtitles plus audio tracks: "Audio & subtitles" with a tab each', (tester) async {
-    await openPlayer(tester, tracks: audio);
-    expect(find.byTooltip('Субтитри та аудіо'), findsOneWidget);
-    expect(find.byIcon(Icons.subtitles_outlined), findsOneWidget);
-    await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
-    final sheet = find.byType(SideSheet);
-    expect(find.descendant(of: sheet, matching: find.text('Субтитри та аудіо')), findsOneWidget);
-    expect(find.widgetWithText(Tab, 'Субтитри'), findsOneWidget);
-    expect(find.widgetWithText(Tab, 'Аудіо'), findsOneWidget);
-    expect(find.byKey(const ValueKey('subtitle-off')), findsOneWidget);
-    expect(find.byKey(const ValueKey('audio-auto')), findsNothing);
-
-    await tester.tap(find.widgetWithText(Tab, 'Аудіо'));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('audio-auto')), findsOneWidget);
-    expect(find.byKey(const ValueKey('subtitleSize')), findsNothing, reason: 'subtitle settings live in their tab');
+    expect(
+      find.descendant(of: find.byKey(const ValueKey('settings-audio')), matching: find.text('Original')),
+      findsOneWidget,
+    );
   });
 
   testAppWidgets('size and offset stay visible under a long subtitles list', (tester) async {
     await openPlayer(tester, extraSubtitles: 30);
-    await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
+    await openSettingsPage(tester, 'subtitles');
     final sheet = tester.getRect(find.byType(SideSheet));
     for (final key in ['subtitleSize', 'subtitleOffset']) {
       final rect = tester.getRect(find.byKey(ValueKey(key)));
@@ -273,16 +281,7 @@ void main() {
       of: find.byKey(const ValueKey('subtitle-off')),
       matching: find.byWidgetPredicate((w) => w is Material && w.clipBehavior == Clip.hardEdge),
     );
-    expect(clips, findsWidgets, reason: 'selected tile ink must not paint over the tabs when scrolled');
-  });
-
-  testAppWidgets('subtitles only: CC button titled "Subtitles" without section headers', (tester) async {
-    await openPlayer(tester);
-    expect(find.byTooltip('Субтитри'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
-    expect(find.descendant(of: find.byType(SideSheet), matching: find.text('Субтитри')), findsOneWidget);
-    expect(find.text('Аудіо'), findsNothing);
+    expect(clips, findsWidgets, reason: 'selected tile ink must not paint over the header when scrolled');
   });
 
   testAppWidgets('settings: side sheet; a row opens its page, Back returns to the row, picking returns too', (
@@ -376,10 +375,7 @@ void main() {
     addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
     await openPlayer(tester, deviceClass: DeviceClass.phone, tracks: video);
     await tester.tap(find.byKey(const Key('subtitlesButton')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('subtitle-1')));
-    await tester.pumpAndSettle();
-    await tester.tapAt(const Offset(10, 360));
+    await tester.pump(const Duration(milliseconds: 400));
     await tester.pumpAndSettle();
 
     backend.emit(position: const Duration(seconds: 12));
@@ -398,22 +394,22 @@ void main() {
     expect(find.byType(SideSheet), findsOneWidget);
   });
 
-  testAppWidgets('tv: subtitles and settings pills open their panels with the remote', (tester) async {
-    await openPlayer(tester, deviceClass: DeviceClass.tv, tracks: video);
+  testAppWidgets('tv: the subtitles pill toggles them; the settings pill opens on the Subtitles row', (tester) async {
+    final container = await openPlayer(tester, deviceClass: DeviceClass.tv, tracks: video);
     await press(tester, LogicalKeyboardKey.arrowDown);
     await press(tester, LogicalKeyboardKey.arrowRight);
     final focused = FocusManager.instance.primaryFocus!.context!;
     expect(
       focused.findAncestorWidgetOfExactType<Tooltip>()?.message,
-      'Субтитри',
+      'Показати субтитри',
       reason: 'next is disabled with one item, so → from Play lands on subtitles',
     );
     await press(tester, LogicalKeyboardKey.enter);
-    expect(focusedKey(), const ValueKey('subtitle-off'));
-    await press(tester, LogicalKeyboardKey.escape);
+    expect(container.read(playerControllerProvider)!.subtitleIndex, 0);
+    expect(find.text('Сховати субтитри'), findsOneWidget, reason: 'the focused pill shows the new label');
 
     await press(tester, LogicalKeyboardKey.arrowRight);
     await press(tester, LogicalKeyboardKey.enter);
-    expect(focusedKey(), const ValueKey('settings-quality'));
+    expect(focusedKey(), const ValueKey('settings-subtitles'));
   });
 }

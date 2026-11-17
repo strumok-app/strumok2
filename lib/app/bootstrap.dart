@@ -10,6 +10,7 @@ import '../core/platform/app_paths.dart';
 import '../core/platform/app_platform.dart';
 import '../core/platform/device_class.dart';
 import '../core/storage/app_preferences.dart';
+import '../features/player/data/pip/pip.dart';
 import '../features/suppliers/data/supplier_bundle_installer.dart';
 import '../features/suppliers/data/supplier_registry.dart';
 import '../features/suppliers/domain/ffi_bundle_info.dart';
@@ -28,7 +29,10 @@ Future<List<Override>> bootstrap() async {
     detectDeviceClass(),
     PackageInfo.fromPlatform(),
   ).wait;
-  final client = await createHttpClient(appVersion: packageInfo.version);
+  final (client, pip) = await (
+    createHttpClient(appVersion: packageInfo.version),
+    createPip(platform, deviceClass),
+  ).wait;
 
   final abis = platform == AppPlatform.android ? (await DeviceInfoPlugin().androidInfo).supportedAbis : <String>[];
   final downloadKey = selectBundleDownloadKey(platform, androidAbis: abis);
@@ -52,6 +56,7 @@ Future<List<Override>> bootstrap() async {
     deviceClassProvider.overrideWithValue(deviceClass),
     currentAppVersionProvider.overrideWithValue(packageInfo.version),
     httpClientProvider.overrideWithValue(client),
+    pipProvider.overrideWithValue(pip),
     bundleDownloadKeyProvider.overrideWithValue(downloadKey),
     initialSupplierBundleProvider.overrideWithValue(initialBundle),
   ];

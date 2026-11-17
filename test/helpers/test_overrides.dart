@@ -17,6 +17,7 @@ import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/features/collection/data/collection_repository.dart';
+import 'package:strumok/features/player/data/pip/pip.dart';
 import 'package:strumok/features/player/data/subtitle_decoding.dart';
 import 'package:strumok/features/player/data/subtitle_repository.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
@@ -197,6 +198,7 @@ Future<List<Override>> testOverrides({
   WindowFullscreen? windowFullscreen,
   BrightnessControl? brightness,
   VolumeControl? volume,
+  Pip? pip,
 }) async {
   final tmp = Directory.systemTemp.createTempSync('strumok_test');
   final paths = AppPaths(support: tmp, cache: Directory('${tmp.path}/cache'), temp: Directory('${tmp.path}/tmp'));
@@ -214,6 +216,7 @@ Future<List<Override>> testOverrides({
     windowFullscreenProvider.overrideWithValue(windowFullscreen ?? FakeWindowFullscreen()),
     brightnessControlProvider.overrideWithValue(brightness ?? FakeBrightnessControl()),
     volumeControlProvider.overrideWithValue(volume ?? FakeVolumeControl()),
+    pipProvider.overrideWithValue(pip ?? UnsupportedPip()),
     // Real isolates never complete under the widget tests' fake async.
     subtitleRepositoryProvider.overrideWith(
       (ref) => SubtitleRepository(

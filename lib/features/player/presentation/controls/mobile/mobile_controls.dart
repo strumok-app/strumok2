@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/localization.dart';
 import '../../../../../core/platform/device_levels.dart';
 import '../../../domain/player_session.dart';
+import '../../pip_view.dart';
 import '../../player_controller.dart';
 import '../../widgets/player_panels.dart';
 import '../../widgets/player_widgets.dart';
@@ -236,6 +237,7 @@ class _MobileControlsState extends ConsumerState<MobileControls> {
             child: PlayerTopBar(
               session: session,
               actions: [
+                const PipButton(),
                 IconButton(
                   key: const Key('lockButton'),
                   tooltip: l10n.playerLock,
@@ -310,7 +312,7 @@ class _MobileControlsState extends ConsumerState<MobileControls> {
                       children: [
                         IgnorePointer(child: PlayerTimeLabel(status: status)),
                         const Spacer(),
-                        SubtitlesButton(session: session),
+                        SubtitlesToggleButton(session: session),
                         if (session.sources.length > 1)
                           SourceButton(session: session, onSelected: _controller.selectSource),
                         const PlayerSettingsButton(),

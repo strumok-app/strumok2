@@ -44,6 +44,30 @@ class SubtitleOverlay extends ConsumerWidget {
   }
 }
 
+/// Subtitles on a small surface (mini player, PiP): laid out on a [referenceWidth] canvas and scaled down, so they
+/// keep their size relative to the picture.
+class ScaledSubtitleOverlay extends StatelessWidget {
+  static const referenceWidth = 960.0;
+
+  const ScaledSubtitleOverlay({super.key});
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final size = constraints.biggest;
+      if (!size.isFinite || size.isEmpty) return const SizedBox.shrink();
+      if (size.width >= referenceWidth) return const SubtitleOverlay(bottom: 24);
+      return FittedBox(
+        child: SizedBox(
+          width: referenceWidth,
+          height: referenceWidth * size.height / size.width,
+          child: const SubtitleOverlay(bottom: 24),
+        ),
+      );
+    },
+  );
+}
+
 /// Centered lines whose backgrounds join into one shape: a corner is rounded only where it sticks out past the
 /// neighboring line, and square where it meets a wider (or about as wide) one.
 class SubtitleLines extends StatelessWidget {

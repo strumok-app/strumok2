@@ -15,7 +15,7 @@ enum AppColorScheme {
   final Color seed;
   final DynamicSchemeVariant variant;
   final bool neutralSurfaces;
-  // Use the seed itself as primary and error/badge color (M3 would lighten them to pastel in dark mode).
+  // Use the seed itself as primary and error color (M3 would lighten them to pastel in dark mode).
   final bool seedPrimary;
 
   const AppColorScheme(
@@ -56,7 +56,7 @@ ColorScheme buildColorScheme(AppColorScheme scheme, Brightness brightness) {
     );
   }
   if (scheme.seedPrimary) {
-    cs = cs.copyWith(primary: scheme.seed, onPrimary: cs.onSurface, error: scheme.seed, onError: cs.onSurface);
+    cs = cs.copyWith(primary: scheme.seed, onPrimary: cs.onSurface, onError: cs.onSurface);
   }
   return cs;
 }
@@ -155,7 +155,6 @@ ThemeData _flatTheme(ColorScheme cs) {
       elevation: 0,
       pressElevation: 0,
     ),
-    switchTheme: const SwitchThemeData(trackOutlineColor: WidgetStatePropertyAll(Colors.transparent)),
     textSelectionTheme: TextSelectionThemeData(cursorColor: cs.onSurface),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,

@@ -2,11 +2,13 @@ package app.strumok
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -14,9 +16,11 @@ import java.io.File
 
 class MainActivity : FlutterActivity() {
     private var pendingInstall: Pair<File, MethodChannel.Result>? = null
+    private var pipHandler: PipHandler? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        pipHandler = PipHandler(this, flutterEngine.dartExecutor.binaryMessenger)
         // Self-update channel (spec-11 §11.2); names kept for continuity with the legacy app.
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "install_apk").setMethodCallHandler { call, result ->
             when (call.method) {
@@ -31,6 +35,24 @@ class MainActivity : FlutterActivity() {
                 else -> result.notImplemented()
             }
         }
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        pipHandler?.dispose()
+        pipHandler = null
+        super.cleanUpFlutterEngine(flutterEngine)
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        pipHandler?.onUserLeaveHint()
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        // The activity is already stopped when the user closed the PiP window.
+        val dismissed = lifecycle.currentState == Lifecycle.State.CREATED
+        pipHandler?.onPictureInPictureModeChanged(isInPictureInPictureMode, dismissed)
     }
 
     private fun installApk(file: File, result: MethodChannel.Result) {

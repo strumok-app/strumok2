@@ -334,6 +334,9 @@ class PlayPauseButton extends StatelessWidget {
   final double? iconSize;
   final ButtonStyle? style;
 
+  /// Off: the label is only announced by screen readers.
+  final bool tooltip;
+
   const PlayPauseButton({
     super.key,
     required this.status,
@@ -341,20 +344,44 @@ class PlayPauseButton extends StatelessWidget {
     this.focusNode,
     this.iconSize,
     this.style,
+    this.tooltip = true,
   });
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
     valueListenable: status,
-    builder: (context, status, _) => IconButton(
-      key: const Key('playPauseButton'),
-      focusNode: focusNode,
-      iconSize: iconSize,
-      style: style,
-      tooltip: status.playing ? context.l10n.playerPause : context.l10n.playerPlay,
-      onPressed: onPressed,
-      icon: Icon(status.playing ? Icons.pause : Icons.play_arrow),
-    ),
+    builder: (context, status, _) {
+      final label = status.playing ? context.l10n.playerPause : context.l10n.playerPlay;
+      return IconButton(
+        key: const Key('playPauseButton'),
+        focusNode: focusNode,
+        iconSize: iconSize,
+        style: style,
+        tooltip: tooltip ? label : null,
+        onPressed: onPressed,
+        icon: Icon(status.playing ? Icons.pause : Icons.play_arrow, semanticLabel: tooltip ? null : label),
+      );
+    },
+  );
+}
+
+/// Thin, non-interactive playback progress along the bottom edge (mini player, PiP).
+class PlaybackProgressLine extends StatelessWidget {
+  final ValueListenable<PlaybackStatus> status;
+
+  const PlaybackProgressLine({super.key, required this.status});
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: status,
+    builder: (context, status, _) {
+      final duration = status.duration.inMilliseconds;
+      return LinearProgressIndicator(
+        minHeight: 3,
+        value: duration <= 0 ? 0 : (status.position.inMilliseconds / duration).clamp(0.0, 1.0),
+        backgroundColor: Colors.white24,
+      );
+    },
   );
 }
 

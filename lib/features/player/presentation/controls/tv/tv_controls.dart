@@ -295,12 +295,14 @@ class _TvControlsState extends ConsumerState<TvControls> {
                                     const SizedBox(width: 8),
                                     PlayerTimeLabel(status: status),
                                     const Spacer(),
-                                    if (subtitlesPanelKind(session, tracks) case final kind?)
+                                    if (session.subtitles.isNotEmpty)
                                       _TvButton(
                                         key: const Key('subtitlesButton'),
-                                        icon: subtitlesPanelIcon,
-                                        label: subtitlesPanelLabel(context, kind),
-                                        onPressed: () => showSubtitlesPanel(context, session, tracks),
+                                        icon: subtitlesToggleIcon(on: session.subtitleIndex != null),
+                                        label: session.subtitleIndex != null
+                                            ? l10n.playerHideSubtitles
+                                            : l10n.playerShowSubtitles,
+                                        onPressed: () => unawaited(_controller.toggleSubtitles()),
                                       ),
                                     if (session.sources.length > 1)
                                       _TvButton(

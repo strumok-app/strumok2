@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/widgets/side_sheet.dart';
 import '../../../../app/widgets/stepper_tile.dart';
 import '../../../../core/localization.dart';
+import '../../../../core/platform/device_class.dart';
 import '../../data/video_backend.dart';
 import '../../domain/equalizer.dart';
 import '../../domain/player_preferences.dart';
@@ -14,29 +15,6 @@ import '../player_controller.dart';
 import '../player_settings.dart';
 import '../subtitle_size.dart';
 import 'player_widgets.dart';
-
-/// What the subtitles button offers (spec-06 §6.5.1); its label follows.
-enum SubtitlesPanelKind { subtitles, audio, both }
-
-/// Null when there is nothing to choose: no supplier subtitles and at most one audio track.
-SubtitlesPanelKind? subtitlesPanelKind(PlayerSession session, PlaybackTracks tracks) =>
-    switch ((session.subtitles.isNotEmpty, tracks.audio.length > 1)) {
-      (true, true) => SubtitlesPanelKind.both,
-      (true, false) => SubtitlesPanelKind.subtitles,
-      (false, true) => SubtitlesPanelKind.audio,
-      (false, false) => null,
-    };
-
-bool hasSubtitlesPanel(PlayerSession session, PlaybackTracks tracks) => subtitlesPanelKind(session, tracks) != null;
-
-String subtitlesPanelLabel(BuildContext context, SubtitlesPanelKind kind) => switch (kind) {
-  SubtitlesPanelKind.subtitles => context.l10n.playerSubtitles,
-  SubtitlesPanelKind.audio => context.l10n.playerAudio,
-  SubtitlesPanelKind.both => context.l10n.playerSubtitlesAndAudio,
-};
-
-/// Same icon whatever the button offers; only the label changes.
-const subtitlesPanelIcon = Icons.subtitles_outlined;
 
 String audioTrackLabel(BuildContext context, MediaTrack track, int index) =>
     track.title ?? track.language ?? context.l10n.playerTrack(index + 1);
@@ -52,25 +30,26 @@ String qualityLabel(BuildContext context, MediaTrack track, int index) => switch
 String formatSubtitleOffset(Duration offset) =>
     '${offset.isNegative ? '−' : '+'}${(offset.inMilliseconds.abs() / 1000).toStringAsFixed(1)}';
 
-class SubtitlesButton extends ConsumerWidget {
+/// Shows or hides subtitles (spec-06 §6.5.1); absent when the item has no supplier subtitles.
+class SubtitlesToggleButton extends ConsumerWidget {
   final PlayerSession session;
 
-  const SubtitlesButton({super.key, required this.session});
+  const SubtitlesToggleButton({super.key, required this.session});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => ValueListenableBuilder(
-    valueListenable: ref.read(playerControllerProvider.notifier).tracks,
-    builder: (context, tracks, _) => switch (subtitlesPanelKind(session, tracks)) {
-      final kind? => IconButton(
-        key: const Key('subtitlesButton'),
-        tooltip: subtitlesPanelLabel(context, kind),
-        onPressed: () => showSubtitlesPanel(context, session, tracks),
-        icon: const Icon(subtitlesPanelIcon),
-      ),
-      null => const SizedBox.shrink(),
-    },
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (session.subtitles.isEmpty) return const SizedBox.shrink();
+    final on = session.subtitleIndex != null;
+    return IconButton(
+      key: const Key('subtitlesButton'),
+      tooltip: on ? context.l10n.playerHideSubtitles : context.l10n.playerShowSubtitles,
+      onPressed: () => unawaited(ref.read(playerControllerProvider.notifier).toggleSubtitles()),
+      icon: Icon(subtitlesToggleIcon(on: on)),
+    );
+  }
 }
+
+IconData subtitlesToggleIcon({required bool on}) => on ? Icons.closed_caption : Icons.closed_caption_off_outlined;
 
 class PlayerSettingsButton extends StatelessWidget {
   const PlayerSettingsButton({super.key});
@@ -84,69 +63,17 @@ class PlayerSettingsButton extends StatelessWidget {
   );
 }
 
-/// Supplier subtitles (with size and offset) and audio tracks, focused on the current subtitles.
-Future<void> showSubtitlesPanel(BuildContext context, PlayerSession session, PlaybackTracks tracks) {
-  final kind = subtitlesPanelKind(session, tracks) ?? SubtitlesPanelKind.subtitles;
-  return showSideSheet<void>(
-    context,
-    title: subtitlesPanelLabel(context, kind),
-    builder: (_) => const _SubtitlesAndAudioPanel(),
-  );
-}
-
 /// Settings in a side sheet on every device: a root list of settings, each opening its own page.
 Future<void> showPlayerSettings(BuildContext context) =>
     showSideSheet<void>(context, title: context.l10n.playerSettings, builder: (_) => const PlayerSettingsPanel());
 
-class _SubtitlesAndAudioPanel extends ConsumerWidget {
-  const _SubtitlesAndAudioPanel();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final session = ref.watch(playerControllerProvider);
-    if (session == null) return const SizedBox.shrink();
-    return ValueListenableBuilder(
-      valueListenable: ref.read(playerControllerProvider.notifier).tracks,
-      builder: (context, tracks, _) {
-        final hasSubtitles = session.subtitles.isNotEmpty;
-        final hasAudio = tracks.audio.length > 1;
-        if (hasSubtitles && hasAudio) {
-          return DefaultTabController(
-            length: 2,
-            child: Column(
-              children: [
-                TabBar(
-                  tabs: [
-                    Tab(text: l10n.playerSubtitles),
-                    Tab(text: l10n.playerAudio),
-                  ],
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _SubtitlesTab(session: session),
-                      _AudioTab(tracks: tracks),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-        return hasSubtitles ? _SubtitlesTab(session: session) : _AudioTab(tracks: tracks);
-      },
-    );
-  }
-}
-
 /// Subtitle choices scroll; size and offset stay pinned below them.
-class _SubtitlesTab extends ConsumerWidget {
+class _SubtitlesPage extends ConsumerWidget {
   static const _offsetStep = Duration(milliseconds: 500);
 
   final PlayerSession session;
 
-  const _SubtitlesTab({required this.session});
+  const _SubtitlesPage({required this.session});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -199,38 +126,8 @@ class _SubtitlesTab extends ConsumerWidget {
   }
 }
 
-class _AudioTab extends ConsumerWidget {
-  final PlaybackTracks tracks;
-
-  const _AudioTab({required this.tracks});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.read(playerControllerProvider.notifier);
-    return _ClippedInk(
-      child: ListView(
-        children: [
-          _Choice(
-            key: const ValueKey('audio-auto'),
-            label: context.l10n.playerAuto,
-            selected: tracks.audioId == null,
-            onTap: () => unawaited(controller.selectAudioTrack(null)),
-          ),
-          for (final (index, track) in tracks.audio.indexed)
-            _Choice(
-              key: ValueKey('audio-${track.id}'),
-              label: audioTrackLabel(context, track, index),
-              selected: tracks.audioId == track.id,
-              onTap: () => unawaited(controller.selectAudioTrack(track.id)),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Selected tile backgrounds are ink on the nearest Material; clip it to the list so scrolled tiles never paint
-/// over the tabs above.
+/// over the header above.
 class _ClippedInk extends StatelessWidget {
   final Widget child;
 
@@ -242,7 +139,7 @@ class _ClippedInk extends StatelessWidget {
 }
 
 /// Settings pages; the root lists one row per page with its current value.
-enum _SettingsPage { quality, speed, equalizer, startFrom, endAction }
+enum _SettingsPage { subtitles, audio, quality, speed, equalizer, startFrom, endAction }
 
 /// Root list of settings; a row opens its page in place, with a pinned back header. Back (key or header) returns
 /// to the root and focuses the row that was opened.
@@ -271,8 +168,9 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
 
   @override
   Widget build(BuildContext context) {
-    final speed = ref.watch(playerControllerProvider.select((s) => s?.speed ?? 1));
+    final session = ref.watch(playerControllerProvider);
     final settings = ref.watch(playerSettingsProvider);
+    if (session == null) return const SizedBox.shrink();
     return PopScope(
       canPop: _page == null,
       onPopInvokedWithResult: (didPop, _) {
@@ -281,7 +179,7 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
       child: ValueListenableBuilder(
         valueListenable: _controller.tracks,
         builder: (context, tracks, _) => switch (_page) {
-          null => _root(tracks, speed, settings),
+          null => _root(session, tracks, settings),
           final page => Column(
             children: [
               ListTile(
@@ -291,7 +189,9 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
                 onTap: _back,
               ),
               Expanded(
-                child: _ClippedInk(child: ListView(children: _pageContent(page, tracks, speed, settings))),
+                child: page == _SettingsPage.subtitles
+                    ? _SubtitlesPage(session: session)
+                    : _ClippedInk(child: ListView(children: _choices(page, session, tracks, settings))),
               ),
             ],
           ),
@@ -300,14 +200,17 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     );
   }
 
-  Widget _root(PlaybackTracks tracks, double speed, PlayerPreferences settings) {
+  Widget _root(PlayerSession session, PlaybackTracks tracks, PlayerPreferences settings) {
     final l10n = context.l10n;
     final startFrom = settings.startFrom == StartFrom.fromFixedPosition
         ? '${startFromLabel(l10n, settings.startFrom)} · ${formatPlaybackTime(Duration(seconds: settings.fixedPosition))}'
         : startFromLabel(l10n, settings.startFrom);
     final rows = [
+      if (session.subtitles.isNotEmpty)
+        (page: _SettingsPage.subtitles, value: session.subtitle?.description ?? l10n.playerSubtitlesOff),
+      if (tracks.audio.length > 1) (page: _SettingsPage.audio, value: _currentAudio(tracks)),
       if (tracks.video.length > 1) (page: _SettingsPage.quality, value: _currentQuality(tracks)),
-      (page: _SettingsPage.speed, value: speedLabel(l10n, speed)),
+      (page: _SettingsPage.speed, value: speedLabel(l10n, session.speed)),
       (page: _SettingsPage.equalizer, value: equalizerPresetLabel(l10n, settings.equalizerPreset)),
       (page: _SettingsPage.startFrom, value: startFrom),
       (page: _SettingsPage.endAction, value: endActionLabel(l10n, settings.endAction)),
@@ -330,12 +233,23 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
             value: settings.shuffle,
             onChanged: (value) => unawaited(_settings.setShuffle(value)),
           ),
+          // No floating player on TV (spec-06 §6.8).
+          if (ref.watch(deviceClassProvider) != DeviceClass.tv)
+            SwitchListTile(
+              key: const ValueKey('settings-floating'),
+              title: Text(l10n.playerFloating),
+              subtitle: Text(l10n.playerFloatingDescription),
+              value: settings.floatingPlayer,
+              onChanged: (value) => unawaited(_settings.setFloatingPlayer(value)),
+            ),
         ],
       ),
     );
   }
 
   String _title(_SettingsPage page) => switch (page) {
+    _SettingsPage.subtitles => context.l10n.playerSubtitles,
+    _SettingsPage.audio => context.l10n.playerAudio,
     _SettingsPage.quality => context.l10n.playerQuality,
     _SettingsPage.speed => context.l10n.playerSpeed,
     _SettingsPage.equalizer => context.l10n.playerEqualizer,
@@ -343,9 +257,26 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     _SettingsPage.endAction => context.l10n.playerOnEnd,
   };
 
-  List<Widget> _pageContent(_SettingsPage page, PlaybackTracks tracks, double speed, PlayerPreferences settings) {
+  List<Widget> _choices(_SettingsPage page, PlayerSession session, PlaybackTracks tracks, PlayerPreferences settings) {
     final l10n = context.l10n;
     return switch (page) {
+      // Built by _SubtitlesPage: its size and offset stay pinned under the list.
+      _SettingsPage.subtitles => const [],
+      _SettingsPage.audio => [
+        _Choice(
+          key: const ValueKey('audio-auto'),
+          label: l10n.playerAuto,
+          selected: tracks.audioId == null,
+          onTap: () => _choose(() => _controller.selectAudioTrack(null)),
+        ),
+        for (final (index, track) in tracks.audio.indexed)
+          _Choice(
+            key: ValueKey('audio-${track.id}'),
+            label: audioTrackLabel(context, track, index),
+            selected: tracks.audioId == track.id,
+            onTap: () => _choose(() => _controller.selectAudioTrack(track.id)),
+          ),
+      ],
       _SettingsPage.quality => [
         _Choice(
           key: const ValueKey('quality-auto'),
@@ -368,7 +299,7 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
           _Choice(
             key: ValueKey('speed-$value'),
             label: speedLabel(l10n, value),
-            selected: value == speed,
+            selected: value == session.speed,
             onTap: () => _choose(() => _controller.setSpeed(value)),
           ),
       ],
@@ -426,6 +357,11 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
           ),
       ],
     };
+  }
+
+  String _currentAudio(PlaybackTracks tracks) {
+    final current = tracks.audio.indexed.where((t) => t.$2.id == tracks.audioId).firstOrNull;
+    return current == null ? context.l10n.playerAuto : audioTrackLabel(context, current.$2, current.$1);
   }
 
   String _currentQuality(PlaybackTracks tracks) {

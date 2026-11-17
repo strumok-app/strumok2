@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../core/localization.dart';
 import '../../../data/video_backend.dart';
 import '../../../domain/player_session.dart';
+import '../../pip_view.dart';
 import '../../player_controller.dart';
 import '../../player_fullscreen.dart';
 import '../../widgets/player_panels.dart';
@@ -89,9 +90,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
       LogicalKeyboardKey.keyS when !repeat && widget.session.sources.length > 1 => _run(
         () => showSourceSelector(context, widget.session, _controller.selectSource),
       ),
-      LogicalKeyboardKey.keyC when !repeat && hasSubtitlesPanel(widget.session, _controller.tracks.value) => _run(
-        () => showSubtitlesPanel(context, widget.session, _controller.tracks.value),
-      ),
+      LogicalKeyboardKey.keyC when !repeat && widget.session.subtitles.isNotEmpty => _run(_controller.toggleSubtitles),
       _ => false,
     };
     if (handled) _visibility.show();
@@ -178,12 +177,13 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                                   const SizedBox(width: 8),
                                   PlayerTimeLabel(status: status),
                                   const Spacer(),
-                                  SubtitlesButton(session: session),
+                                  SubtitlesToggleButton(session: session),
                                   if (session.sources.length > 1)
                                     SourceButton(session: session, onSelected: _controller.selectSource),
                                   const PlayerSettingsButton(),
                                   if (session.items.length > 1) PlaylistButton(session: session),
                                   const SizedBox(width: 16),
+                                  const PipButton(),
                                   IconButton(
                                     key: const Key('fullscreenButton'),
                                     tooltip: fullscreen ? l10n.playerExitFullscreen : l10n.playerFullscreen,

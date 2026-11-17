@@ -30,6 +30,8 @@ void main() {
       expect(EqualizerPreset.cinema.bands, [4, 2, 0, 2, 4]);
       expect(EqualizerPreset.night.bands, [-3, 0, 3, 4, -2]);
       expect(EqualizerPreset.action.bands, [5, 3, -1, 1, 3]);
+      expect(EqualizerPreset.max.bands, [12, 12, 12, 12, 12]);
+      expect(EqualizerPreset.of(parseEqualizerBands('20,20,20,20,20')), EqualizerPreset.max, reason: 'clamped');
       expect(EqualizerPreset.of([4, 2, 0, 2, 4]), EqualizerPreset.cinema);
       expect(EqualizerPreset.of([4, 2, 0, 2, 5]), isNull);
     });
@@ -110,6 +112,8 @@ void main() {
       await settings.setEndAction(EndAction.playAgain);
       await settings.setShuffle(true);
       await settings.setEqualizer([1, 2, 3, 4, 5]);
+      expect(c.read(playerSettingsProvider).floatingPlayer, isTrue, reason: 'floating player is on by default');
+      await settings.setFloatingPlayer(false);
 
       final prefs = c.read(appPreferencesProvider);
       expect(prefs.getString(AppPreferences.videoPlayerStartFrom), 'fromFixedPosition');
@@ -117,6 +121,7 @@ void main() {
       expect(prefs.getString(AppPreferences.videoPlayerEndsAction), 'playAgain');
       expect(prefs.getBool(AppPreferences.videoPlayerShuffleMode), isTrue);
       expect(prefs.getString(AppPreferences.videoPlayerEqualizerBands), '1.0,2.0,3.0,4.0,5.0');
+      expect(prefs.getBool(AppPreferences.floatingVideoPlayerEnabled), isFalse);
 
       c.invalidate(playerSettingsProvider);
       expect(
@@ -127,6 +132,7 @@ void main() {
           endAction: EndAction.playAgain,
           shuffle: true,
           equalizer: [1, 2, 3, 4, 5],
+          floatingPlayer: false,
         ),
       );
     });

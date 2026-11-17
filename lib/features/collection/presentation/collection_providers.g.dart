@@ -35,7 +35,7 @@ final class CollectionItemsProvider extends $AsyncNotifierProvider<CollectionIte
   CollectionItems create() => CollectionItems();
 }
 
-String _$collectionItemsHash() => r'dd42f315a0280ec130072bafe3cc7b2e267b7d43';
+String _$collectionItemsHash() => r'5cafaeff3ae1cae13bf36e7ac7e19d1d12b060e5';
 
 /// Active profile's collection by item key; kept current from repository change events.
 

@@ -25,6 +25,7 @@ class PlayerSettings extends _$PlayerSettings {
           EndAction.values.asNameMap()[prefs.getString(AppPreferences.videoPlayerEndsAction)] ?? EndAction.playNext,
       shuffle: prefs.getBool(AppPreferences.videoPlayerShuffleMode) ?? false,
       equalizer: parseEqualizerBands(prefs.getString(AppPreferences.videoPlayerEqualizerBands)),
+      floatingPlayer: prefs.getBool(AppPreferences.floatingVideoPlayerEnabled) ?? true,
     );
   }
 
@@ -47,6 +48,11 @@ class PlayerSettings extends _$PlayerSettings {
   Future<void> setShuffle(bool value) async {
     state = state.copyWith(shuffle: value);
     await _prefs.setBool(AppPreferences.videoPlayerShuffleMode, value);
+  }
+
+  Future<void> setFloatingPlayer(bool value) async {
+    state = state.copyWith(floatingPlayer: value);
+    await _prefs.setBool(AppPreferences.floatingVideoPlayerEnabled, value);
   }
 
   Future<void> setEqualizer(List<double> bands) async {
@@ -75,6 +81,7 @@ String equalizerPresetLabel(AppLocalizations l10n, EqualizerPreset? preset) => s
   EqualizerPreset.cinema => l10n.playerEqualizerCinema,
   EqualizerPreset.night => l10n.playerEqualizerNight,
   EqualizerPreset.action => l10n.playerEqualizerAction,
+  EqualizerPreset.max => l10n.playerEqualizerMax,
   null => l10n.playerEqualizerCustom,
 };
 

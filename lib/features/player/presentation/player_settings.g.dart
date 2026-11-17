@@ -40,7 +40,7 @@ final class PlayerSettingsProvider extends $NotifierProvider<PlayerSettings, Pla
   }
 }
 
-String _$playerSettingsHash() => r'c9deab7c1bc84e3bde31d42845fdc46ebfdf82cd';
+String _$playerSettingsHash() => r'8a0c1b80f2ef1d3bacdb21a4cc05eca929fbc78e';
 
 /// Persisted player settings (spec-09 keys, enums stored by `.name`).
 

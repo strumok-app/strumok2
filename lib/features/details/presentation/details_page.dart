@@ -3,12 +3,16 @@ import 'dart:math';
 import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
+import 'package:strumok/app/widgets/trailing_fade.dart';
 
 import '../../../app/widgets/app_network_image.dart';
 import '../../../app/widgets/content_card.dart';
 import '../../../app/widgets/content_row.dart';
 import '../../../app/widgets/state_views.dart';
 import '../../../core/localization.dart';
+import '../../collection/presentation/collection_providers.dart';
+import '../../suppliers/data/supplier_registry.dart';
 import 'details_providers.dart';
 import 'details_widgets.dart';
 
@@ -30,13 +34,50 @@ class DetailsPage extends ConsumerWidget {
             ? _WideDetails(details: value, viewport: constraints.biggest)
             : _NarrowDetails(details: value),
       ),
-      AsyncError(:final error, isLoading: false) => LoadErrorView(
-        autofocus: true,
-        message: error is ContentNotFoundException ? context.l10n.detailsNotFound : null,
+      AsyncError(:final error, isLoading: false) => _DetailsError(
+        supplier: supplier,
+        id: id,
+        error: error is ProviderException ? error.exception : error,
         onRetry: () => ref.invalidate(provider),
       ),
       _ => const Center(child: CircularProgressIndicator()),
     };
+  }
+}
+
+/// Content gone or its supplier missing from the library: offer removing the stale collection item.
+class _DetailsError extends ConsumerWidget {
+  final String supplier;
+  final String id;
+  final Object error;
+  final VoidCallback onRetry;
+
+  const _DetailsError({required this.supplier, required this.id, required this.error, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final gone = error is ContentNotFoundException || error is SupplierNotFoundException;
+    final item = gone ? ref.watch(collectionItemProvider(supplier, id)) : null;
+    return LoadErrorView(
+      autofocus: true,
+      message: switch (error) {
+        ContentNotFoundException() => l10n.detailsNotFound,
+        SupplierNotFoundException() => l10n.detailsSupplierUnavailable(supplier),
+        _ => null,
+      },
+      onRetry: onRetry,
+      action: item == null
+          ? null
+          : TextButton.icon(
+              icon: const Icon(Icons.bookmark_remove_outlined),
+              label: Text(l10n.collectionRemove),
+              onPressed: () async {
+                await ref.read(collectionItemsProvider.notifier).remove(item.key);
+                if (context.mounted) await Navigator.of(context).maybePop();
+              },
+            ),
+    );
   }
 }
 
@@ -50,7 +91,6 @@ class _WideDetails extends StatelessWidget {
   const _WideDetails({required this.details, required this.viewport});
 
   static const _padding = 24.0;
-  static const gap = 16.0;
 
   @override
   Widget build(BuildContext context) {
@@ -67,40 +107,14 @@ class _WideDetails extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: _padding),
                 child: DetailsInfo(details: details),
               ),
-              for (final section in _sections(details)) _TrailingFade(child: section),
+              for (var section in _sections(details)) TrailingFade(child: section),
             ],
           ),
         ),
-        const SizedBox(width: gap),
         SizedBox(width: posterWidth, child: AppNetworkImage(details.image)),
       ],
     );
   }
-}
-
-/// Fades the trailing [width] of [child] to transparent (applies to content overflowing into that area too,
-/// because the enclosing list clips at the same edge).
-class _TrailingFade extends StatelessWidget {
-  static const width = 48.0;
-
-  final Widget child;
-
-  const _TrailingFade({required this.child});
-
-  @override
-  Widget build(BuildContext context) => ShaderMask(
-    blendMode: BlendMode.dstIn,
-    shaderCallback: (bounds) {
-      final fadeStart = bounds.width <= width ? 0.0 : 1 - width / bounds.width;
-      return LinearGradient(
-        begin: AlignmentDirectional.centerStart,
-        end: AlignmentDirectional.centerEnd,
-        colors: const [Colors.white, Colors.white, Colors.transparent],
-        stops: [0, fadeStart, 1],
-      ).createShader(bounds, textDirection: Directionality.of(context));
-    },
-    child: child,
-  );
 }
 
 class _NarrowDetails extends StatelessWidget {

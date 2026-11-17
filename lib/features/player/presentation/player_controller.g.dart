@@ -81,7 +81,7 @@ final class PlayerControllerProvider extends $NotifierProvider<PlayerController,
   }
 }
 
-String _$playerControllerHash() => r'e0696e77d1ddcdc6db08a7ded206ecc6f6f975e3';
+String _$playerControllerHash() => r'69d27f10754211e472be0949c65e89f7cae6b4ce';
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
 /// Kept alive so the session can outlive the player route (floating player / PiP, M6).

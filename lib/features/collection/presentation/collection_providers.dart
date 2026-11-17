@@ -51,6 +51,8 @@ class CollectionItems extends _$CollectionItems {
   }
 
   Future<void> save(CollectionItem item) => _repository.save(item);
+
+  Future<void> remove(String key) => _repository.delete(key);
 }
 
 @riverpod

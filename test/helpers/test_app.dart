@@ -8,6 +8,7 @@ import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
+import 'package:strumok/features/player/data/pip/pip.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 
@@ -24,6 +25,7 @@ Future<ProviderContainer> pumpApp(
   BrightnessControl? brightness,
   VolumeControl? volume,
   http.Client? client,
+  Pip? pip,
   List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
@@ -39,6 +41,7 @@ Future<ProviderContainer> pumpApp(
     brightness: brightness,
     volume: volume,
     client: client,
+    pip: pip,
   );
   final container = ProviderContainer(overrides: [...overrides, ...extraOverrides]);
   addTearDown(container.dispose);

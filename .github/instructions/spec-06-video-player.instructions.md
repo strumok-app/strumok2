@@ -71,7 +71,8 @@ to media_kit together with the source headers, stop the proxy when the backend i
 - Audio track and video quality track selection.
 - Playback speed (0.5–2.0, steps of 0.25); kept for the app session across items and titles, not persisted.
 - 5-band equalizer via mpv `af` (bands 60, 230, 910, 4000, 14000 Hz; range ±12 dB) with presets:
-  Reset `[0,0,0,0,0]`, Clear dialogue `[0,2,4,5,1]`, Cinema `[4,2,0,2,4]`, Night `[-3,0,3,4,-2]`, Action `[5,3,-1,1,3]`.
+  Reset `[0,0,0,0,0]`, Clear dialogue `[0,2,4,5,1]`, Cinema `[4,2,0,2,4]`, Night `[-3,0,3,4,-2]`, Action `[5,3,-1,1,3]`,
+  Max `[12,12,12,12,12]` (full boost on every band).
   Filter: `lavfi=[equalizer=f=<Hz>:width_type=o:width=2:g=<dB>,…]` for non-zero bands; empty when flat. Gains
   step by 1 dB; gains matching no preset show as "Custom".
 - Settings: shuffle mode; on-end action (`playNext` default / `playAgain` / `doNothing`); start-from
@@ -87,10 +88,10 @@ Buttons by frequency of use:
 | Button | Contents | Placement |
 |--------|----------|-----------|
 | Play/pause, prev/next, seek bar | — | per device (below) |
-| **Subtitles** (CC) | supplier subtitles + off, audio tracks (section hidden with one track), subtitle size and offset | own button, one icon (subtitles); the label follows the content: "Subtitles", "Audio" when only audio tracks can be chosen, "Audio & subtitles" with Subtitles / Audio tabs when both; subtitle size and offset stay pinned below the scrolling subtitles list |
+| **Subtitles** (CC) | show/hide toggle: off when on, otherwise the last chosen subtitles of the session (the first when none) | own button when the item has supplier subtitles; CC icon on/off; tooltip "Show subtitles" / "Hide subtitles" |
 | **Source** (server) | sources, current checked | own button; also "Change source" in the error view |
 | **Episodes** | playlist grouped by section | own button |
-| **Settings** (gear) | rows: Quality (with several qualities), Speed, Equalizer, Start from, When it ends → pages; Shuffle switch | own button, always shown |
+| **Settings** (gear) | rows: Subtitles (with supplier subtitles: off + list, size and offset pinned below the scrolling list; choosing stays on the page), Audio (with several tracks), Quality (with several qualities), Speed, Equalizer, Start from, When it ends → pages; Shuffle switch | own button, always shown |
 | PiP, fullscreen, volume, lock | — | device-specific |
 
 - Order is fixed everywhere: **subtitles → source → settings → episodes**, then window/mode buttons. Episodes is
@@ -117,7 +118,7 @@ Buttons by frequency of use:
 | F | toggle fullscreen; Enter → enter fullscreen; Esc → exit fullscreen |
 | P | open playlist |
 | S | open source selector |
-| C | open subtitles panel |
+| C | show/hide subtitles |
 
 Layout: top bar = back, title, episode. Bottom bar = seek bar; row: prev, play, next, volume, time … subtitles,
 source, settings, episodes, gap, PiP, fullscreen (far right).
@@ -153,11 +154,14 @@ scroll on volume. PiP button (specs §6.9).
 
 ## 6.9 Floating player (phone/tablet/desktop; setting, default **on**)
 
-- When the user navigates back from the player while a video is playing, keep playing in a mini player
-  overlay above all routes (app root `Stack`).
+- When the user navigates back from the player, keep the video (playing or paused) in a mini player overlay above
+  all routes (app root `Stack`). A failed session is closed instead.
 - Width: 220 dp (mobile) / 420 dp (desktop), 16:9; snap to one of 4 corners after drag (default bottom-right);
   paddings: desktop 10/10, mobile 16 h / 32 v.
-- Controls: play/pause, close (stops playback). Tap → reopen full-screen player.
+- Mobile controls: play/pause, close (stops playback), always visible; tap → reopen full-screen player.
+- Desktop controls: the same as the desktop PiP window (§6.10), shown on hover/click and hidden after 2 s:
+  prev / play-pause / next in the center, open full-screen player top-left, close (stops playback) top-right,
+  progress at the bottom. Dragging still snaps to a corner.
 
 ## 6.10 Picture-in-Picture
 

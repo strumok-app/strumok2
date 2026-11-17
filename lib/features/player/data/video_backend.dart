@@ -12,6 +12,9 @@ final class PlaybackStatus {
   /// 0..100.
   final double volume;
 
+  /// Width / height of the video; null until known.
+  final double? aspectRatio;
+
   const PlaybackStatus({
     this.position = Duration.zero,
     this.duration = Duration.zero,
@@ -19,6 +22,7 @@ final class PlaybackStatus {
     this.playing = false,
     this.buffering = false,
     this.volume = 100,
+    this.aspectRatio,
   });
 
   PlaybackStatus copyWith({
@@ -28,6 +32,7 @@ final class PlaybackStatus {
     bool? playing,
     bool? buffering,
     double? volume,
+    double? aspectRatio,
   }) => PlaybackStatus(
     position: position ?? this.position,
     duration: duration ?? this.duration,
@@ -35,6 +40,7 @@ final class PlaybackStatus {
     playing: playing ?? this.playing,
     buffering: buffering ?? this.buffering,
     volume: volume ?? this.volume,
+    aspectRatio: aspectRatio ?? this.aspectRatio,
   );
 
   @override
@@ -45,10 +51,11 @@ final class PlaybackStatus {
       other.buffered == buffered &&
       other.playing == playing &&
       other.buffering == buffering &&
-      other.volume == volume;
+      other.volume == volume &&
+      other.aspectRatio == aspectRatio;
 
   @override
-  int get hashCode => Object.hash(position, duration, buffered, playing, buffering, volume);
+  int get hashCode => Object.hash(position, duration, buffered, playing, buffering, volume, aspectRatio);
 }
 
 /// A video or audio track of the current media.

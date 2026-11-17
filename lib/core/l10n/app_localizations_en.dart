@@ -220,6 +220,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailsNotFound => 'Content not found';
 
   @override
+  String detailsSupplierUnavailable(String supplier) {
+    return 'Supplier \"$supplier\" is not available';
+  }
+
+  @override
   String get appTitle => 'Strumok';
 
   @override
@@ -596,9 +601,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerSubtitlesLoading => 'Loading subtitles…';
 
   @override
-  String get playerSubtitlesAndAudio => 'Audio & subtitles';
-
-  @override
   String get playerSpeed => 'Speed';
 
   @override
@@ -676,5 +678,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerShuffle => 'Shuffle';
 
   @override
-  String get settingsVideoPlayerSection => 'Video player';
+  String get playerShowSubtitles => 'Show subtitles';
+
+  @override
+  String get playerHideSubtitles => 'Hide subtitles';
+
+  @override
+  String get playerEqualizerMax => 'Max';
+
+  @override
+  String get playerPip => 'Picture in picture';
+
+  @override
+  String get playerExitPip => 'Back to the full player';
+
+  @override
+  String get playerCloseApp => 'Close the app';
+
+  @override
+  String get playerFloating => 'Floating player';
+
+  @override
+  String get playerFloatingDescription => 'Keep watching in a mini player after leaving the player';
+
+  @override
+  String get playerOpen => 'Open player';
+
+  @override
+  String get playerClose => 'Close player';
 }

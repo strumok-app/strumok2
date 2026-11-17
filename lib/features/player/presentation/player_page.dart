@@ -4,13 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/platform/device_class.dart';
+import '../data/pip/pip.dart';
 import 'controls/desktop/desktop_controls.dart';
 import 'controls/mobile/mobile_controls.dart';
 import 'controls/tv/tv_controls.dart';
+import 'floating_player.dart';
+import 'pip_view.dart';
 import 'player_controller.dart';
 import 'player_fullscreen.dart';
+import 'player_theme.dart';
 
-/// Full-screen; outside the app shell. Controls are picked by device class (spec-06 §6.1).
+/// Full-screen; outside the app shell, always in the dark player theme. Controls are picked by device class
+/// (spec-06 §6.1). Leaving it hands a playing session to the floating player (spec-06 §6.9); PiP is allowed only
+/// while it is shown (spec-06 §6.10).
 class PlayerPage extends ConsumerStatefulWidget {
   final String supplier;
   final String id;
@@ -27,25 +33,48 @@ class PlayerPage extends ConsumerStatefulWidget {
 class _PlayerPageState extends ConsumerState<PlayerPage> {
   late final PlayerController _controller;
   late final PlayerFullscreen _fullscreen;
+  late final FloatingPlayer _floating;
+  late final Pip _pip;
 
   @override
   void initState() {
     super.initState();
     _controller = ref.read(playerControllerProvider.notifier);
     _fullscreen = ref.read(playerFullscreenProvider.notifier);
+    _floating = ref.read(floatingPlayerProvider.notifier);
+    _pip = ref.read(pipProvider);
+    _pip.isActive.addListener(_onPipChanged);
+    unawaited(_pip.enable());
     // Providers must not change while the tree is building.
-    unawaited(Future.microtask(() => _controller.open(widget.supplier, widget.id, item: widget.item)));
+    unawaited(
+      Future.microtask(() async {
+        _floating.hide();
+        await _controller.open(widget.supplier, widget.id, item: widget.item);
+      }),
+    );
   }
 
   @override
   void dispose() {
+    _pip.isActive.removeListener(_onPipChanged);
+    final pip = _pip, fullscreen = _fullscreen, floating = _floating;
     unawaited(
       Future.microtask(() async {
-        await _fullscreen.set(false);
-        await _controller.close();
+        // Decided right away: the playing state must not change while the window is restored.
+        final leave = floating.leavePlayer();
+        await pip.disable();
+        await fullscreen.set(false);
+        await leave;
       }),
     );
     super.dispose();
+  }
+
+  /// Side sheets would cover the picture in the PiP window.
+  void _onPipChanged() {
+    if (!_pip.isActive.value || !mounted) return;
+    final route = ModalRoute.of(context);
+    if (route != null && !route.isCurrent) Navigator.of(context).popUntil((r) => r == route);
   }
 
   @override
@@ -53,36 +82,38 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     final session = ref.watch(playerControllerProvider);
     final deviceClass = ref.watch(deviceClassProvider);
     final video = _controller.buildVideoView();
-    final theme = Theme.of(context);
 
-    // Controls sit on video: always light-on-dark, whatever the app brightness.
     return Theme(
-      data: theme.copyWith(
-        iconTheme: const IconThemeData(color: Colors.white),
-        textTheme: theme.textTheme.apply(bodyColor: Colors.white, displayColor: Colors.white),
-        iconButtonTheme: IconButtonThemeData(
-          style: (theme.iconButtonTheme.style ?? const ButtonStyle()).copyWith(
-            foregroundColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.disabled) ? Colors.white38 : Colors.white,
-            ),
-          ),
-        ),
-      ),
+      data: ref.watch(playerThemeProvider),
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            ?video,
-            if (session == null)
-              const Center(child: CircularProgressIndicator())
-            else
-              switch (deviceClass) {
-                DeviceClass.desktop => DesktopControls(session: session),
-                DeviceClass.phone || DeviceClass.tablet => MobileControls(session: session),
-                DeviceClass.tv => TvControls(session: session),
-              },
-          ],
+        body: PipBinding(
+          session: session,
+          status: _controller.status,
+          child: ValueListenableBuilder(
+            valueListenable: _pip.isActive,
+            builder: (context, inPip, _) => Stack(
+              fit: StackFit.expand,
+              children: [
+                ?video,
+                if (session == null)
+                  const Center(child: CircularProgressIndicator())
+                else ...[
+                  // Kept alive under PiP: the controls own orientation, immersive mode and their own state.
+                  Visibility(
+                    visible: !inPip,
+                    maintainState: true,
+                    child: switch (deviceClass) {
+                      DeviceClass.desktop => DesktopControls(session: session),
+                      DeviceClass.phone || DeviceClass.tablet => MobileControls(session: session),
+                      DeviceClass.tv => TvControls(session: session),
+                    },
+                  ),
+                  if (inPip) PipView(session: session, interactive: deviceClass == DeviceClass.desktop),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );

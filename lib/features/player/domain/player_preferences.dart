@@ -19,12 +19,16 @@ final class PlayerPreferences {
   final bool shuffle;
   final List<double> equalizer;
 
+  /// Keep playing in a mini player after leaving the player (spec-06 §6.9).
+  final bool floatingPlayer;
+
   const PlayerPreferences({
     this.startFrom = StartFrom.fromRemembered,
     this.fixedPosition = 0,
     this.endAction = EndAction.playNext,
     this.shuffle = false,
     this.equalizer = const [0, 0, 0, 0, 0],
+    this.floatingPlayer = true,
   });
 
   PlayerPreferences copyWith({
@@ -33,12 +37,14 @@ final class PlayerPreferences {
     EndAction? endAction,
     bool? shuffle,
     List<double>? equalizer,
+    bool? floatingPlayer,
   }) => PlayerPreferences(
     startFrom: startFrom ?? this.startFrom,
     fixedPosition: fixedPosition ?? this.fixedPosition,
     endAction: endAction ?? this.endAction,
     shuffle: shuffle ?? this.shuffle,
     equalizer: equalizer ?? this.equalizer,
+    floatingPlayer: floatingPlayer ?? this.floatingPlayer,
   );
 
   @override
@@ -48,10 +54,12 @@ final class PlayerPreferences {
       other.fixedPosition == fixedPosition &&
       other.endAction == endAction &&
       other.shuffle == shuffle &&
-      listEquals(other.equalizer, equalizer);
+      listEquals(other.equalizer, equalizer) &&
+      other.floatingPlayer == floatingPlayer;
 
   @override
-  int get hashCode => Object.hash(startFrom, fixedPosition, endAction, shuffle, Object.hashAll(equalizer));
+  int get hashCode =>
+      Object.hash(startFrom, fixedPosition, endAction, shuffle, Object.hashAll(equalizer), floatingPlayer);
 
   EqualizerPreset? get equalizerPreset => EqualizerPreset.of(equalizer);
 }

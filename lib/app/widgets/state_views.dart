@@ -7,8 +7,9 @@ class LoadErrorView extends StatelessWidget {
   final VoidCallback onRetry;
   final String? message;
   final bool autofocus;
+  final Widget? action;
 
-  const LoadErrorView({super.key, required this.onRetry, this.message, this.autofocus = false});
+  const LoadErrorView({super.key, required this.onRetry, this.message, this.autofocus = false, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class LoadErrorView extends StatelessWidget {
             Icon(Icons.cloud_off_outlined, color: colors.onSurfaceVariant),
             Text(message ?? l10n.errorLoading, textAlign: TextAlign.center),
             FilledButton.tonal(autofocus: autofocus, onPressed: onRetry, child: Text(l10n.commonRetry)),
+            ?action,
           ],
         ),
       ),

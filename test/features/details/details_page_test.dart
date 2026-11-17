@@ -228,7 +228,42 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Контент не знайдено'), findsOneWidget);
     expect(find.text('Повторити'), findsOneWidget);
+    expect(find.text('Видалити з колекції'), findsNothing, reason: 'not in the collection');
   });
+
+  for (final (name, supplierName, message) in [
+    ('content not found', 'alpha', 'Контент не знайдено'),
+    ('supplier missing', 'gone', 'Постачальник «gone» недоступний'),
+  ]) {
+    testAppWidgets('$name: collection item can be removed from the error page', (tester) async {
+      final container = await pumpApp(
+        tester,
+        bundle: SupplierBundleReady(FakeBundle([FakeSupplier('alpha')]), bundleInfo('4.0.0')),
+      );
+      await tester.runAsync(
+        () => container
+            .read(collectionItemsProvider.notifier)
+            .save(
+              CollectionItem(
+                id: 'x1',
+                supplier: supplierName,
+                title: 'Old',
+                image: '',
+                status: CollectionStatus.latter,
+              ),
+            ),
+      );
+      final router = container.read(routerProvider);
+      unawaited(router.push(AppRoutes.details(supplierName, 'x1')));
+      await tester.pumpAndSettle();
+      expect(find.text(message), findsOneWidget);
+
+      await tester.tap(find.text('Видалити з колекції'));
+      await tester.pumpAndSettle();
+      expect(container.read(collectionItemProvider(supplierName, 'x1')), isNull);
+      expect(router.state.uri.path, isNot(AppRoutes.details(supplierName, 'x1')));
+    });
+  }
 
   testAppWidgets('retry shows loading until details arrive', (tester) async {
     final supplier = _GatedSupplier('alpha', FakeDetails('alpha', 'm1'));

@@ -1,6 +1,7 @@
 import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:strumok/app/widgets/trailing_fade.dart';
 
 import '../../core/localization.dart';
 import '../../core/paging/paged_items.dart';
@@ -135,7 +136,10 @@ class ContentRow extends ConsumerWidget {
               style: theme.textTheme.titleMedium,
             ),
           ),
-          SizedBox(height: rowHeight, child: body),
+          SizedBox(
+            height: rowHeight,
+            child: TrailingFade(child: body),
+          ),
         ],
       ),
     );

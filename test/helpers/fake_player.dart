@@ -4,6 +4,7 @@ import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/widgets.dart';
 import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
+import 'package:strumok/features/player/data/pip/pip.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
 
 class FakeVideoSource extends VideoMediaItemSource {
@@ -180,4 +181,45 @@ class FakeVolumeControl implements VolumeControl {
 
   @override
   Future<void> set(double value) async => this.value = value;
+}
+
+/// Records calls; tests emit platform actions with [action].
+class FakePip extends Pip {
+  final calls = <String>[];
+  final playbacks = <PipPlayback>[];
+  final bool supported;
+
+  FakePip({this.supported = true});
+
+  @override
+  bool get isSupported => supported;
+
+  void action(PipAction action) => emitAction(action);
+
+  @override
+  Future<void> enable() async => calls.add('enable');
+
+  @override
+  Future<void> disable() async {
+    calls.add('disable');
+    active = false;
+  }
+
+  @override
+  Future<void> updatePlayback(PipPlayback playback) async => playbacks.add(playback);
+
+  @override
+  Future<void> enter() async {
+    calls.add('enter');
+    active = true;
+  }
+
+  @override
+  Future<void> exit() async {
+    calls.add('exit');
+    active = false;
+  }
+
+  @override
+  Future<void> closeApp() async => calls.add('closeApp');
 }

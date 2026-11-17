@@ -287,6 +287,15 @@
   "@detailsNotFound": {
     "description": "Details: supplier returned no content for this id"
   },
+  "detailsSupplierUnavailable": "Постачальник «{supplier}» недоступний",
+  "@detailsSupplierUnavailable": {
+    "description": "Details: the content's supplier is not in the installed suppliers library",
+    "placeholders": {
+      "supplier": {
+        "type": "String"
+      }
+    }
+  },
   "appTitle": "Струмок",
   "@appTitle": {
     "description": "Application name"
@@ -816,10 +825,6 @@
   "@playerSubtitlesLoading": {
     "description": "Subtitle overlay placeholder while the selected subtitles load"
   },
-  "playerSubtitlesAndAudio": "Субтитри та аудіо",
-  "@playerSubtitlesAndAudio": {
-    "description": "Player: subtitles button and panel title when audio tracks can be chosen too"
-  },
   "playerSpeed": "Швидкість",
   "@playerSpeed": {
     "description": "Player settings: playback speed"
@@ -932,8 +937,44 @@
   "@playerShuffle": {
     "description": "Player setting: the next item after the end is random"
   },
-  "settingsVideoPlayerSection": "Відеоплеєр",
-  "@settingsVideoPlayerSection": {
-    "description": "Settings section title"
+  "playerShowSubtitles": "Показати субтитри",
+  "@playerShowSubtitles": {
+    "description": "Player: subtitles toggle while they are off"
+  },
+  "playerHideSubtitles": "Сховати субтитри",
+  "@playerHideSubtitles": {
+    "description": "Player: subtitles toggle while they are on"
+  },
+  "playerEqualizerMax": "Максимум",
+  "@playerEqualizerMax": {
+    "description": "Equalizer preset: full +12 dB boost on every band"
+  },
+  "playerPip": "Картинка в картинці",
+  "@playerPip": {
+    "description": "Player: enter picture-in-picture (Android PiP / compact desktop window)"
+  },
+  "playerExitPip": "Повернутися до повного плеєра",
+  "@playerExitPip": {
+    "description": "Desktop picture-in-picture window: back to the full player"
+  },
+  "playerCloseApp": "Закрити застосунок",
+  "@playerCloseApp": {
+    "description": "Desktop picture-in-picture window: stop playback and close the app"
+  },
+  "playerFloating": "Плаваючий плеєр",
+  "@playerFloating": {
+    "description": "Player setting: keep playing in a mini player after leaving the player"
+  },
+  "playerFloatingDescription": "Продовжувати перегляд у міні-плеєрі після виходу з плеєра",
+  "@playerFloatingDescription": {
+    "description": "Player setting: floating player switch subtitle"
+  },
+  "playerOpen": "Відкрити плеєр",
+  "@playerOpen": {
+    "description": "Floating mini player: reopen the full-screen player"
+  },
+  "playerClose": "Закрити плеєр",
+  "@playerClose": {
+    "description": "Floating mini player: stop playback and close it"
   }
 }

@@ -68,6 +68,7 @@
   "detailsChapters": "Chapters",
   "detailsSimilar": "Similar",
   "detailsNotFound": "Content not found",
+  "detailsSupplierUnavailable": "Supplier \"{supplier}\" is not available",
   "appTitle": "Strumok",
   "navHome": "Home",
   "navSearch": "Search",
@@ -184,7 +185,6 @@
   "playerSettings": "Settings",
   "playerQuality": "Quality",
   "playerSubtitlesLoading": "Loading subtitles…",
-  "playerSubtitlesAndAudio": "Audio & subtitles",
   "playerSpeed": "Speed",
   "playerSpeedNormal": "Normal",
   "playerSpeedValue": "{value}×",
@@ -208,5 +208,14 @@
   "playerOnEndAgain": "Play again",
   "playerOnEndNothing": "Do nothing",
   "playerShuffle": "Shuffle",
-  "settingsVideoPlayerSection": "Video player"
+  "playerShowSubtitles": "Show subtitles",
+  "playerHideSubtitles": "Hide subtitles",
+  "playerEqualizerMax": "Max",
+  "playerPip": "Picture in picture",
+  "playerExitPip": "Back to the full player",
+  "playerCloseApp": "Close the app",
+  "playerFloating": "Floating player",
+  "playerFloatingDescription": "Keep watching in a mini player after leaving the player",
+  "playerOpen": "Open player",
+  "playerClose": "Close player"
 }

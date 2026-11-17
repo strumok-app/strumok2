@@ -1,6 +1,7 @@
 import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:strumok/app/widgets/trailing_fade.dart';
 
 import '../../../app/widgets/content_card.dart';
 import '../../../app/widgets/reveal_on_focus.dart';
@@ -64,24 +65,29 @@ class CollectionItemsRow extends ConsumerWidget {
           ),
           SizedBox(
             height: cardWidth / posterAspectRatio + 72 + 2 * contentCardInset,
-            child: FocusTraversalGroup(
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16 - contentCardInset, vertical: 8 - contentCardInset),
-                clipBehavior: Clip.none,
-                itemCount: items.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 12 - 2 * contentCardInset),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return ContentCard(
-                    info: CollectionContentInfo(item),
-                    width: cardWidth,
-                    autofocus: autofocusFirst && index == 0,
-                    caption: l10n.collectionCurrentItem(item),
-                    progress: item.currentPosition?.progress,
-                    badge: item.supplier,
-                  );
-                },
+            child: TrailingFade(
+              child: FocusTraversalGroup(
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16 - contentCardInset,
+                    vertical: 8 - contentCardInset,
+                  ),
+                  clipBehavior: Clip.none,
+                  itemCount: items.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 12 - 2 * contentCardInset),
+                  itemBuilder: (context, index) {
+                    final item = items[index];
+                    return ContentCard(
+                      info: CollectionContentInfo(item),
+                      width: cardWidth,
+                      autofocus: autofocusFirst && index == 0,
+                      caption: l10n.collectionCurrentItem(item),
+                      progress: item.currentPosition?.progress,
+                      badge: item.supplier,
+                    );
+                  },
+                ),
               ),
             ),
           ),
