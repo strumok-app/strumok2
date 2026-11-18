@@ -71,9 +71,10 @@ Reading MUST be tolerant:
 - Progress update rules (reduce write volume):
   - Video: persist position only when `position > 10s` **and** differs from stored position by `> 10s`,
     excluding the final `60s` when length is known (fixed constant; preserve the previously saved position);
-    doing so sets `status = inProgress` (legacy behavior: regardless of previous status).
-  - Video length: when known (`> 0`), store it; clamp position to `length - 1`; set `status = inProgress`.
-  - Manga: persist when page index changes.
+    doing so sets `status = inProgress` only when the item is not in the collection (`status == none`); an
+    existing status is kept (deliberate change: legacy overwrote any status with `inProgress`).
+  - Video length: when known (`> 0`), store it; clamp position to `length - 1`; same status rule.
+  - Manga: persist when page index changes; same status rule.
   - Changing `currentItem`, `currentSourceName`, `currentSubtitleName`, `status`, `priority` persists immediately.
   - `priority` can only be changed when `status != none`.
 - When an item is opened from details, refresh its `title`/`image` from fresh supplier details.

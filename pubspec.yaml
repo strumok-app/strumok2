@@ -14,10 +14,12 @@ dependencies:
     path: packages/content_suppliers_rust
   device_info_plus: ^13.3.0
   # Exact pin: per-profile isolation uses firebase_dart implementation classes (lib/features/auth/data/firebase_apps.dart).
+  file_selector: ^1.1.0
   firebase_dart: 1.6.2
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.5.0
+  flutter_foreground_task: ^11.0.3
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^3.5.0
@@ -33,6 +35,7 @@ dependencies:
   package_info_plus: ^10.2.2
   path: ^1.9.1
   path_provider: ^2.1.6
+  pointycastle: ^4.0.0
   rhttp: ^0.18.0
   riverpod_annotation: ^4.0.8
   screen_brightness: ^2.1.11

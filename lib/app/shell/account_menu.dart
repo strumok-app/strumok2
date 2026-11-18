@@ -8,8 +8,10 @@ import '../../features/auth/presentation/account_flows.dart';
 import '../../features/auth/presentation/auth_providers.dart';
 import '../../features/auth/presentation/connect_tv_dialog.dart';
 import '../../features/auth/presentation/pairing_code_dialog.dart';
+import '../../features/downloads/presentation/downloads_providers.dart';
 import '../../features/profiles/presentation/profile_avatar.dart';
 import '../../features/profiles/presentation/profiles_providers.dart';
+import '../../features/settings/presentation/widgets/downloads_settings.dart';
 import '../../features/updates/presentation/update_providers.dart';
 import '../router.dart';
 import '../theme.dart';
@@ -32,15 +34,18 @@ class AccountMenu extends StatelessWidget {
   );
 }
 
-/// Active profile avatar with the update-notice badge (spec-01, spec-11).
+/// Active profile avatar with the update-notice badge (spec-01, spec-11), or the number of active downloads
+/// (spec-08 §8.1 queue indicator).
 class AccountAvatar extends ConsumerWidget {
   const AccountAvatar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Badge(
-    isLabelVisible: ref.watch(hasUpdateNoticeProvider),
-    child: ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final downloads = ref.watch(activeDownloadCountProvider);
+    final avatar = ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14);
+    if (downloads > 0) return Badge.count(key: const Key('downloadsBadge'), count: downloads, child: avatar);
+    return Badge(isLabelVisible: ref.watch(hasUpdateNoticeProvider), child: avatar);
+  }
 }
 
 class AccountDialog extends ConsumerWidget {
@@ -55,6 +60,7 @@ class AccountDialog extends ConsumerWidget {
     final user = ref.watch(activeAuthUserProvider).value;
     final isTv = ref.watch(deviceClassProvider) == DeviceClass.tv;
     final accounts = ref.watch(accountsAvailableProvider);
+    final downloads = ref.watch(activeDownloadCountProvider);
 
     void open(String route) {
       final router = GoRouter.of(context);
@@ -142,7 +148,11 @@ class AccountDialog extends ConsumerWidget {
               ListTile(
                 autofocus: true,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                leading: const Icon(Icons.download_outlined),
+                leading: Badge.count(
+                  count: downloads,
+                  isLabelVisible: downloads > 0,
+                  child: const Icon(Icons.download_outlined),
+                ),
                 title: Text(l10n.navDownloads),
                 onTap: () => open(AppRoutes.downloads),
               ),
@@ -152,6 +162,7 @@ class AccountDialog extends ConsumerWidget {
                 title: Text(l10n.navSettings),
                 onTap: () => open(AppRoutes.settings),
               ),
+              const OfflineModeSwitch(contentPadding: EdgeInsets.symmetric(horizontal: 24)),
             ],
           ),
         ),

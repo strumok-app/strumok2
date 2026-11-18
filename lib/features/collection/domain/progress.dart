@@ -13,7 +13,8 @@ const _videoPositionSaveTail = 60;
 
 /// Persists only past 10 s, when moved more than 10 s, and outside the final 60 s of a known length.
 /// Known length is stored even when the position is not saved.
-/// Legacy behavior: a persisted position always sets `inProgress`.
+/// A title not in the collection is added as `inProgress`; an existing status is kept.
+// SPEC: legacy always set `inProgress`, overwriting e.g. `complete`/`onHold`; changed on purpose (spec-03 §3.3).
 CollectionItem? updateVideoProgress(
   CollectionItem item, {
   required int itemIndex,
@@ -33,10 +34,10 @@ CollectionItem? updateVideoProgress(
 
   final positionToSave = shouldSavePosition ? clampedPosition : (stored?.position ?? 0);
   final next = MediaItemPosition(position: positionToSave, length: effectiveLength);
-  return item.copyWith(positions: {...item.positions, itemIndex: next}, status: CollectionStatus.inProgress);
+  return item.copyWith(positions: {...item.positions, itemIndex: next}, status: _progressStatus(item));
 }
 
-/// Persists when the page index or provided page count changes.
+/// Persists when the page index or provided page count changes. Status as in [updateVideoProgress].
 CollectionItem? updateMangaProgress(
   CollectionItem item, {
   required int itemIndex,
@@ -50,8 +51,11 @@ CollectionItem? updateMangaProgress(
 
   final lengthToSave = pageCount > 0 ? pageCount : (stored?.length ?? 0);
   final next = MediaItemPosition(position: page, length: lengthToSave);
-  return item.copyWith(positions: {...item.positions, itemIndex: next}, status: CollectionStatus.inProgress);
+  return item.copyWith(positions: {...item.positions, itemIndex: next}, status: _progressStatus(item));
 }
+
+CollectionStatus _progressStatus(CollectionItem item) =>
+    item.status == CollectionStatus.none ? CollectionStatus.inProgress : item.status;
 
 /// `priority` only applies to items in the collection.
 CollectionItem? updatePriority(CollectionItem item, CollectionPriority priority) =>

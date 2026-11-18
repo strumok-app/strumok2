@@ -1083,5 +1083,279 @@
   "readerPreviousChapter": "Попередній розділ",
   "@readerPreviousChapter": {
     "description": "Reader: open the previous chapter"
+  },
+  "commonDelete": "Видалити",
+  "@commonDelete": {
+    "description": "Generic delete action"
+  },
+  "commonNotNow": "Не зараз",
+  "@commonNotNow": {
+    "description": "Dismiss a permission explanation"
+  },
+  "commonAllow": "Дозволити",
+  "@commonAllow": {
+    "description": "Confirm a permission explanation"
+  },
+  "detailsDownload": "Завантажити",
+  "@detailsDownload": {
+    "description": "Details: download button and sheet title"
+  },
+  "downloadsAll": "Завантажити все",
+  "@downloadsAll": {
+    "description": "Download sheet: all items of the content"
+  },
+  "downloadsSection": "Завантажити «{section}»",
+  "@downloadsSection": {
+    "description": "Download sheet: all items of one section (season/volume)",
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsPickEpisode": "Вибрати серію",
+  "@downloadsPickEpisode": {
+    "description": "Download sheet: pick a single episode"
+  },
+  "downloadsPickChapter": "Вибрати розділ",
+  "@downloadsPickChapter": {
+    "description": "Download sheet: pick a single chapter"
+  },
+  "downloadsChooseSource": "Джерело для завантаження",
+  "@downloadsChooseSource": {
+    "description": "Download sheet: source list header"
+  },
+  "downloadsNoSources": "Немає джерел для завантаження",
+  "@downloadsNoSources": {
+    "description": "Download sheet: no downloadable sources"
+  },
+  "downloadsAdded": "{count, plural, one{Додано до завантажень: {count}} few{Додано до завантажень: {count}} many{Додано до завантажень: {count}} other{Додано до завантажень: {count}}}",
+  "@downloadsAdded": {
+    "description": "Snackbar after enqueueing downloads",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsQueue": "Черга",
+  "@downloadsQueue": {
+    "description": "Downloads page: queue section"
+  },
+  "downloadsDownloaded": "Завантажене",
+  "@downloadsDownloaded": {
+    "description": "Downloads page: downloaded content section; home row in offline mode"
+  },
+  "downloadsEmpty": "Тут з’являтимуться завантажені фільми, серіали та манга",
+  "@downloadsEmpty": {
+    "description": "Downloads page: nothing downloaded"
+  },
+  "downloadsCancel": "Скасувати завантаження",
+  "@downloadsCancel": {
+    "description": "Cancel one task"
+  },
+  "downloadsCancelAll": "Скасувати все",
+  "@downloadsCancelAll": {
+    "description": "Cancel every active download (page and notification)"
+  },
+  "downloadsDismiss": "Прибрати зі списку",
+  "@downloadsDismiss": {
+    "description": "Remove a finished task from the queue list"
+  },
+  "downloadsClearFinished": "Очистити завершені",
+  "@downloadsClearFinished": {
+    "description": "Remove all finished tasks from the queue list"
+  },
+  "downloadsStateQueued": "У черзі",
+  "@downloadsStateQueued": {
+    "description": "Task state"
+  },
+  "downloadsStateCompleted": "Завантажено",
+  "@downloadsStateCompleted": {
+    "description": "Task state; mark of a downloaded item or source"
+  },
+  "downloadsStateCanceled": "Скасовано",
+  "@downloadsStateCanceled": {
+    "description": "Task state"
+  },
+  "downloadsProgress": "{percent}% · {speed}",
+  "@downloadsProgress": {
+    "description": "Running task: progress and speed",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsSpeed": "{size}/с",
+  "@downloadsSpeed": {
+    "description": "Download speed",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsFailureNetwork": "Помилка мережі",
+  "@downloadsFailureNetwork": {
+    "description": "Task failure"
+  },
+  "downloadsFailureUnavailable": "Джерело недоступне",
+  "@downloadsFailureUnavailable": {
+    "description": "Task failure: HTTP 4xx"
+  },
+  "downloadsFailureSourceNotFound": "Джерело не знайдено",
+  "@downloadsFailureSourceNotFound": {
+    "description": "Task failure: source/item gone"
+  },
+  "downloadsFailureSuppliers": "Бібліотека постачальників недоступна",
+  "@downloadsFailureSuppliers": {
+    "description": "Task failure"
+  },
+  "downloadsFailureInvalidMedia": "Непідтримуваний формат відео",
+  "@downloadsFailureInvalidMedia": {
+    "description": "Task failure"
+  },
+  "downloadsFailureStorage": "Не вдалося записати файл",
+  "@downloadsFailureStorage": {
+    "description": "Task failure"
+  },
+  "downloadsEpisodes": "{count, plural, one{{count} серія} few{{count} серії} many{{count} серій} other{{count} серії}}",
+  "@downloadsEpisodes": {
+    "description": "Downloaded content: number of episodes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsChapters": "{count, plural, one{{count} розділ} few{{count} розділи} many{{count} розділів} other{{count} розділу}}",
+  "@downloadsChapters": {
+    "description": "Downloaded content: number of chapters",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsDeleteContent": "Видалити завантажене",
+  "@downloadsDeleteContent": {
+    "description": "Delete downloaded files of a content or an item"
+  },
+  "downloadsDeleteConfirm": "Видалити завантажене «{title}»?",
+  "@downloadsDeleteConfirm": {
+    "description": "Delete confirmation",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "downloadsNotificationActive": "{count, plural, one{Завантаження: {count}} few{Завантаження: {count}} many{Завантаження: {count}} other{Завантаження: {count}}}",
+  "@downloadsNotificationActive": {
+    "description": "Android notification title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsNotificationProgress": "{name} — {percent}%",
+  "@downloadsNotificationProgress": {
+    "description": "Android notification text",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsNotificationDone": "Завантаження завершено",
+  "@downloadsNotificationDone": {
+    "description": "Android notification title when the queue is done"
+  },
+  "downloadsBatteryTitle": "Завантаження у фоні",
+  "@downloadsBatteryTitle": {
+    "description": "Battery optimization explanation title"
+  },
+  "downloadsBatteryMessage": "Щоб завантаження не переривались, коли застосунок згорнуто, дозвольте йому працювати без обмежень батареї.",
+  "@downloadsBatteryMessage": {
+    "description": "Battery optimization explanation"
+  },
+  "sizeKilobytes": "{value} КБ",
+  "@sizeKilobytes": {
+    "description": "File size",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sizeMegabytes": "{value} МБ",
+  "@sizeMegabytes": {
+    "description": "File size",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sizeGigabytes": "{value} ГБ",
+  "@sizeGigabytes": {
+    "description": "File size",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDownloadsFolder": "Тека завантажень",
+  "@settingsDownloadsFolder": {
+    "description": "Settings: downloads folder"
+  },
+  "settingsDownloadsFolderChange": "Змінити",
+  "@settingsDownloadsFolderChange": {
+    "description": "Settings: pick another downloads folder"
+  },
+  "settingsDownloadsFolderReset": "Типова тека",
+  "@settingsDownloadsFolderReset": {
+    "description": "Settings: reset the downloads folder"
+  },
+  "settingsMaxDownloads": "Одночасних завантажень",
+  "@settingsMaxDownloads": {
+    "description": "Settings: max parallel downloads"
+  },
+  "offlineMode": "Офлайн-режим",
+  "@offlineMode": {
+    "description": "Offline mode switch"
+  },
+  "offlineModeDescription": "Лише завантажене; колекція синхронізується пізніше",
+  "@offlineModeDescription": {
+    "description": "Offline mode switch subtitle"
+  },
+  "offlineModeTurnOn": "Увімкнути офлайн-режим",
+  "@offlineModeTurnOn": {
+    "description": "Home suggestion action"
+  },
+  "offlineModeTurnOff": "Вимкнути офлайн-режим",
+  "@offlineModeTurnOff": {
+    "description": "Offline Home/Search action"
+  },
+  "homeOfflineSuggestion": "Немає з’єднання? Перегляньте завантажене в офлайн-режимі.",
+  "@homeOfflineSuggestion": {
+    "description": "Home: suggestion when every row failed to load"
+  },
+  "homeOfflineEmpty": "Немає завантаженого. Вимкніть офлайн-режим, щоб переглядати каталог.",
+  "@homeOfflineEmpty": {
+    "description": "Home in offline mode without downloads"
+  },
+  "searchOffline": "Пошук недоступний в офлайн-режимі",
+  "@searchOffline": {
+    "description": "Search page in offline mode"
   }
 }

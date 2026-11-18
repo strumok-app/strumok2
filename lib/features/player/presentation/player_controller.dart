@@ -53,8 +53,9 @@ class PlayerController extends _$PlayerController {
   /// Subtitles the show/hide toggle turns back on.
   String? _lastSubtitleName;
 
-  /// Item index the backend is currently playing; null while loading, so stale positions are never saved.
-  int? _playingIndex;
+  /// Number (collection key) of the item the backend is currently playing; null while loading, so stale positions
+  /// are never saved.
+  int? _playingNumber;
   CollectionItem? _base;
   Duration _lastProgressCheck = Duration.zero;
   Duration _resumeAt = Duration.zero;
@@ -75,6 +76,8 @@ class PlayerController extends _$PlayerController {
   Widget? buildVideoView() => _backend?.buildView();
 
   /// Reopening the title of a running session (floating player → full screen) keeps it: no reload, no re-buffering.
+  /// [item] is an item number (collection key); offline content lists only downloaded items, so numbers and list
+  /// indexes differ there.
   Future<void> open(String supplier, String id, {int? item}) async {
     final current = state;
     if (current != null &&
@@ -82,12 +85,13 @@ class PlayerController extends _$PlayerController {
         current.id == id &&
         current.failure == null &&
         (current.loading || _backend != null)) {
-      if (item != null && item != current.itemIndex && current.items.isNotEmpty) await selectItem(item);
+      final index = item == null ? null : itemIndexOfNumber(current.items, item);
+      if (index != null && index != current.itemIndex) await selectItem(index);
       return;
     }
     await _saveProgress();
     final token = ++_token;
-    _playingIndex = null;
+    _playingNumber = null;
     state = PlayerSession(supplier: supplier, id: id, speed: _speed);
     try {
       final details = await ref.read(contentDetailsProvider(supplier, id).future);
@@ -110,7 +114,7 @@ class PlayerController extends _$PlayerController {
         state = state!.copyWith(loading: false, failure: PlayerFailure.noSources);
         return;
       }
-      await _openItem(token, (item ?? _base!.currentItem).clamp(0, items.length - 1));
+      await _openItem(token, itemIndexOfNumber(items, item ?? _base!.currentItem) ?? 0);
     } catch (e, st) {
       _fail(token, PlayerFailure.loadFailed, e, st);
     }
@@ -138,7 +142,7 @@ class PlayerController extends _$PlayerController {
     final position = status.value.position;
     await _saveProgress();
     final token = ++_token;
-    _playingIndex = null;
+    _playingNumber = null;
     state = session.copyWith(sourceIndex: index, loading: true, clearFailure: true);
     await _updateItem((item) => item.copyWith(currentSourceName: session.sources[index].description));
     await _openSource(token, position);
@@ -207,7 +211,7 @@ class PlayerController extends _$PlayerController {
     if (!ref.mounted) return;
     await _saveProgress();
     _token++;
-    _playingIndex = null;
+    _playingNumber = null;
     state = null;
     _clearSubtitles();
     await _disposeBackend();
@@ -239,7 +243,7 @@ class PlayerController extends _$PlayerController {
   bool _isCurrent(int token) => ref.mounted && token == _token;
 
   Future<void> _openItem(int token, int index) async {
-    _playingIndex = null;
+    _playingNumber = null;
     state = state!.copyWith(
       itemIndex: index,
       sources: const [],
@@ -253,7 +257,8 @@ class PlayerController extends _$PlayerController {
       clearFailure: true,
     );
     _clearSubtitles();
-    await _updateItem((item) => item.copyWith(currentItem: index));
+    final number = state!.items[index].number;
+    await _updateItem((item) => item.copyWith(currentItem: number));
     try {
       final all = await state!.items[index].sources;
       if (!_isCurrent(token)) return;
@@ -277,7 +282,7 @@ class PlayerController extends _$PlayerController {
       final settings = ref.read(playerSettingsProvider);
       final start = startPosition(
         settings.startFrom,
-        remembered: _latest?.positions[index],
+        remembered: _latest?.positions[number],
         fixedSeconds: settings.fixedPosition,
       );
       await _openSource(token, Duration(seconds: start));
@@ -304,7 +309,7 @@ class PlayerController extends _$PlayerController {
         ),
       );
       if (!_isCurrent(token)) return;
-      _playingIndex = session.itemIndex;
+      _playingNumber = session.item?.number;
       _lastProgressCheck = start;
       state = state!.copyWith(loading: false);
     } catch (e, st) {
@@ -342,7 +347,7 @@ class PlayerController extends _$PlayerController {
     final status = _backend?.status.value;
     if (status == null) return;
     _refreshSubtitleLines();
-    if (_playingIndex == null) return;
+    if (_playingNumber == null) return;
     _resumeAt = status.position;
     if (!status.playing || (status.position - _lastProgressCheck).abs() >= _progressInterval) {
       _lastProgressCheck = status.position;
@@ -369,7 +374,7 @@ class PlayerController extends _$PlayerController {
 
   void _onPlaybackError(String message) {
     _log.warning('Playback failed: $message');
-    _playingIndex = null;
+    _playingNumber = null;
     if (state != null) state = state!.copyWith(loading: false, failure: PlayerFailure.playbackFailed);
   }
 
@@ -395,7 +400,7 @@ class PlayerController extends _$PlayerController {
     try {
       final track = await ref
           .read(subtitleRepositoryProvider)
-          .load(subtitleCacheKey(session.supplier, session.id, session.itemIndex, source.description), source);
+          .load(subtitleCacheKey(session.supplier, session.id, session.item!.number, source.description), source);
       if (!ref.mounted || token != _subtitleToken) return;
       _subtitleTrack = track;
       if (state != null) state = state!.copyWith(subtitleLoading: false);
@@ -436,14 +441,14 @@ class PlayerController extends _$PlayerController {
   }
 
   Future<void> _saveProgress() async {
-    final index = _playingIndex;
+    final number = _playingNumber;
     final latest = _latest;
     final backend = _backend;
-    if (index == null || latest == null || backend == null) return;
+    if (number == null || latest == null || backend == null) return;
     final status = backend.status.value;
     final updated = updateVideoProgress(
       latest,
-      itemIndex: index,
+      itemIndex: number,
       position: status.position.inSeconds,
       length: status.duration.inSeconds,
     );

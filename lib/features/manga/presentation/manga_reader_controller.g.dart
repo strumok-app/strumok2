@@ -60,7 +60,7 @@ final class MangaReaderControllerProvider extends $NotifierProvider<MangaReaderC
   }
 }
 
-String _$mangaReaderControllerHash() => r'09d280660596f620500be4d68919d4e0be549bab';
+String _$mangaReaderControllerHash() => r'fd4ad9e485ffb7fc7b13cbf8c195b4b34c2af9f5';
 
 /// UI-agnostic reader (spec-07): loads chapters, translations and pages, remembers the chapter, translation and
 /// page in the collection (spec-03 §3.3).

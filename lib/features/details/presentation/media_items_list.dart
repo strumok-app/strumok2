@@ -21,6 +21,9 @@ class MediaItemsList extends StatelessWidget {
   final int? currentItem;
   final ValueChanged<ContentMediaItem> onSelected;
 
+  /// Extra widget at the end of a tile (e.g. download state); D-pad reaches it with →.
+  final Widget Function(ContentMediaItem item)? trailing;
+
   const MediaItemsList({
     super.key,
     required this.items,
@@ -28,6 +31,7 @@ class MediaItemsList extends StatelessWidget {
     required this.onSelected,
     this.positions = const {},
     this.currentItem,
+    this.trailing,
   });
 
   @override
@@ -44,6 +48,7 @@ class MediaItemsList extends StatelessWidget {
       showImages: showImages,
       autofocus: index == currentGroup,
       onSelected: onSelected,
+      trailing: trailing,
     );
 
     if (groups.length == 1) return list(0);
@@ -79,6 +84,7 @@ class _ItemList extends StatefulWidget {
   final bool showImages;
   final bool autofocus;
   final ValueChanged<ContentMediaItem> onSelected;
+  final Widget Function(ContentMediaItem item)? trailing;
 
   const _ItemList({
     required this.items,
@@ -88,6 +94,7 @@ class _ItemList extends StatefulWidget {
     required this.showImages,
     required this.autofocus,
     required this.onSelected,
+    required this.trailing,
   });
 
   @override
@@ -133,6 +140,7 @@ class _ItemListState extends State<_ItemList> {
         selected: item.number == widget.currentItem,
         autofocus: widget.autofocus && index == _focusIndex,
         onTap: () => widget.onSelected(item),
+        trailing: widget.trailing?.call(item),
       );
     },
   );
@@ -151,6 +159,7 @@ class _MediaItemTile extends StatefulWidget {
   final bool selected;
   final bool autofocus;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   _MediaItemTile({
     required this.item,
@@ -160,6 +169,7 @@ class _MediaItemTile extends StatefulWidget {
     required this.selected,
     required this.autofocus,
     required this.onTap,
+    this.trailing,
   }) : super(key: ValueKey('mediaItem-${item.number}'));
 
   @override
@@ -188,54 +198,61 @@ class _MediaItemTileState extends State<_MediaItemTile> {
             side: BorderSide(color: widget.selected ? colors.outline : colors.outlineVariant),
           ),
           clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            autofocus: widget.autofocus,
-            onTap: widget.onTap,
-            onFocusChange: (focused) => setState(() => _focused = focused),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (widget.showImage)
-                  _Thumbnail(url: widget.item.image, mediaType: widget.mediaType, playing: widget.selected),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: Row(
-                            spacing: 8,
-                            children: [
-                              if (widget.selected && !widget.showImage)
-                                Icon(Icons.play_arrow, size: 20, color: colors.onSurface),
-                              Expanded(
-                                child: Text(
-                                  widget.item.title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.titleSmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 4,
-                          borderRadius: const BorderRadius.all(Radius.circular(2)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: _ink(theme, colors, progress)),
+              ?widget.trailing,
+            ],
           ),
         ),
       ),
     );
   }
+
+  Widget _ink(ThemeData theme, ColorScheme colors, double progress) => InkWell(
+    autofocus: widget.autofocus,
+    onTap: widget.onTap,
+    onFocusChange: (focused) => setState(() => _focused = focused),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.showImage) _Thumbnail(url: widget.item.image, mediaType: widget.mediaType, playing: widget.selected),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      if (widget.selected && !widget.showImage)
+                        Icon(Icons.play_arrow, size: 20, color: colors.onSurface),
+                      Expanded(
+                        child: Text(
+                          widget.item.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 4,
+                  borderRadius: const BorderRadius.all(Radius.circular(2)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _Thumbnail extends StatelessWidget {

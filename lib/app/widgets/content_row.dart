@@ -32,12 +32,16 @@ class ContentRow extends ConsumerWidget {
   });
 
   /// Static list without paging.
-  ContentRow.items({super.key, required this.title, required List<ContentInfo> items, this.subtitle})
-    : state = PagedItems(items: items, hasMore: false),
-      onLoadMore = null,
-      onRetry = null,
-      hideWhenEmpty = true,
-      autofocusFirst = false;
+  ContentRow.items({
+    super.key,
+    required this.title,
+    required List<ContentInfo> items,
+    this.subtitle,
+    this.autofocusFirst = false,
+  }) : state = PagedItems(items: items, hasMore: false),
+       onLoadMore = null,
+       onRetry = null,
+       hideWhenEmpty = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

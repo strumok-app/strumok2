@@ -7,6 +7,7 @@ import '../../../app/widgets/side_sheet.dart';
 import '../../../app/widgets/state_views.dart';
 import '../../../core/localization.dart';
 import '../../collection/presentation/collection_providers.dart';
+import '../../downloads/presentation/widgets/download_widgets.dart';
 import 'details_providers.dart';
 import 'details_widgets.dart';
 import 'media_items_list.dart';
@@ -17,7 +18,8 @@ Future<void> showMediaItemsSheet(BuildContext context, ContentDetails details) =
   builder: (_) => MediaItemsSheet(details: details),
 );
 
-/// Episodes/chapters of [details] with progress from the collection (when the content is in it).
+/// Episodes/chapters of [details] with progress from the collection (when the content is in it) and their download
+/// state, with per-item delete (spec-08 §8.3).
 class MediaItemsSheet extends ConsumerWidget {
   final ContentDetails details;
 
@@ -36,6 +38,7 @@ class MediaItemsSheet extends ConsumerWidget {
         mediaType: details.mediaType,
         positions: collectionItem?.positions ?? const {},
         currentItem: collectionItem?.currentItem,
+        trailing: (item) => ItemDownloadStatus(supplier: details.supplier, id: details.id, item: item),
         onSelected: (item) {
           final router = GoRouter.of(context);
           Navigator.of(context).pop();

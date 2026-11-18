@@ -19,12 +19,16 @@ class MangaReaderController extends _$MangaReaderController {
   /// Incremented by every load; async steps of an older load stop when it changed.
   int _token = 0;
   int? _requestedItem;
-  CollectionItem? _base;
+  ContentDetails? _details;
+
+  /// Chapter/translation picked for a title that is not in the collection (never persisted).
+  CollectionItem? _untracked;
 
   @override
   MangaReaderState build(String supplier, String id) => MangaReaderState(supplier: supplier, id: id);
 
-  /// [item] = chapter picked explicitly; null resumes `currentItem` of the collection.
+  /// [item] = number of a chapter picked explicitly; null resumes `currentItem` of the collection. Numbers are the
+  /// collection keys; offline content lists only downloaded chapters, so they differ from list indexes there.
   Future<void> open({int? item}) async {
     final token = ++_token;
     _requestedItem = item;
@@ -35,22 +39,15 @@ class MangaReaderController extends _$MangaReaderController {
       final collection = await ref.read(collectionItemsProvider.future);
       if (!_isCurrent(token)) return;
 
-      _base =
-          (collection[collectionItemKey(supplier, id)] ??
-                  CollectionItem(
-                    id: id,
-                    supplier: supplier,
-                    title: details.title,
-                    image: details.image,
-                    mediaType: MediaType.manga,
-                  ))
-              .copyWith(title: details.title, image: details.image);
+      _details = details;
+      _untracked = null;
       state = state.copyWith(title: details.title, items: items);
       if (items.isEmpty) {
         state = state.copyWith(loading: false, failure: MangaReaderFailure.noPages);
         return;
       }
-      final index = (item ?? _base!.currentItem).clamp(0, items.length - 1);
+      final stored = collection[collectionItemKey(supplier, id)];
+      final index = itemIndexOfNumber(items, item ?? stored?.currentItem ?? 0) ?? 0;
       await _openItem(token, index, restartCompleted: item != null);
     } catch (e, st) {
       _fail(token, e, st);
@@ -115,7 +112,8 @@ class MangaReaderController extends _$MangaReaderController {
       loading: true,
       clearFailure: true,
     );
-    await _updateItem((item) => item.copyWith(currentItem: index));
+    final number = state.items[index].number;
+    await _updateItem((item) => item.copyWith(currentItem: number));
     try {
       final all = await state.items[index].sources;
       if (!_isCurrent(token)) return;
@@ -125,7 +123,7 @@ class MangaReaderController extends _$MangaReaderController {
         return;
       }
       state = state.copyWith(sources: sources, sourceIndex: chooseMangaSource(sources, _latest?.currentSourceName));
-      final remembered = _latest?.positions[index];
+      final remembered = _latest?.positions[number];
       await _loadPages(
         token,
         (count) => mangaStartPage(count, remembered: remembered, fromEnd: fromEnd, restartCompleted: restartCompleted),
@@ -159,12 +157,19 @@ class MangaReaderController extends _$MangaReaderController {
     if (_isCurrent(token)) state = state.copyWith(loading: false, failure: MangaReaderFailure.loadFailed);
   }
 
-  /// Collection item with the latest synced data, refreshed with this session's title/image.
+  /// Collection item with the latest synced data (or the untracked one), refreshed with this session's title/image.
   CollectionItem? get _latest {
-    final base = _base;
-    if (base == null || !ref.mounted) return null;
-    final stored = ref.read(collectionItemsProvider).value?[base.key];
-    return stored?.copyWith(title: base.title, image: base.image) ?? base;
+    final details = _details;
+    if (details == null || !ref.mounted) return null;
+    final stored = ref.read(collectionItemsProvider).value?[collectionItemKey(supplier, id)];
+    return stored?.copyWith(title: details.title, image: details.image) ??
+        (_untracked ??= CollectionItem(
+          id: id,
+          supplier: supplier,
+          title: details.title,
+          image: details.image,
+          mediaType: MediaType.manga,
+        ));
   }
 
   /// Applies [change]; persists only items that are in the collection (saving `status == none` deletes).
@@ -172,8 +177,9 @@ class MangaReaderController extends _$MangaReaderController {
     final latest = _latest;
     if (latest == null) return;
     final updated = change(latest);
-    _base = updated;
-    if (updated.status != CollectionStatus.none) {
+    if (updated.status == CollectionStatus.none) {
+      _untracked = updated;
+    } else {
       await ref.read(collectionItemsProvider.notifier).save(updated);
     }
   }
@@ -186,12 +192,11 @@ class MangaReaderController extends _$MangaReaderController {
     if (latest == null || !current.ready) return;
     final updated = updateMangaProgress(
       latest,
-      itemIndex: current.itemIndex,
+      itemIndex: current.item!.number,
       page: current.page,
       pageCount: current.pages.length,
     );
     if (updated == null) return;
-    _base = updated;
     await ref.read(collectionItemsProvider.notifier).save(updated);
   }
 }

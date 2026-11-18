@@ -1525,6 +1525,318 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Попередній розділ'**
   String get readerPreviousChapter;
+
+  /// Generic delete action
+  ///
+  /// In uk, this message translates to:
+  /// **'Видалити'**
+  String get commonDelete;
+
+  /// Dismiss a permission explanation
+  ///
+  /// In uk, this message translates to:
+  /// **'Не зараз'**
+  String get commonNotNow;
+
+  /// Confirm a permission explanation
+  ///
+  /// In uk, this message translates to:
+  /// **'Дозволити'**
+  String get commonAllow;
+
+  /// Details: download button and sheet title
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажити'**
+  String get detailsDownload;
+
+  /// Download sheet: all items of the content
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажити все'**
+  String get downloadsAll;
+
+  /// Download sheet: all items of one section (season/volume)
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажити «{section}»'**
+  String downloadsSection(String section);
+
+  /// Download sheet: pick a single episode
+  ///
+  /// In uk, this message translates to:
+  /// **'Вибрати серію'**
+  String get downloadsPickEpisode;
+
+  /// Download sheet: pick a single chapter
+  ///
+  /// In uk, this message translates to:
+  /// **'Вибрати розділ'**
+  String get downloadsPickChapter;
+
+  /// Download sheet: source list header
+  ///
+  /// In uk, this message translates to:
+  /// **'Джерело для завантаження'**
+  String get downloadsChooseSource;
+
+  /// Download sheet: no downloadable sources
+  ///
+  /// In uk, this message translates to:
+  /// **'Немає джерел для завантаження'**
+  String get downloadsNoSources;
+
+  /// Snackbar after enqueueing downloads
+  ///
+  /// In uk, this message translates to:
+  /// **'{count, plural, one{Додано до завантажень: {count}} few{Додано до завантажень: {count}} many{Додано до завантажень: {count}} other{Додано до завантажень: {count}}}'**
+  String downloadsAdded(int count);
+
+  /// Downloads page: queue section
+  ///
+  /// In uk, this message translates to:
+  /// **'Черга'**
+  String get downloadsQueue;
+
+  /// Downloads page: downloaded content section; home row in offline mode
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажене'**
+  String get downloadsDownloaded;
+
+  /// Downloads page: nothing downloaded
+  ///
+  /// In uk, this message translates to:
+  /// **'Тут з’являтимуться завантажені фільми, серіали та манга'**
+  String get downloadsEmpty;
+
+  /// Cancel one task
+  ///
+  /// In uk, this message translates to:
+  /// **'Скасувати завантаження'**
+  String get downloadsCancel;
+
+  /// Cancel every active download (page and notification)
+  ///
+  /// In uk, this message translates to:
+  /// **'Скасувати все'**
+  String get downloadsCancelAll;
+
+  /// Remove a finished task from the queue list
+  ///
+  /// In uk, this message translates to:
+  /// **'Прибрати зі списку'**
+  String get downloadsDismiss;
+
+  /// Remove all finished tasks from the queue list
+  ///
+  /// In uk, this message translates to:
+  /// **'Очистити завершені'**
+  String get downloadsClearFinished;
+
+  /// Task state
+  ///
+  /// In uk, this message translates to:
+  /// **'У черзі'**
+  String get downloadsStateQueued;
+
+  /// Task state; mark of a downloaded item or source
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажено'**
+  String get downloadsStateCompleted;
+
+  /// Task state
+  ///
+  /// In uk, this message translates to:
+  /// **'Скасовано'**
+  String get downloadsStateCanceled;
+
+  /// Running task: progress and speed
+  ///
+  /// In uk, this message translates to:
+  /// **'{percent}% · {speed}'**
+  String downloadsProgress(int percent, String speed);
+
+  /// Download speed
+  ///
+  /// In uk, this message translates to:
+  /// **'{size}/с'**
+  String downloadsSpeed(String size);
+
+  /// Task failure
+  ///
+  /// In uk, this message translates to:
+  /// **'Помилка мережі'**
+  String get downloadsFailureNetwork;
+
+  /// Task failure: HTTP 4xx
+  ///
+  /// In uk, this message translates to:
+  /// **'Джерело недоступне'**
+  String get downloadsFailureUnavailable;
+
+  /// Task failure: source/item gone
+  ///
+  /// In uk, this message translates to:
+  /// **'Джерело не знайдено'**
+  String get downloadsFailureSourceNotFound;
+
+  /// Task failure
+  ///
+  /// In uk, this message translates to:
+  /// **'Бібліотека постачальників недоступна'**
+  String get downloadsFailureSuppliers;
+
+  /// Task failure
+  ///
+  /// In uk, this message translates to:
+  /// **'Непідтримуваний формат відео'**
+  String get downloadsFailureInvalidMedia;
+
+  /// Task failure
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося записати файл'**
+  String get downloadsFailureStorage;
+
+  /// Downloaded content: number of episodes
+  ///
+  /// In uk, this message translates to:
+  /// **'{count, plural, one{{count} серія} few{{count} серії} many{{count} серій} other{{count} серії}}'**
+  String downloadsEpisodes(int count);
+
+  /// Downloaded content: number of chapters
+  ///
+  /// In uk, this message translates to:
+  /// **'{count, plural, one{{count} розділ} few{{count} розділи} many{{count} розділів} other{{count} розділу}}'**
+  String downloadsChapters(int count);
+
+  /// Delete downloaded files of a content or an item
+  ///
+  /// In uk, this message translates to:
+  /// **'Видалити завантажене'**
+  String get downloadsDeleteContent;
+
+  /// Delete confirmation
+  ///
+  /// In uk, this message translates to:
+  /// **'Видалити завантажене «{title}»?'**
+  String downloadsDeleteConfirm(String title);
+
+  /// Android notification title
+  ///
+  /// In uk, this message translates to:
+  /// **'{count, plural, one{Завантаження: {count}} few{Завантаження: {count}} many{Завантаження: {count}} other{Завантаження: {count}}}'**
+  String downloadsNotificationActive(int count);
+
+  /// Android notification text
+  ///
+  /// In uk, this message translates to:
+  /// **'{name} — {percent}%'**
+  String downloadsNotificationProgress(String name, int percent);
+
+  /// Android notification title when the queue is done
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантаження завершено'**
+  String get downloadsNotificationDone;
+
+  /// Battery optimization explanation title
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантаження у фоні'**
+  String get downloadsBatteryTitle;
+
+  /// Battery optimization explanation
+  ///
+  /// In uk, this message translates to:
+  /// **'Щоб завантаження не переривались, коли застосунок згорнуто, дозвольте йому працювати без обмежень батареї.'**
+  String get downloadsBatteryMessage;
+
+  /// File size
+  ///
+  /// In uk, this message translates to:
+  /// **'{value} КБ'**
+  String sizeKilobytes(String value);
+
+  /// File size
+  ///
+  /// In uk, this message translates to:
+  /// **'{value} МБ'**
+  String sizeMegabytes(String value);
+
+  /// File size
+  ///
+  /// In uk, this message translates to:
+  /// **'{value} ГБ'**
+  String sizeGigabytes(String value);
+
+  /// Settings: downloads folder
+  ///
+  /// In uk, this message translates to:
+  /// **'Тека завантажень'**
+  String get settingsDownloadsFolder;
+
+  /// Settings: pick another downloads folder
+  ///
+  /// In uk, this message translates to:
+  /// **'Змінити'**
+  String get settingsDownloadsFolderChange;
+
+  /// Settings: reset the downloads folder
+  ///
+  /// In uk, this message translates to:
+  /// **'Типова тека'**
+  String get settingsDownloadsFolderReset;
+
+  /// Settings: max parallel downloads
+  ///
+  /// In uk, this message translates to:
+  /// **'Одночасних завантажень'**
+  String get settingsMaxDownloads;
+
+  /// Offline mode switch
+  ///
+  /// In uk, this message translates to:
+  /// **'Офлайн-режим'**
+  String get offlineMode;
+
+  /// Offline mode switch subtitle
+  ///
+  /// In uk, this message translates to:
+  /// **'Лише завантажене; колекція синхронізується пізніше'**
+  String get offlineModeDescription;
+
+  /// Home suggestion action
+  ///
+  /// In uk, this message translates to:
+  /// **'Увімкнути офлайн-режим'**
+  String get offlineModeTurnOn;
+
+  /// Offline Home/Search action
+  ///
+  /// In uk, this message translates to:
+  /// **'Вимкнути офлайн-режим'**
+  String get offlineModeTurnOff;
+
+  /// Home: suggestion when every row failed to load
+  ///
+  /// In uk, this message translates to:
+  /// **'Немає з’єднання? Перегляньте завантажене в офлайн-режимі.'**
+  String get homeOfflineSuggestion;
+
+  /// Home in offline mode without downloads
+  ///
+  /// In uk, this message translates to:
+  /// **'Немає завантаженого. Вимкніть офлайн-режим, щоб переглядати каталог.'**
+  String get homeOfflineEmpty;
+
+  /// Search page in offline mode
+  ///
+  /// In uk, this message translates to:
+  /// **'Пошук недоступний в офлайн-режимі'**
+  String get searchOffline;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

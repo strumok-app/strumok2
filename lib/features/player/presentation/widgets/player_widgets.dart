@@ -9,6 +9,8 @@ import '../../../../app/widgets/side_sheet.dart';
 import '../../../../core/localization.dart';
 import '../../../collection/presentation/collection_providers.dart';
 import '../../../details/presentation/media_items_list.dart';
+import '../../../downloads/presentation/downloads_providers.dart';
+import '../../../downloads/presentation/widgets/download_widgets.dart';
 import '../../data/video_backend.dart';
 import '../../domain/player_session.dart';
 import '../player_controller.dart';
@@ -549,6 +551,7 @@ Future<void> showSourceSelector(BuildContext context, PlayerSession session, Val
             key: ValueKey('source-$index'),
             autofocus: index == session.sourceIndex,
             selected: index == session.sourceIndex,
+            leading: isLocalSource(source) ? const DownloadedMark() : null,
             title: Text(source.description),
             trailing: index == session.sourceIndex ? const Icon(Icons.check) : null,
             onTap: () => Navigator.of(context).pop(index),

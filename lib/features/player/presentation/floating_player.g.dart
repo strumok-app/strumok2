@@ -40,7 +40,7 @@ final class FloatingPlayerProvider extends $NotifierProvider<FloatingPlayer, boo
   }
 }
 
-String _$floatingPlayerHash() => r'f2a5c8258eb45692155f1861224a8a0ad0c45d4a';
+String _$floatingPlayerHash() => r'1dc55b16c3f327f9f9fd06f0e1d820225f0621ef';
 
 /// Whether the session is shown in the in-app mini player (spec-06 §6.9); hidden whenever the session ends.
 

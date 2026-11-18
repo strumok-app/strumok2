@@ -9,6 +9,8 @@ import '../../../../app/widgets/side_sheet.dart';
 import '../../../../core/localization.dart';
 import '../../../collection/presentation/collection_providers.dart';
 import '../../../details/presentation/media_items_list.dart';
+import '../../../downloads/presentation/downloads_providers.dart';
+import '../../../downloads/presentation/widgets/download_widgets.dart';
 import '../../domain/manga_reader_preferences.dart';
 import '../../domain/manga_reader_state.dart';
 import '../manga_reader_settings.dart';
@@ -247,6 +249,7 @@ Future<void> showReaderSources(BuildContext context, MangaReaderState state, Val
           _Choice(
             key: ValueKey('readerSource-$index'),
             label: source.description,
+            leading: isLocalSource(source) ? const DownloadedMark() : null,
             selected: index == state.sourceIndex,
             onTap: () => Navigator.of(context).pop(index),
           ),
@@ -319,14 +322,23 @@ class _Choice extends StatelessWidget {
   final String label;
   final bool selected;
   final bool? autofocus;
+  final Widget? leading;
   final VoidCallback onTap;
 
-  const _Choice({super.key, required this.label, required this.selected, required this.onTap, this.autofocus});
+  const _Choice({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.autofocus,
+    this.leading,
+  });
 
   @override
   Widget build(BuildContext context) => ListTile(
     autofocus: autofocus ?? selected,
     selected: selected,
+    leading: leading,
     title: Text(label),
     trailing: selected ? const Icon(Icons.check) : null,
     onTap: onTap,

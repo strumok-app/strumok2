@@ -778,4 +778,217 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get readerPreviousChapter => 'Попередній розділ';
+
+  @override
+  String get commonDelete => 'Видалити';
+
+  @override
+  String get commonNotNow => 'Не зараз';
+
+  @override
+  String get commonAllow => 'Дозволити';
+
+  @override
+  String get detailsDownload => 'Завантажити';
+
+  @override
+  String get downloadsAll => 'Завантажити все';
+
+  @override
+  String downloadsSection(String section) {
+    return 'Завантажити «$section»';
+  }
+
+  @override
+  String get downloadsPickEpisode => 'Вибрати серію';
+
+  @override
+  String get downloadsPickChapter => 'Вибрати розділ';
+
+  @override
+  String get downloadsChooseSource => 'Джерело для завантаження';
+
+  @override
+  String get downloadsNoSources => 'Немає джерел для завантаження';
+
+  @override
+  String downloadsAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Додано до завантажень: $count',
+      many: 'Додано до завантажень: $count',
+      few: 'Додано до завантажень: $count',
+      one: 'Додано до завантажень: $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get downloadsQueue => 'Черга';
+
+  @override
+  String get downloadsDownloaded => 'Завантажене';
+
+  @override
+  String get downloadsEmpty => 'Тут з’являтимуться завантажені фільми, серіали та манга';
+
+  @override
+  String get downloadsCancel => 'Скасувати завантаження';
+
+  @override
+  String get downloadsCancelAll => 'Скасувати все';
+
+  @override
+  String get downloadsDismiss => 'Прибрати зі списку';
+
+  @override
+  String get downloadsClearFinished => 'Очистити завершені';
+
+  @override
+  String get downloadsStateQueued => 'У черзі';
+
+  @override
+  String get downloadsStateCompleted => 'Завантажено';
+
+  @override
+  String get downloadsStateCanceled => 'Скасовано';
+
+  @override
+  String downloadsProgress(int percent, String speed) {
+    return '$percent% · $speed';
+  }
+
+  @override
+  String downloadsSpeed(String size) {
+    return '$size/с';
+  }
+
+  @override
+  String get downloadsFailureNetwork => 'Помилка мережі';
+
+  @override
+  String get downloadsFailureUnavailable => 'Джерело недоступне';
+
+  @override
+  String get downloadsFailureSourceNotFound => 'Джерело не знайдено';
+
+  @override
+  String get downloadsFailureSuppliers => 'Бібліотека постачальників недоступна';
+
+  @override
+  String get downloadsFailureInvalidMedia => 'Непідтримуваний формат відео';
+
+  @override
+  String get downloadsFailureStorage => 'Не вдалося записати файл';
+
+  @override
+  String downloadsEpisodes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count серії',
+      many: '$count серій',
+      few: '$count серії',
+      one: '$count серія',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsChapters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count розділу',
+      many: '$count розділів',
+      few: '$count розділи',
+      one: '$count розділ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get downloadsDeleteContent => 'Видалити завантажене';
+
+  @override
+  String downloadsDeleteConfirm(String title) {
+    return 'Видалити завантажене «$title»?';
+  }
+
+  @override
+  String downloadsNotificationActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Завантаження: $count',
+      many: 'Завантаження: $count',
+      few: 'Завантаження: $count',
+      one: 'Завантаження: $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsNotificationProgress(String name, int percent) {
+    return '$name — $percent%';
+  }
+
+  @override
+  String get downloadsNotificationDone => 'Завантаження завершено';
+
+  @override
+  String get downloadsBatteryTitle => 'Завантаження у фоні';
+
+  @override
+  String get downloadsBatteryMessage =>
+      'Щоб завантаження не переривались, коли застосунок згорнуто, дозвольте йому працювати без обмежень батареї.';
+
+  @override
+  String sizeKilobytes(String value) {
+    return '$value КБ';
+  }
+
+  @override
+  String sizeMegabytes(String value) {
+    return '$value МБ';
+  }
+
+  @override
+  String sizeGigabytes(String value) {
+    return '$value ГБ';
+  }
+
+  @override
+  String get settingsDownloadsFolder => 'Тека завантажень';
+
+  @override
+  String get settingsDownloadsFolderChange => 'Змінити';
+
+  @override
+  String get settingsDownloadsFolderReset => 'Типова тека';
+
+  @override
+  String get settingsMaxDownloads => 'Одночасних завантажень';
+
+  @override
+  String get offlineMode => 'Офлайн-режим';
+
+  @override
+  String get offlineModeDescription => 'Лише завантажене; колекція синхронізується пізніше';
+
+  @override
+  String get offlineModeTurnOn => 'Увімкнути офлайн-режим';
+
+  @override
+  String get offlineModeTurnOff => 'Вимкнути офлайн-режим';
+
+  @override
+  String get homeOfflineSuggestion => 'Немає з’єднання? Перегляньте завантажене в офлайн-режимі.';
+
+  @override
+  String get homeOfflineEmpty => 'Немає завантаженого. Вимкніть офлайн-режим, щоб переглядати каталог.';
+
+  @override
+  String get searchOffline => 'Пошук недоступний в офлайн-режимі';
 }

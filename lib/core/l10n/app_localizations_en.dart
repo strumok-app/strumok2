@@ -777,4 +777,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get readerPreviousChapter => 'Previous chapter';
+
+  @override
+  String get commonDelete => 'Delete';
+
+  @override
+  String get commonNotNow => 'Not now';
+
+  @override
+  String get commonAllow => 'Allow';
+
+  @override
+  String get detailsDownload => 'Download';
+
+  @override
+  String get downloadsAll => 'Download all';
+
+  @override
+  String downloadsSection(String section) {
+    return 'Download “$section”';
+  }
+
+  @override
+  String get downloadsPickEpisode => 'Choose an episode';
+
+  @override
+  String get downloadsPickChapter => 'Choose a chapter';
+
+  @override
+  String get downloadsChooseSource => 'Source to download';
+
+  @override
+  String get downloadsNoSources => 'Nothing to download from this source';
+
+  @override
+  String downloadsAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Added $count downloads',
+      one: 'Added $count download',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get downloadsQueue => 'Queue';
+
+  @override
+  String get downloadsDownloaded => 'Downloaded';
+
+  @override
+  String get downloadsEmpty => 'Downloaded movies, series and manga will appear here';
+
+  @override
+  String get downloadsCancel => 'Cancel download';
+
+  @override
+  String get downloadsCancelAll => 'Cancel all';
+
+  @override
+  String get downloadsDismiss => 'Remove from the list';
+
+  @override
+  String get downloadsClearFinished => 'Clear finished';
+
+  @override
+  String get downloadsStateQueued => 'Queued';
+
+  @override
+  String get downloadsStateCompleted => 'Downloaded';
+
+  @override
+  String get downloadsStateCanceled => 'Canceled';
+
+  @override
+  String downloadsProgress(int percent, String speed) {
+    return '$percent% · $speed';
+  }
+
+  @override
+  String downloadsSpeed(String size) {
+    return '$size/s';
+  }
+
+  @override
+  String get downloadsFailureNetwork => 'Network error';
+
+  @override
+  String get downloadsFailureUnavailable => 'The source is not available';
+
+  @override
+  String get downloadsFailureSourceNotFound => 'The source was not found';
+
+  @override
+  String get downloadsFailureSuppliers => 'The suppliers library is not available';
+
+  @override
+  String get downloadsFailureInvalidMedia => 'Unsupported video format';
+
+  @override
+  String get downloadsFailureStorage => 'Could not write the file';
+
+  @override
+  String downloadsEpisodes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count episodes', one: '$count episode');
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsChapters(int count) {
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: '$count chapters', one: '$count chapter');
+    return '$_temp0';
+  }
+
+  @override
+  String get downloadsDeleteContent => 'Delete download';
+
+  @override
+  String downloadsDeleteConfirm(String title) {
+    return 'Delete the download of “$title”?';
+  }
+
+  @override
+  String downloadsNotificationActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Downloading $count items',
+      one: 'Downloading $count item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String downloadsNotificationProgress(String name, int percent) {
+    return '$name — $percent%';
+  }
+
+  @override
+  String get downloadsNotificationDone => 'Downloads finished';
+
+  @override
+  String get downloadsBatteryTitle => 'Background downloads';
+
+  @override
+  String get downloadsBatteryMessage =>
+      'To keep downloads going while the app is in the background, allow it to run without battery restrictions.';
+
+  @override
+  String sizeKilobytes(String value) {
+    return '$value KB';
+  }
+
+  @override
+  String sizeMegabytes(String value) {
+    return '$value MB';
+  }
+
+  @override
+  String sizeGigabytes(String value) {
+    return '$value GB';
+  }
+
+  @override
+  String get settingsDownloadsFolder => 'Downloads folder';
+
+  @override
+  String get settingsDownloadsFolderChange => 'Change';
+
+  @override
+  String get settingsDownloadsFolderReset => 'Default folder';
+
+  @override
+  String get settingsMaxDownloads => 'Parallel downloads';
+
+  @override
+  String get offlineMode => 'Offline mode';
+
+  @override
+  String get offlineModeDescription => 'Downloaded content only; the collection syncs later';
+
+  @override
+  String get offlineModeTurnOn => 'Turn on offline mode';
+
+  @override
+  String get offlineModeTurnOff => 'Turn off offline mode';
+
+  @override
+  String get homeOfflineSuggestion => 'No connection? Watch your downloads in offline mode.';
+
+  @override
+  String get homeOfflineEmpty => 'Nothing is downloaded yet. Turn off offline mode to browse.';
+
+  @override
+  String get searchOffline => 'Search is not available in offline mode';
 }

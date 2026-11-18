@@ -27,6 +27,9 @@ class AppPreferences {
   static const activeProfileId = 'active_profile_id';
   static const profileAskOnStartup = 'profile_ask_on_startup';
   static const offlineMode = 'offline_mode';
+  static const offlineDownloadsDirectory = 'offline_downloads_directory';
+  static const downloadsMaxParallel = 'downloads_max_parallel';
+  static const downloadsBatteryPromptShown = 'downloads_battery_prompt_shown';
   static const userLanguage = 'user_language';
   static const themeBrightness = 'theme_brightness';
   static const themeColorScheme = 'theme_color_scheme';

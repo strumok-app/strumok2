@@ -29,7 +29,14 @@ when it is missing). The SHA-1/SHA-256 of every signing key (debug keystore and 
 `strumok-release.jks`) must be registered on the `app.strumok` Firebase Android app, then the JSON re-downloaded;
 otherwise sign-in fails with `UNREGISTERED_ON_API_CONSOLE` / `Account reauth failed` in logcat:
 `firebase apps:android:sha:create <appId> <sha> --project cloud-hook-b1106`.
-Each profile keeps its own Firebase session under `<appSupport>/firebase/<profileId>`.
+Each profile keeps its own Firebase session under `<appSupport>/firebase/<profileId>`. On desktop only one app
+instance runs at a time (lock in `<appSupport>/instance.lock`); starting another brings the running window to the
+front.
+
+Downloads go to `<Downloads>/strumok` on desktop (changeable in Settings) and to app-specific storage
+(`Android/data/app.strumok/files/strumok`, removed with the app) on Android; the queue is kept in
+`<appSupport>/downloads/queue.json`. On Android they run in a `dataSync` foreground service
+(`flutter_foreground_task`) with its own Dart isolate, so they continue after the app is closed.
 
 ## Supplier bridge (FFI)
 

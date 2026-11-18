@@ -8,13 +8,20 @@ part of 'details_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Supplier details; in offline mode (or when the supplier fails and the content is downloaded) the details saved
+/// with the download (spec-08 §8.4).
 
 @ProviderFor(contentDetails)
 final contentDetailsProvider = ContentDetailsFamily._();
 
+/// Supplier details; in offline mode (or when the supplier fails and the content is downloaded) the details saved
+/// with the download (spec-08 §8.4).
+
 final class ContentDetailsProvider
     extends $FunctionalProvider<AsyncValue<ContentDetails>, ContentDetails, FutureOr<ContentDetails>>
     with $FutureModifier<ContentDetails>, $FutureProvider<ContentDetails> {
+  /// Supplier details; in offline mode (or when the supplier fails and the content is downloaded) the details saved
+  /// with the download (spec-08 §8.4).
   ContentDetailsProvider._({required ContentDetailsFamily super.from, required (String, String) super.argument})
     : super(
         retry: null,
@@ -55,7 +62,10 @@ final class ContentDetailsProvider
   }
 }
 
-String _$contentDetailsHash() => r'a1598460d164f708abba389faeabcb6e7208d308';
+String _$contentDetailsHash() => r'f45a70ffc5d4baa1003abbb7be060aee73c50ea9';
+
+/// Supplier details; in offline mode (or when the supplier fails and the content is downloaded) the details saved
+/// with the download (spec-08 §8.4).
 
 final class ContentDetailsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ContentDetails>, (String, String)> {
@@ -68,6 +78,9 @@ final class ContentDetailsFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// Supplier details; in offline mode (or when the supplier fails and the content is downloaded) the details saved
+  /// with the download (spec-08 §8.4).
+
   ContentDetailsProvider call(String supplier, String id) =>
       ContentDetailsProvider._(argument: (supplier, id), from: this);
 
@@ -75,12 +88,14 @@ final class ContentDetailsFamily extends $Family
   String toString() => r'contentDetailsProvider';
 }
 
-/// Lazily loaded items (spec-02 §2.3); list index is the item number stored by the collection.
+/// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
+/// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
 
 @ProviderFor(mediaItems)
 final mediaItemsProvider = MediaItemsFamily._();
 
-/// Lazily loaded items (spec-02 §2.3); list index is the item number stored by the collection.
+/// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
+/// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
 
 final class MediaItemsProvider
     extends
@@ -90,7 +105,8 @@ final class MediaItemsProvider
           FutureOr<List<ContentMediaItem>>
         >
     with $FutureModifier<List<ContentMediaItem>>, $FutureProvider<List<ContentMediaItem>> {
-  /// Lazily loaded items (spec-02 §2.3); list index is the item number stored by the collection.
+  /// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
+  /// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
   MediaItemsProvider._({required MediaItemsFamily super.from, required (String, String) super.argument})
     : super(
         retry: null,
@@ -132,9 +148,10 @@ final class MediaItemsProvider
   }
 }
 
-String _$mediaItemsHash() => r'e388e062dfb2785e351cc201f433658a39fc8fc2';
+String _$mediaItemsHash() => r'2ebcd8fec4304beb917a563d3f89d4d413ee6f4c';
 
-/// Lazily loaded items (spec-02 §2.3); list index is the item number stored by the collection.
+/// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
+/// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
 
 final class MediaItemsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<ContentMediaItem>>, (String, String)> {
@@ -147,7 +164,8 @@ final class MediaItemsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Lazily loaded items (spec-02 §2.3); list index is the item number stored by the collection.
+  /// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
+  /// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
 
   MediaItemsProvider call(String supplier, String id) => MediaItemsProvider._(argument: (supplier, id), from: this);
 

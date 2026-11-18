@@ -6,10 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../../../app/router.dart';
 import '../../../app/widgets/reveal_on_focus.dart';
 import '../../../core/localization.dart';
+import '../../../core/storage/offline_mode.dart';
 import '../../collection/domain/collection_item.dart';
 import '../../collection/presentation/collection_labels.dart';
 import '../../collection/presentation/collection_providers.dart';
 import '../../collection/presentation/collection_status_sheet.dart';
+import '../../downloads/presentation/download_sheet.dart';
 import 'details_providers.dart';
 import 'media_items_sheet.dart';
 
@@ -42,10 +44,10 @@ class DetailsInfo extends StatelessWidget {
                 WatchButton(details: details),
                 CollectionButton(details: details),
                 MediaItemsButton(details: details),
+                DownloadButton(details: details),
               ],
             ),
           ),
-          // SPEC: download actions (M8) are added with their milestone.
           DetailsMeta(details: details),
         ],
       ),
@@ -221,6 +223,26 @@ class MediaItemsButton extends ConsumerWidget {
       visualDensity: Theme.of(context).visualDensity,
       onPressed: () => showMediaItemsSheet(context, details),
       icon: const Icon(Icons.format_list_bulleted),
+    );
+  }
+}
+
+/// Opens the download sheet (spec-08 §8.2); hidden in offline mode, where there is nothing to download from.
+class DownloadButton extends ConsumerWidget {
+  final ContentDetails details;
+
+  const DownloadButton({super.key, required this.details});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (ref.watch(offlineModeProvider)) return const SizedBox.shrink();
+    return IconButton.filledTonal(
+      key: const Key('downloadButton'),
+      tooltip: context.l10n.detailsDownload,
+      // M3 icon buttons ignore the theme density; match the filled buttons next to it.
+      visualDensity: Theme.of(context).visualDensity,
+      onPressed: () => showDownloadSheet(context, details),
+      icon: const Icon(Icons.download_outlined),
     );
   }
 }

@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Asked once, politely, so Android does not stop background downloads (spec-08 §8.1). -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- Android TV: installable on TV and devices without touchscreen. -->
     <uses-feature android:name="android.software.leanback" android:required="false" />
@@ -49,6 +51,13 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Download service (spec-08 §8.1): flutter_foreground_task runs the download engine in its own isolate.
+             The name must not change; stopWithTask=false keeps downloads going after the app is swiped away. -->
+        <service
+            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false"
+            android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"

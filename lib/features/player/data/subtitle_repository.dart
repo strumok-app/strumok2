@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
@@ -54,7 +55,10 @@ class SubtitleRepository {
   }
 
   Future<SubtitleTrack> _fetch(SubtitleMediaItemSource source) async {
-    final response = await _client.get(await source.link, headers: source.headers);
+    final link = await source.link;
+    // Downloaded subtitles (spec-08 §8.4).
+    if (link.scheme == 'file') return _parse(await File.fromUri(link).readAsBytes());
+    final response = await _client.get(link, headers: source.headers);
     if (response.statusCode >= 400) {
       throw http.ClientException('Subtitles request failed: HTTP ${response.statusCode}', response.request?.url);
     }

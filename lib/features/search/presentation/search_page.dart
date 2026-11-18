@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,7 @@ import '../../../app/widgets/state_views.dart';
 import '../../../app/widgets/text_field_arrow_escape.dart';
 import '../../../core/localization.dart';
 import '../../../core/platform/device_class.dart';
+import '../../../core/storage/offline_mode.dart';
 import '../domain/search.dart';
 import 'search_filters_sheet.dart';
 import 'search_providers.dart';
@@ -66,6 +69,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Spec-08 §8.4: no supplier search in offline mode.
+    if (ref.watch(offlineModeProvider)) {
+      return EmptyStateView(
+        icon: Icons.cloud_off_outlined,
+        message: l10n.searchOffline,
+        action: FilledButton.tonal(
+          autofocus: true,
+          onPressed: () => unawaited(ref.read(offlineModeProvider.notifier).set(false)),
+          child: Text(l10n.offlineModeTurnOff),
+        ),
+      );
+    }
     final query = ref.watch(searchQueryProvider);
     final isTv = ref.watch(deviceClassProvider) == DeviceClass.tv;
     final suggestions = searchSuggestions(ref.watch(searchHistoryProvider), _controller.text);

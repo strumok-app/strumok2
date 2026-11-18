@@ -89,6 +89,7 @@ class _PosterHeaderState extends State<PosterHeader> {
                                       children: [
                                         Expanded(child: DetailsTitle(details: widget.details, overlay: true)),
                                         MediaItemsButton(details: widget.details),
+                                        DownloadButton(details: widget.details),
                                       ],
                                     ),
                                   ),

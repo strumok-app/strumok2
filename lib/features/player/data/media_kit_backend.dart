@@ -194,7 +194,9 @@ class MediaKitVideoBackend implements VideoBackend {
     _finished = false;
     _lastError = null;
     _update(PlaybackStatus(volume: _status.value.volume));
-    await _player.open(Media(url.toString(), httpHeaders: request.headers, start: request.start));
+    // Downloaded files (spec-08 §8.4) open by path: mpv takes it verbatim, without URL decoding.
+    final resource = url.scheme == 'file' ? url.toFilePath() : url.toString();
+    await _player.open(Media(resource, httpHeaders: request.headers, start: request.start));
   }
 
   @override

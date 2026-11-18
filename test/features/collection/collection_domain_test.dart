@@ -52,16 +52,35 @@ void main() {
   });
 
   group('progress rules (spec-03 §3.3)', () {
-    test('video position persists past 10 s and when moved more than 10 s; sets inProgress', () {
+    test('video position persists past 10 s and when moved more than 10 s', () {
       final base = item(status: CollectionStatus.complete);
       expect(updateVideoProgress(base, itemIndex: 0, position: 10), isNull);
 
       final first = updateVideoProgress(base, itemIndex: 0, position: 11)!;
       expect(first.positions[0]!.position, 11);
-      expect(first.status, CollectionStatus.inProgress, reason: 'legacy: regardless of previous status');
+      expect(first.status, CollectionStatus.complete, reason: 'an existing status is kept');
 
       expect(updateVideoProgress(first, itemIndex: 0, position: 21), isNull);
       expect(updateVideoProgress(first, itemIndex: 0, position: 22)!.positions[0]!.position, 22);
+    });
+
+    test('progress adds a title that is not in the collection as inProgress', () {
+      final video = item(status: CollectionStatus.none);
+      expect(updateVideoProgress(video, itemIndex: 0, position: 11)!.status, CollectionStatus.inProgress);
+      expect(updateVideoProgress(video, itemIndex: 0, position: 0, length: 1400)!.status, CollectionStatus.inProgress);
+
+      final manga = item(status: CollectionStatus.none, mediaType: MediaType.manga);
+      expect(updateMangaProgress(manga, itemIndex: 0, page: 0)!.status, CollectionStatus.inProgress);
+    });
+
+    test('progress keeps every existing status', () {
+      for (final status in CollectionStatus.values.where((s) => s != CollectionStatus.none)) {
+        expect(updateVideoProgress(item(status: status), itemIndex: 0, position: 11)!.status, status);
+        expect(
+          updateMangaProgress(item(status: status, mediaType: MediaType.manga), itemIndex: 0, page: 1)!.status,
+          status,
+        );
+      }
     });
 
     test('video saves backward movement only when it exceeds 10 s', () {
@@ -76,7 +95,7 @@ void main() {
     test('known length is stored without saving positions in the final 60 s', () {
       final withLength = updateVideoProgress(item(), itemIndex: 1, position: 5, length: 1400)!;
       expect(withLength.positions[1], const MediaItemPosition(position: 0, length: 1400));
-      expect(withLength.status, CollectionStatus.inProgress);
+      expect(withLength.status, CollectionStatus.latter);
 
       expect(updateVideoProgress(withLength, itemIndex: 1, position: 2000), isNull);
     });
@@ -94,7 +113,7 @@ void main() {
       final base = item(positions: {0: const MediaItemPosition(position: 1200)});
       final updated = updateVideoProgress(base, itemIndex: 0, position: 1350, length: 1400)!;
       expect(updated.positions[0], const MediaItemPosition(position: 1200, length: 1400));
-      expect(updated.status, CollectionStatus.inProgress);
+      expect(updated.status, CollectionStatus.latter);
       expect(
         updateVideoProgress(updated, itemIndex: 0, position: 1380, length: 1420)!.positions[0],
         const MediaItemPosition(position: 1200, length: 1420),
@@ -138,7 +157,7 @@ void main() {
       final updated = updateMangaProgress(base, itemIndex: 0, page: 3, pageCount: 21)!;
       expect(updated.positions[0], const MediaItemPosition(position: 3, length: 21));
       expect(updated.positions[1], base.positions[1]);
-      expect(updated.status, CollectionStatus.inProgress);
+      expect(updated.status, CollectionStatus.complete);
     });
 
     test('manga creates first-page progress and preserves length for non-positive page counts', () {

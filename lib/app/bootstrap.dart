@@ -1,4 +1,5 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:logging/logging.dart';
 import 'package:media_kit/media_kit.dart';
@@ -22,6 +23,8 @@ final _log = Logger('bootstrap');
 Future<List<Override>> bootstrap() async {
   final platform = AppPlatform.current;
   MediaKit.ensureInitialized();
+  // Messages from the download service isolate (spec-08 §8.1).
+  if (platform == AppPlatform.android) FlutterForegroundTask.initCommunicationPort();
   if (platform != AppPlatform.android) await windowManager.ensureInitialized();
   final (prefs, paths, deviceClass, packageInfo) = await (
     AppPreferences.create(),
