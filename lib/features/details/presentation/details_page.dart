@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' show ImageFilter;
 
 import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
@@ -9,12 +10,15 @@ import 'package:strumok/app/widgets/trailing_fade.dart';
 import '../../../app/widgets/app_network_image.dart';
 import '../../../app/widgets/content_card.dart';
 import '../../../app/widgets/content_row.dart';
+import '../../../app/widgets/network_image_aspect_ratio.dart';
+import '../../../app/widgets/reveal_on_focus.dart';
 import '../../../app/widgets/state_views.dart';
 import '../../../core/localization.dart';
 import '../../collection/presentation/collection_providers.dart';
 import '../../suppliers/data/supplier_registry.dart';
 import 'details_providers.dart';
 import 'details_widgets.dart';
+import 'poster_header.dart';
 
 /// Poster left / info right on wide screens; poster header + scroll on narrow ones (spec-01 Details).
 class DetailsPage extends ConsumerWidget {
@@ -32,7 +36,7 @@ class DetailsPage extends ConsumerWidget {
       AsyncData(:final value) => LayoutBuilder(
         builder: (context, constraints) => constraints.maxWidth >= _wideBreakpoint
             ? _WideDetails(details: value, viewport: constraints.biggest)
-            : _NarrowDetails(details: value),
+            : _NarrowDetails(details: value, viewport: constraints.biggest),
       ),
       AsyncError(:final error, isLoading: false) => _DetailsError(
         supplier: supplier,
@@ -94,8 +98,6 @@ class _WideDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Full height at poster ratio, but never wider than 40% of the pane (then cropped by `cover`).
-    final posterWidth = min(viewport.height * posterAspectRatio, viewport.width * 0.4);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -111,44 +113,92 @@ class _WideDetails extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: posterWidth, child: AppNetworkImage(details.image)),
+        _WidePoster(url: details.image, viewport: viewport),
       ],
     );
   }
 }
 
+/// Full pane height at the poster's own aspect ratio, but never wider than 40% of the pane. When capped, the
+/// whole poster is shown (`contain`) over a blurred, cropped copy of itself instead of being cropped.
+class _WidePoster extends StatelessWidget {
+  final String url;
+  final Size viewport;
+
+  const _WidePoster({required this.url, required this.viewport});
+
+  static const _maxWidthFraction = 0.4;
+  static const _resizeDuration = Duration(milliseconds: 200);
+
+  @override
+  Widget build(BuildContext context) => NetworkImageAspectRatio(
+    url: url,
+    builder: (context, aspectRatio, _) {
+      // Until the poster is decoded (or without one) it is assumed portrait.
+      final width = min(viewport.height * (aspectRatio ?? posterAspectRatio), viewport.width * _maxWidthFraction);
+      return TweenAnimationBuilder<double>(
+        tween: Tween(end: width),
+        duration: _resizeDuration,
+        curve: Curves.easeOutCubic,
+        builder: (context, width, _) {
+          // Pane narrower than the poster (capped, or mid-resize): fill the bands around it.
+          final letterboxed = aspectRatio != null && (width / viewport.height - aspectRatio).abs() > 0.01;
+          return SizedBox(
+            width: width,
+            child: ClipRect(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (letterboxed)
+                    ImageFiltered(
+                      key: const ValueKey('backdrop'),
+                      imageFilter: ImageFilter.blur(sigmaX: 24, sigmaY: 24, tileMode: TileMode.clamp),
+                      child: AppNetworkImage(url),
+                    ),
+                  if (letterboxed) const ColoredBox(key: ValueKey('scrim'), color: Color(0x33000000)),
+                  // Keyed so it keeps its loaded image while the backdrop comes and goes.
+                  AppNetworkImage(
+                    url,
+                    key: const ValueKey('poster'),
+                    fit: aspectRatio == null ? BoxFit.cover : BoxFit.contain,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+/// Poster header with the title, episodes and Watch over it, then collection status and info below (legacy layout).
 class _NarrowDetails extends StatelessWidget {
   final ContentDetails details;
+  final Size viewport;
 
-  const _NarrowDetails({required this.details});
+  const _NarrowDetails({required this.details, required this.viewport});
+
+  /// Leaves the collection button peeking below the poster.
+  static const _maxPosterFraction = 0.7;
 
   @override
   Widget build(BuildContext context) {
-    final surface = Theme.of(context).colorScheme.surface;
     return ListView(
       children: [
-        SizedBox(
-          height: 320,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              AppNetworkImage(details.image),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [surface.withValues(alpha: 0), surface],
-                    stops: const [0.5, 1],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        PosterHeader(details: details, maxHeight: viewport.height * _maxPosterFraction),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: DetailsInfo(details: details),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: RevealOnFocus(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 12,
+              children: [
+                CollectionButton(details: details),
+                DetailsMeta(details: details),
+              ],
+            ),
+          ),
         ),
         ..._sections(details),
       ],

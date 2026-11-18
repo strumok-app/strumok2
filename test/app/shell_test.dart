@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:strumok/app/router.dart';
 import 'package:strumok/app/shell/app_shell.dart';
 import 'package:strumok/core/platform/device_class.dart';
@@ -187,6 +189,73 @@ void main() {
     container.read(routerProvider).go(AppRoutes.manga('dummy', '1'));
     await tester.pumpAndSettle();
     expect(find.byType(NavigationRail), findsNothing);
+  });
+
+  group('android predictive back gesture pops only the visible route', () {
+    Future<void> swipeBack(WidgetTester tester) async {
+      Future<void> send(String method, [Map<String, Object?>? arguments]) =>
+          tester.binding.defaultBinaryMessenger.handlePlatformMessage(
+            SystemChannels.backGesture.name,
+            SystemChannels.backGesture.codec.encodeMethodCall(MethodCall(method, arguments)),
+            (_) {},
+          );
+      Map<String, Object?> event(double progress) => {
+        'touchOffset': [5.0, 300.0],
+        'progress': progress,
+        'swipeEdge': 0,
+      };
+      await send('startBackGesture', event(0));
+      await tester.pump();
+      await send('updateBackGestureProgress', event(0.5));
+      await tester.pump();
+      await send('commitBackGesture');
+      await tester.pumpAndSettle();
+    }
+
+    Future<GoRouter> openSettings(WidgetTester tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      final container = await pumpApp(tester, size: phone, deviceClass: DeviceClass.phone);
+      final router = container.read(routerProvider);
+      unawaited(router.push(AppRoutes.settings));
+      await tester.pumpAndSettle();
+      return router;
+    }
+
+    for (final (name, location) in [
+      ('player', AppRoutes.video('dummy', '1')),
+      ('reader', AppRoutes.manga('dummy', '1')),
+    ]) {
+      testAppWidgets('$name closes in one swipe, the shell page below stays', (tester) async {
+        final router = await openSettings(tester);
+        unawaited(router.push(location));
+        await tester.pumpAndSettle();
+
+        await swipeBack(tester);
+        expect(router.state.uri.path, AppRoutes.settings);
+        expect(find.byType(SettingsPage), findsOneWidget);
+        debugDefaultTargetPlatformOverride = null;
+      });
+    }
+
+    testAppWidgets('dialog over a shell page closes in one swipe, the page stays', (tester) async {
+      final router = await openSettings(tester);
+      await tester.tap(find.byKey(const Key('accountMenuButton')));
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsOneWidget);
+
+      await swipeBack(tester);
+      expect(find.byType(Dialog), findsNothing);
+      expect(router.state.uri.path, AppRoutes.settings);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testAppWidgets('shell page still pops with the gesture', (tester) async {
+      final router = await openSettings(tester);
+      await swipeBack(tester);
+      expect(router.state.uri.path, AppRoutes.home);
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 
   testAppWidgets('unknown route shows not found', (tester) async {

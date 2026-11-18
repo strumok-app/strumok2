@@ -60,6 +60,12 @@ class ReaderTopBar extends StatelessWidget {
                 onPressed: () => showReaderSources(context, state, onSelectSource),
                 icon: const Icon(Icons.translate),
               ),
+            IconButton(
+              key: const Key('readerSettingsButton'),
+              tooltip: l10n.readerSettings,
+              onPressed: () => showReaderSettings(context),
+              icon: const Icon(Icons.settings_outlined),
+            ),
             if (state.items.length > 1)
               IconButton(
                 key: const Key('readerChaptersButton'),
@@ -67,12 +73,6 @@ class ReaderTopBar extends StatelessWidget {
                 onPressed: () => showReaderChapters(context, state, onSelectChapter),
                 icon: const Icon(Icons.format_list_bulleted),
               ),
-            IconButton(
-              key: const Key('readerSettingsButton'),
-              tooltip: l10n.readerSettings,
-              onPressed: () => showReaderSettings(context),
-              icon: const Icon(Icons.settings_outlined),
-            ),
           ],
         ),
       ),

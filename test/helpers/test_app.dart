@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +27,7 @@ Future<ProviderContainer> pumpApp(
   VolumeControl? volume,
   http.Client? client,
   Pip? pip,
+  BaseCacheManager? imageCache,
   List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = size;
@@ -42,6 +44,7 @@ Future<ProviderContainer> pumpApp(
     volume: volume,
     client: client,
     pip: pip,
+    imageCache: imageCache,
   );
   final container = ProviderContainer(overrides: [...overrides, ...extraOverrides]);
   addTearDown(container.dispose);

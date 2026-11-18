@@ -126,6 +126,8 @@ class FakeDetails implements ContentDetails {
   final MediaType mediaType;
   @override
   final List<ContentInfo> similar;
+  @override
+  final String image;
   final Future<List<ContentMediaItem>> Function() loadItems;
 
   FakeDetails(
@@ -134,13 +136,12 @@ class FakeDetails implements ContentDetails {
     this.title = 'Fake title',
     this.mediaType = MediaType.video,
     this.similar = const [],
+    this.image = '',
     Future<List<ContentMediaItem>> Function()? loadItems,
   }) : loadItems = loadItems ?? (() async => const []);
 
   @override
   String? get originalTitle => 'Original';
-  @override
-  String get image => '';
   @override
   String get description => 'Description';
   @override
@@ -199,6 +200,7 @@ Future<List<Override>> testOverrides({
   BrightnessControl? brightness,
   VolumeControl? volume,
   Pip? pip,
+  BaseCacheManager? imageCache,
 }) async {
   final tmp = Directory.systemTemp.createTempSync('strumok_test');
   final paths = AppPaths(support: tmp, cache: Directory('${tmp.path}/cache'), temp: Directory('${tmp.path}/tmp'));
@@ -210,7 +212,7 @@ Future<List<Override>> testOverrides({
     httpClientProvider.overrideWithValue(client ?? MockClient((_) async => http.Response('', 404))),
     bundleDownloadKeyProvider.overrideWithValue('linux'),
     initialSupplierBundleProvider.overrideWithValue(bundle ?? defaultTestBundle),
-    imageCacheManagerProvider.overrideWithValue(FakeCacheManager()),
+    imageCacheManagerProvider.overrideWithValue(imageCache ?? FakeCacheManager()),
     mangaPageCacheManagerProvider.overrideWithValue(FakeCacheManager()),
     collectionDatabaseFactoryProvider.overrideWithValue(newDatabaseFactoryMemory()),
     videoBackendFactoryProvider.overrideWithValue(videoBackend ?? FakeVideoBackend.new),

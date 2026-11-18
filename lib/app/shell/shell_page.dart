@@ -49,6 +49,17 @@ class _ShellPageRoute extends PageRoute<void> with MaterialRouteTransitionMixin<
   @override
   bool get maintainState => true;
 
+  // Android predictive back: every page route's gesture detector claims the swipe when its route is current in
+  // its own navigator. A shell page stays current in the nested navigator while the player, reader or a sheet
+  // covers the shell on the root navigator, so it would pop first, unseen. Only take the gesture when the shell
+  // itself is current; otherwise the covering route handles back.
+  @override
+  bool get popGestureEnabled {
+    final shellContext = navigator?.context;
+    final shellIsCurrent = shellContext == null || (ModalRoute.isCurrentOf(shellContext) ?? true);
+    return shellIsCurrent && super.popGestureEnabled;
+  }
+
   @override
   String get debugLabel => '${super.debugLabel}(${_page.name})';
 }

@@ -17,7 +17,7 @@ String mediaItemRoute(ContentDetails details, {int? item}) => details.mediaType 
     ? AppRoutes.video(details.supplier, details.id, item: item)
     : AppRoutes.manga(details.supplier, details.id, item: item);
 
-/// Title block with the primary Watch/Read action (autofocused for TV).
+/// Title block with the primary Watch/Read action (autofocused for TV); the wide layout's info pane.
 class DetailsInfo extends StatelessWidget {
   final ContentDetails details;
 
@@ -25,11 +25,6 @@ class DetailsInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final isVideo = details.mediaType == MediaType.video;
-    final muted = theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant);
-
     // Margin covers the list padding above the title.
     return RevealOnFocus(
       margin: 24,
@@ -37,39 +32,100 @@ class DetailsInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 12,
         children: [
-          SelectableText(details.title, style: theme.textTheme.headlineMedium),
-          if (details.originalTitle case final original? when original.isNotEmpty)
-            SelectableText(
-              original,
-              style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
+          DetailsTitle(details: details),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                FilledButton.icon(
-                  autofocus: true,
-                  onPressed: () => context.push(mediaItemRoute(details)),
-                  icon: Icon(isVideo ? Icons.play_arrow : Icons.menu_book),
-                  label: Text(isVideo ? l10n.detailsWatch : l10n.detailsRead),
-                ),
-                _CollectionButton(details: details),
-                _MediaItemsButton(details: details),
+                WatchButton(details: details),
+                CollectionButton(details: details),
+                MediaItemsButton(details: details),
               ],
             ),
           ),
           // SPEC: download actions (M8) are added with their milestone.
-          if (details.additionalInfo.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 4,
-              children: [for (final line in details.additionalInfo) Text(line, style: muted)],
-            ),
-          if (details.description.isNotEmpty) ExpandableText(details.description),
+          DetailsMeta(details: details),
         ],
       ),
+    );
+  }
+}
+
+/// Title and original title; [overlay] styles them for legibility on top of the poster (light text, shadow).
+class DetailsTitle extends StatelessWidget {
+  final ContentDetails details;
+  final bool overlay;
+
+  const DetailsTitle({super.key, required this.details, this.overlay = false});
+
+  static const _shadows = [Shadow(blurRadius: 6)];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final titleStyle = overlay
+        ? textTheme.titleLarge?.copyWith(color: Colors.white, shadows: _shadows)
+        : textTheme.headlineMedium;
+    final originalStyle = textTheme.titleMedium?.copyWith(
+      color: overlay ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
+      shadows: overlay ? _shadows : null,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: overlay ? 4 : 12,
+      children: [
+        SelectableText(details.title, style: titleStyle),
+        if (details.originalTitle case final original? when original.isNotEmpty)
+          SelectableText(original, style: originalStyle),
+      ],
+    );
+  }
+}
+
+/// Primary Watch/Read action; autofocused so TV lands on it.
+class WatchButton extends StatelessWidget {
+  final ContentDetails details;
+
+  const WatchButton({super.key, required this.details});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final isVideo = details.mediaType == MediaType.video;
+    return FilledButton.icon(
+      autofocus: true,
+      onPressed: () => context.push(mediaItemRoute(details)),
+      icon: Icon(isVideo ? Icons.play_arrow : Icons.menu_book),
+      label: Text(isVideo ? l10n.detailsWatch : l10n.detailsRead),
+    );
+  }
+}
+
+/// Additional info lines and the expandable description.
+class DetailsMeta extends StatelessWidget {
+  final ContentDetails details;
+
+  const DetailsMeta({super.key, required this.details});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 12,
+      children: [
+        if (details.additionalInfo.isNotEmpty)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
+            children: [for (final line in details.additionalInfo) Text(line, style: muted)],
+          ),
+        if (details.description.isNotEmpty) ExpandableText(details.description),
+      ],
     );
   }
 }
@@ -124,10 +180,10 @@ class _ExpandableTextState extends State<ExpandableText> {
 }
 
 /// Shows the collection status (or "add") and opens the status/priority sheet.
-class _CollectionButton extends ConsumerWidget {
+class CollectionButton extends ConsumerWidget {
   final ContentDetails details;
 
-  const _CollectionButton({required this.details});
+  const CollectionButton({super.key, required this.details});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -143,10 +199,10 @@ class _CollectionButton extends ConsumerWidget {
 }
 
 /// Opens the episodes/chapters side panel; hidden while loading and for single-item content.
-class _MediaItemsButton extends ConsumerWidget {
+class MediaItemsButton extends ConsumerWidget {
   final ContentDetails details;
 
-  const _MediaItemsButton({required this.details});
+  const MediaItemsButton({super.key, required this.details});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
