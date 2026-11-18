@@ -136,6 +136,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('downloadButton')));
     await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('download-sections')), findsNothing, reason: 'a single season');
     await tester.tap(find.byKey(const ValueKey('download-all')));
     await settle(tester);
     expect(find.text('UA subs'), findsNothing, reason: 'only video sources are offered');
@@ -177,6 +178,18 @@ void main() {
     await tester.tap(find.byKey(const Key('downloadButton')));
     await tester.pumpAndSettle();
 
+    // Seasons are behind their own entry, not listed on the first page.
+    expect(find.byKey(const ValueKey('download-section-0')), findsNothing);
+    await tester.tap(find.text('Завантажити сезон'));
+    await tester.pumpAndSettle();
+    expect(find.text('S1'), findsOneWidget);
+    expect(find.text('2 серії'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('download-section-1')));
+    await settle(tester);
+    // Back from the sources returns to the seasons.
+    await tester.tap(find.byKey(const ValueKey('download-back')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('download-section-0')), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('download-section-1')));
     await settle(tester);
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
@@ -252,7 +265,7 @@ void main() {
     expect(find.text('Тут з’являтимуться завантажені фільми, серіали та манга'), findsOneWidget);
   });
 
-  testAppWidgets('settings: parallel downloads, folder and offline mode', (tester) async {
+  testAppWidgets('settings: parallel downloads and folder; offline mode is in the account menu', (tester) async {
     final picked = Directory.systemTemp.createTempSync('picked');
     addTearDown(() => picked.deleteSync(recursive: true));
     await start(tester, picker: ({initialDirectory}) async => picked.path);
@@ -283,7 +296,12 @@ void main() {
     expect(container.read(appPreferencesProvider).getInt(AppPreferences.downloadsMaxParallel), 4);
     expect(queue().maxConcurrent, 4);
 
-    await reveal(find.byKey(const Key('offlineModeSwitch')));
+    await tester.drag(settingsList, const Offset(0, -2000));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('offlineModeSwitch')), findsNothing, reason: 'only in the account menu');
+
+    await tester.tap(find.byKey(const Key('accountMenuButton')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('offlineModeSwitch')));
     await tester.pumpAndSettle();
     expect(container.read(offlineModeProvider), isTrue);

@@ -1104,15 +1104,6 @@
   "@downloadsAll": {
     "description": "Download sheet: all items of the content"
   },
-  "downloadsSection": "Завантажити «{section}»",
-  "@downloadsSection": {
-    "description": "Download sheet: all items of one section (season/volume)",
-    "placeholders": {
-      "section": {
-        "type": "String"
-      }
-    }
-  },
   "downloadsPickEpisode": "Вибрати серію",
   "@downloadsPickEpisode": {
     "description": "Download sheet: pick a single episode"
@@ -1357,5 +1348,13 @@
   "searchOffline": "Пошук недоступний в офлайн-режимі",
   "@searchOffline": {
     "description": "Search page in offline mode"
+  },
+  "downloadsPickSeason": "Завантажити сезон",
+  "@downloadsPickSeason": {
+    "description": "Download sheet: open the list of seasons"
+  },
+  "downloadsPickVolume": "Завантажити том",
+  "@downloadsPickVolume": {
+    "description": "Download sheet: open the list of manga volumes"
   }
 }

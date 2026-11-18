@@ -11,7 +11,7 @@ import '../../features/auth/presentation/pairing_code_dialog.dart';
 import '../../features/downloads/presentation/downloads_providers.dart';
 import '../../features/profiles/presentation/profile_avatar.dart';
 import '../../features/profiles/presentation/profiles_providers.dart';
-import '../../features/settings/presentation/widgets/downloads_settings.dart';
+import '../../features/downloads/presentation/widgets/download_widgets.dart';
 import '../../features/updates/presentation/update_providers.dart';
 import '../router.dart';
 import '../theme.dart';

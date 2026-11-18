@@ -794,11 +794,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadsAll => 'Download all';
 
   @override
-  String downloadsSection(String section) {
-    return 'Download “$section”';
-  }
-
-  @override
   String get downloadsPickEpisode => 'Choose an episode';
 
   @override
@@ -972,4 +967,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchOffline => 'Search is not available in offline mode';
+
+  @override
+  String get downloadsPickSeason => 'Download a season';
+
+  @override
+  String get downloadsPickVolume => 'Download a volume';
 }

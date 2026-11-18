@@ -37,14 +37,20 @@ class DetailsInfo extends StatelessWidget {
           DetailsTitle(details: details),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Wrap(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 8,
-              runSpacing: 8,
               children: [
-                WatchButton(details: details),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    WatchButton(details: details),
+                    DownloadButton(details: details),
+                    MediaItemsButton(details: details),
+                  ],
+                ),
                 CollectionButton(details: details),
-                MediaItemsButton(details: details),
-                DownloadButton(details: details),
               ],
             ),
           ),

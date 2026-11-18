@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/localization.dart';
 import '../../../../core/platform/background_permissions.dart';
 import '../../../../core/storage/app_preferences.dart';
+import '../../../../core/storage/offline_mode.dart';
 import '../../domain/download_queue.dart';
 import '../../domain/download_task.dart';
 import '../downloads_providers.dart';
@@ -200,6 +201,27 @@ class DownloadTaskTile extends ConsumerWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+/// Global offline mode (spec-08 §8.4), in the account menu.
+class OfflineModeSwitch extends ConsumerWidget {
+  final EdgeInsetsGeometry? contentPadding;
+
+  const OfflineModeSwitch({super.key, this.contentPadding});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    return SwitchListTile(
+      key: const Key('offlineModeSwitch'),
+      contentPadding: contentPadding,
+      secondary: const Icon(Icons.cloud_off_outlined),
+      title: Text(l10n.offlineMode),
+      subtitle: Text(l10n.offlineModeDescription),
+      value: ref.watch(offlineModeProvider),
+      onChanged: (value) => unawaited(ref.read(offlineModeProvider.notifier).set(value)),
     );
   }
 }

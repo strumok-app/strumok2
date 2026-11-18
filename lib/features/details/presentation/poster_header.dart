@@ -88,8 +88,8 @@ class _PosterHeaderState extends State<PosterHeader> {
                                       spacing: 8,
                                       children: [
                                         Expanded(child: DetailsTitle(details: widget.details, overlay: true)),
-                                        MediaItemsButton(details: widget.details),
                                         DownloadButton(details: widget.details),
+                                        MediaItemsButton(details: widget.details),
                                       ],
                                     ),
                                   ),

@@ -58,7 +58,7 @@ item is downloaded alongside the video when available.
 
 ## 8.4 Offline mode
 
-- Global switch (account menu + settings), persisted. Also auto-suggest it when the network is unavailable.
+- Global switch in the account menu (not on the Settings page), persisted. Also auto-suggest it when the network is unavailable.
 - In offline mode:
   - Home shows downloaded contents; Search is disabled with an explanation.
   - Details come from `details.json`; media items = downloaded item indexes (title "N").

@@ -795,11 +795,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get downloadsAll => 'Завантажити все';
 
   @override
-  String downloadsSection(String section) {
-    return 'Завантажити «$section»';
-  }
-
-  @override
   String get downloadsPickEpisode => 'Вибрати серію';
 
   @override
@@ -991,4 +986,10 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get searchOffline => 'Пошук недоступний в офлайн-режимі';
+
+  @override
+  String get downloadsPickSeason => 'Завантажити сезон';
+
+  @override
+  String get downloadsPickVolume => 'Завантажити том';
 }

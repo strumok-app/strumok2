@@ -36,17 +36,26 @@ class DownloadSheet extends ConsumerStatefulWidget {
 
 class _DownloadSheetState extends ConsumerState<DownloadSheet> {
   List<ContentMediaItem>? _selection;
-  var _picking = false;
+  var _step = _Step.root;
+
+  /// Root row to focus when coming back to the root.
+  _Step? _returnedFrom;
 
   ContentDetails get _details => widget.details;
 
   bool get _isManga => _details.mediaType == MediaType.manga;
 
+  void _open(_Step step) => setState(() => _step = step);
+
+  void _select(List<ContentMediaItem> items) => setState(() => _selection = items);
+
+  /// Back from the sources to the list they were chosen in, otherwise to the root.
   void _back() => setState(() {
     if (_selection != null) {
       _selection = null;
     } else {
-      _picking = false;
+      _returnedFrom = _step;
+      _step = _Step.root;
     }
   });
 
@@ -63,23 +72,34 @@ class _DownloadSheetState extends ConsumerState<DownloadSheet> {
   }
 
   Widget _steps(List<ContentMediaItem> items) {
+    final l10n = context.l10n;
     final single = items.length == 1;
     final selection = _selection ?? (single ? items : null);
-    final atRoot = selection == null && !_picking || single;
+    final atRoot = (selection == null && _step == _Step.root) || single;
     final Widget body;
+    final String title;
     if (selection != null) {
       body = _SourceList(details: _details, items: selection);
-    } else if (_picking) {
-      final collection = ref.watch(collectionItemProvider(_details.supplier, _details.id));
-      body = MediaItemsList(
-        items: items,
-        mediaType: _details.mediaType,
-        positions: collection?.positions ?? const {},
-        currentItem: collection?.currentItem,
-        onSelected: (item) => setState(() => _selection = [item]),
-      );
+      title = l10n.downloadsChooseSource;
     } else {
-      body = _options(items);
+      switch (_step) {
+        case _Step.root:
+          body = _options(items);
+          title = '';
+        case _Step.sections:
+          body = _sections(items);
+          title = _isManga ? l10n.downloadsPickVolume : l10n.downloadsPickSeason;
+        case _Step.items:
+          final collection = ref.watch(collectionItemProvider(_details.supplier, _details.id));
+          body = MediaItemsList(
+            items: items,
+            mediaType: _details.mediaType,
+            positions: collection?.positions ?? const {},
+            currentItem: collection?.currentItem,
+            onSelected: (item) => _select([item]),
+          );
+          title = _isManga ? l10n.downloadsPickChapter : l10n.downloadsPickEpisode;
+      }
     }
     return PopScope(
       canPop: atRoot,
@@ -94,12 +114,7 @@ class _DownloadSheetState extends ConsumerState<DownloadSheet> {
                 ListTile(
                   key: const ValueKey('download-back'),
                   leading: const Icon(Icons.arrow_back),
-                  title: Text(
-                    selection == null
-                        ? (_isManga ? context.l10n.downloadsPickChapter : context.l10n.downloadsPickEpisode)
-                        : context.l10n.downloadsChooseSource,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  title: Text(title, style: Theme.of(context).textTheme.titleMedium),
                   onTap: _back,
                 ),
                 Expanded(child: body),
@@ -108,41 +123,59 @@ class _DownloadSheetState extends ConsumerState<DownloadSheet> {
     );
   }
 
+  String _count(int count) => _isManga ? context.l10n.downloadsChapters(count) : context.l10n.downloadsEpisodes(count);
+
+  /// Everything, a season/volume (sub-list, when there are several) or a single item.
   Widget _options(List<ContentMediaItem> items) {
     final l10n = context.l10n;
-    final sections = groupBySection(items);
+    final hasSections = groupBySection(items).length > 1;
     return ListView(
       children: [
         ListTile(
           key: const ValueKey('download-all'),
-          autofocus: true,
+          autofocus: _returnedFrom == null,
           leading: const Icon(Icons.download_for_offline_outlined),
           title: Text(l10n.downloadsAll),
-          subtitle: Text(_isManga ? l10n.downloadsChapters(items.length) : l10n.downloadsEpisodes(items.length)),
-          onTap: () => setState(() => _selection = items),
+          subtitle: Text(_count(items.length)),
+          onTap: () => _select(items),
         ),
-        if (sections.length > 1)
-          for (final (index, (section, sectionItems)) in sections.indexed)
-            ListTile(
-              key: ValueKey('download-section-$index'),
-              leading: const Icon(Icons.playlist_add),
-              title: Text(l10n.downloadsSection(section == null || section.isEmpty ? '${index + 1}' : section)),
-              subtitle: Text(
-                _isManga ? l10n.downloadsChapters(sectionItems.length) : l10n.downloadsEpisodes(sectionItems.length),
-              ),
-              onTap: () => setState(() => _selection = sectionItems),
-            ),
+        if (hasSections)
+          ListTile(
+            key: const ValueKey('download-sections'),
+            autofocus: _returnedFrom == _Step.sections,
+            leading: const Icon(Icons.playlist_add),
+            title: Text(_isManga ? l10n.downloadsPickVolume : l10n.downloadsPickSeason),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _open(_Step.sections),
+          ),
         ListTile(
           key: const ValueKey('download-pick'),
+          autofocus: _returnedFrom == _Step.items,
           leading: const Icon(Icons.format_list_bulleted),
           title: Text(_isManga ? l10n.downloadsPickChapter : l10n.downloadsPickEpisode),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () => setState(() => _picking = true),
+          onTap: () => _open(_Step.items),
         ),
       ],
     );
   }
+
+  Widget _sections(List<ContentMediaItem> items) => ListView(
+    children: [
+      for (final (index, (section, sectionItems)) in groupBySection(items).indexed)
+        ListTile(
+          key: ValueKey('download-section-$index'),
+          autofocus: index == 0,
+          leading: const Icon(Icons.playlist_add),
+          title: Text(section == null || section.isEmpty ? '${index + 1}' : section),
+          subtitle: Text(_count(sectionItems.length)),
+          onTap: () => _select(sectionItems),
+        ),
+    ],
+  );
 }
+
+enum _Step { root, sections, items }
 
 /// Downloadable sources of the first selected item (videos or manga translations, not local copies).
 class _SourceList extends ConsumerStatefulWidget {

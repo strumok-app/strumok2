@@ -7,11 +7,11 @@ import '../../../../app/widgets/stepper_tile.dart';
 import '../../../../core/localization.dart';
 import '../../../../core/platform/background_permissions.dart';
 import '../../../../core/platform/device_class.dart';
-import '../../../../core/storage/offline_mode.dart';
 import '../../../downloads/domain/download_queue.dart';
 import '../../../downloads/presentation/downloads_providers.dart';
 
-/// Spec-09 §5: downloads folder (desktop only), max parallel downloads, offline mode.
+/// Spec-09 §5: downloads folder (desktop only) and max parallel downloads. The offline mode switch is in the
+/// account menu only.
 class DownloadsSettingsSection extends ConsumerWidget {
   const DownloadsSettingsSection({super.key});
 
@@ -64,29 +64,7 @@ class DownloadsSettingsSection extends ConsumerWidget {
               ? () => unawaited(maxNotifier.set(maxParallel + 1))
               : null,
         ),
-        const OfflineModeSwitch(contentPadding: EdgeInsets.zero),
       ],
-    );
-  }
-}
-
-/// Global offline mode (spec-08 §8.4); in Settings and in the account menu.
-class OfflineModeSwitch extends ConsumerWidget {
-  final EdgeInsetsGeometry? contentPadding;
-
-  const OfflineModeSwitch({super.key, this.contentPadding});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    return SwitchListTile(
-      key: const Key('offlineModeSwitch'),
-      contentPadding: contentPadding,
-      secondary: const Icon(Icons.cloud_off_outlined),
-      title: Text(l10n.offlineMode),
-      subtitle: Text(l10n.offlineModeDescription),
-      value: ref.watch(offlineModeProvider),
-      onChanged: (value) => unawaited(ref.read(offlineModeProvider.notifier).set(value)),
     );
   }
 }

@@ -17,7 +17,8 @@ Sections (order):
    point to the app update (spec-11 §11.1).
 3. **Language** — `uk` / `en` (app UI + preferred audio language).
 4. **Theme** — brightness (light / system / dark), color scheme picker.
-5. **Downloads** — downloads directory picker (desktop only), max parallel downloads, offline mode switch.
+5. **Downloads** — downloads directory picker (desktop only), max parallel downloads (the offline mode switch is in
+   the account menu only).
 6. **Suppliers & recommendations** → sub-page: reorder suppliers (drag on touch/mouse; move up/down buttons on TV),
    enable/disable each supplier, choose recommendation channels per supplier.
 7. **Profiles** → manage profiles (spec-05), "ask for profile on startup".

@@ -244,7 +244,6 @@
   "commonAllow": "Allow",
   "detailsDownload": "Download",
   "downloadsAll": "Download all",
-  "downloadsSection": "Download “{section}”",
   "downloadsPickEpisode": "Choose an episode",
   "downloadsPickChapter": "Choose a chapter",
   "downloadsChooseSource": "Source to download",
@@ -290,5 +289,7 @@
   "offlineModeTurnOff": "Turn off offline mode",
   "homeOfflineSuggestion": "No connection? Watch your downloads in offline mode.",
   "homeOfflineEmpty": "Nothing is downloaded yet. Turn off offline mode to browse.",
-  "searchOffline": "Search is not available in offline mode"
+  "searchOffline": "Search is not available in offline mode",
+  "downloadsPickSeason": "Download a season",
+  "downloadsPickVolume": "Download a volume"
 }

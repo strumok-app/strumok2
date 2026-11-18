@@ -153,8 +153,17 @@ void main() {
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.pumpAndSettle();
+    expect(
+      FocusManager.instance.primaryFocus!.context!.findAncestorWidgetOfExactType<FilledButton>()?.key,
+      const Key('collectionButton'),
+      reason: 'the collection button is on the second row',
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pumpAndSettle();
     expect(position().pixels, greaterThan(0), reason: 'the similar row is below the fold');
 
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.pumpAndSettle();
     expect(position().pixels, 0);

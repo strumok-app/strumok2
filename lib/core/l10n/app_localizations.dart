@@ -1556,12 +1556,6 @@ abstract class AppLocalizations {
   /// **'Завантажити все'**
   String get downloadsAll;
 
-  /// Download sheet: all items of one section (season/volume)
-  ///
-  /// In uk, this message translates to:
-  /// **'Завантажити «{section}»'**
-  String downloadsSection(String section);
-
   /// Download sheet: pick a single episode
   ///
   /// In uk, this message translates to:
@@ -1837,6 +1831,18 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Пошук недоступний в офлайн-режимі'**
   String get searchOffline;
+
+  /// Download sheet: open the list of seasons
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажити сезон'**
+  String get downloadsPickSeason;
+
+  /// Download sheet: open the list of manga volumes
+  ///
+  /// In uk, this message translates to:
+  /// **'Завантажити том'**
+  String get downloadsPickVolume;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
