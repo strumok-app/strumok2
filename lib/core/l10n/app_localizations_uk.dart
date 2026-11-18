@@ -404,6 +404,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsLanguageSection => 'Мова';
 
   @override
+  String get settingsTvSection => 'Телевізор';
+
+  @override
+  String get settingsConnectTvSubtitle => 'Показати код для входу в цей обліковий запис на телевізорі';
+
+  @override
   String get settingsLanguageHint => 'Мова інтерфейсу та рекомендованих постачальників';
 
   @override

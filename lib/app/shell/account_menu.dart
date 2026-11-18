@@ -3,25 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/localization.dart';
-import '../../core/platform/device_class.dart';
 import '../../features/auth/presentation/account_flows.dart';
 import '../../features/auth/presentation/auth_providers.dart';
-import '../../features/auth/presentation/connect_tv_dialog.dart';
 import '../../features/auth/presentation/pairing_code_dialog.dart';
-import '../../features/downloads/presentation/downloads_providers.dart';
 import '../../features/profiles/presentation/profile_avatar.dart';
 import '../../features/profiles/presentation/profiles_providers.dart';
 import '../../features/downloads/presentation/widgets/download_widgets.dart';
 import '../../features/updates/presentation/update_providers.dart';
 import '../router.dart';
-import '../theme.dart';
 
 const accountMenuKey = Key('accountMenuButton');
 
 Future<void> showAccountDialog(BuildContext context) =>
     showDialog<void>(context: context, builder: (_) => const AccountDialog());
 
-/// Active profile avatar opening [AccountDialog]: account actions, profiles, Settings, Downloads.
+/// Active profile avatar opening [AccountDialog]: account actions, Settings, offline mode.
 class AccountMenu extends StatelessWidget {
   const AccountMenu({super.key});
 
@@ -34,18 +30,15 @@ class AccountMenu extends StatelessWidget {
   );
 }
 
-/// Active profile avatar with the update-notice badge (spec-01, spec-11), or the number of active downloads
-/// (spec-08 §8.1 queue indicator).
+/// Active profile avatar with the update-notice badge (spec-01, spec-11).
 class AccountAvatar extends ConsumerWidget {
   const AccountAvatar({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final downloads = ref.watch(activeDownloadCountProvider);
-    final avatar = ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14);
-    if (downloads > 0) return Badge.count(key: const Key('downloadsBadge'), count: downloads, child: avatar);
-    return Badge(isLabelVisible: ref.watch(hasUpdateNoticeProvider), child: avatar);
-  }
+  Widget build(BuildContext context, WidgetRef ref) => Badge(
+    isLabelVisible: ref.watch(hasUpdateNoticeProvider),
+    child: ProfileAvatar(profile: ref.watch(activeProfileProvider), radius: 14),
+  );
 }
 
 class AccountDialog extends ConsumerWidget {
@@ -58,9 +51,7 @@ class AccountDialog extends ConsumerWidget {
     final hasUpdate = ref.watch(hasUpdateNoticeProvider);
     final profile = ref.watch(activeProfileProvider);
     final user = ref.watch(activeAuthUserProvider).value;
-    final isTv = ref.watch(deviceClassProvider) == DeviceClass.tv;
     final accounts = ref.watch(accountsAvailableProvider);
-    final downloads = ref.watch(activeDownloadCountProvider);
 
     void open(String route) {
       final router = GoRouter.of(context);
@@ -85,85 +76,63 @@ class AccountDialog extends ConsumerWidget {
           onTap: () => showPairingCodeDialog(context, profile.id),
         ),
       ],
-      if (accounts && user != null) ...[
-        if (!isTv)
-          ListTile(
-            key: const Key('accountConnectTv'),
-            leading: const Icon(Icons.tv),
-            title: Text(l10n.accountConnectTv),
-            onTap: () => showConnectTvDialog(context),
-          ),
-        ListTile(
-          key: const Key('accountSignOut'),
-          leading: const Icon(Icons.logout),
-          title: Text(l10n.accountSignOut),
-          onTap: () =>
-              runAccountAction(context, ref, () => ref.read(accountControllerProvider.notifier).signOut(profile.id)),
-        ),
-      ],
     ];
 
     return Dialog(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-                child: Text(l10n.accountMenuTooltip, style: theme.textTheme.titleLarge),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                child: SurfaceZone(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  padding: const EdgeInsets.all(4),
-                  child: Column(
+        child: ListTileTheme(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 12, 8),
+                  child: Row(
+                    spacing: 16,
                     children: [
-                      ListTile(
-                        leading: ProfileAvatar(profile: profile),
-                        title: Text(profile.name),
-                        subtitle: Text(
-                          user == null ? l10n.accountNotSignedIn : (user.displayName ?? user.email ?? user.uid),
+                      ProfileAvatar(profile: profile, radius: 24),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(profile.name, style: theme.textTheme.titleMedium, overflow: TextOverflow.ellipsis),
+                            Text(
+                              user == null ? l10n.accountNotSignedIn : (user.displayName ?? user.email ?? user.uid),
+                              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
-                      ...accountActions,
-                      ListTile(
-                        leading: const Icon(Icons.switch_account_outlined),
-                        title: Text(l10n.profilesSwitch),
-                        onTap: () => open(AppRoutes.profiles),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.manage_accounts_outlined),
-                        title: Text(l10n.profilesManage),
-                        onTap: () => open(AppRoutes.settingsProfiles),
-                      ),
+                      if (accounts && user != null)
+                        IconButton(
+                          key: const Key('accountSignOut'),
+                          tooltip: l10n.accountSignOut,
+                          icon: const Icon(Icons.logout),
+                          onPressed: () => runAccountAction(
+                            context,
+                            ref,
+                            () => ref.read(accountControllerProvider.notifier).signOut(profile.id),
+                          ),
+                        ),
                     ],
                   ),
                 ),
-              ),
-              ListTile(
-                autofocus: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                leading: Badge.count(
-                  count: downloads,
-                  isLabelVisible: downloads > 0,
-                  child: const Icon(Icons.download_outlined),
+                ...accountActions,
+                const Divider(height: 16),
+                ListTile(
+                  autofocus: true,
+                  leading: Badge(isLabelVisible: hasUpdate, child: const Icon(Icons.settings_outlined)),
+                  title: Text(l10n.navSettings),
+                  onTap: () => open(AppRoutes.settings),
                 ),
-                title: Text(l10n.navDownloads),
-                onTap: () => open(AppRoutes.downloads),
-              ),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                leading: Badge(isLabelVisible: hasUpdate, child: const Icon(Icons.settings_outlined)),
-                title: Text(l10n.navSettings),
-                onTap: () => open(AppRoutes.settings),
-              ),
-              const OfflineModeSwitch(contentPadding: EdgeInsets.symmetric(horizontal: 24)),
-            ],
+                const OfflineModeSwitch(),
+              ],
+            ),
           ),
         ),
       ),

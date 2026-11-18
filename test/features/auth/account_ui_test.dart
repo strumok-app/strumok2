@@ -9,6 +9,7 @@ import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/features/auth/domain/app_user.dart';
 import 'package:strumok/features/auth/presentation/auth_providers.dart';
 import 'package:strumok/features/profiles/presentation/profiles_providers.dart';
+import 'package:strumok/features/settings/presentation/settings_page.dart';
 
 import '../../helpers/fake_auth.dart';
 import '../../helpers/test_app.dart';
@@ -63,7 +64,6 @@ void main() {
 
     expect(find.byKey(const Key('pairingCodeField')), findsNothing);
     expect(find.text('Alice'), findsOneWidget);
-    expect(find.byKey(const Key('accountConnectTv')), findsOneWidget);
     expect(find.byKey(const Key('accountSignOut')), findsOneWidget);
     expect(container.read(activeProfileProvider).firebaseUid, 'u1');
   });
@@ -81,7 +81,7 @@ void main() {
   });
 
   testAppWidgets('tv: no Google sign-in; back in the code field moves focus to the accept button', (tester) async {
-    await openAccountMenu(tester, deviceClass: DeviceClass.tv);
+    final container = await openAccountMenu(tester, deviceClass: DeviceClass.tv);
     expect(find.byKey(const Key('accountSignInGoogle')), findsNothing);
 
     await tester.tap(find.byKey(const Key('accountSignInWithCode')));
@@ -99,16 +99,42 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('pairingCodeField')), findsNothing);
     expect(find.text('Alice'), findsOneWidget);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await tester.pumpAndSettle();
+    unawaited(container.read(routerProvider).push(AppRoutes.settings));
+    await tester.pumpAndSettle();
     expect(find.byKey(const Key('accountConnectTv')), findsNothing, reason: 'TVs do not generate codes');
   });
 
-  testAppWidgets('connect TV shows the generated code; sign out returns to signed out', (tester) async {
+  testAppWidgets('sign out from the account header returns to signed out', (tester) async {
     await openAccountMenu(tester);
     await tester.tap(find.byKey(const Key('accountSignInGoogle')));
     await tester.pumpAndSettle();
     expect(find.text('Alice'), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('accountConnectTv')));
+    await tester.tap(find.byKey(const Key('accountSignOut')));
+    await tester.pumpAndSettle();
+    expect(find.text('Ви не увійшли'), findsOneWidget);
+    expect(find.byKey(const Key('accountSignOut')), findsNothing);
+  });
+
+  testAppWidgets('settings: connect TV shows the generated code only when signed in', (tester) async {
+    final container = await openAccountMenu(tester);
+    await tester.tap(find.descendant(of: find.byType(Dialog), matching: find.text('Налаштування')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('accountConnectTv'), skipOffstage: false), findsNothing);
+
+    await container.read(accountControllerProvider.notifier).signInWithGoogle(container.read(activeProfileIdProvider));
+    await tester.pumpAndSettle();
+    final connectTv = find.byKey(const Key('accountConnectTv'));
+    await tester.scrollUntilVisible(
+      connectTv,
+      200,
+      scrollable: find.descendant(of: find.byType(SettingsPage), matching: find.byType(Scrollable)).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(connectTv);
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     final dialogSurface = find.descendant(of: find.byType(AlertDialog), matching: find.byType(Material)).first;
@@ -117,10 +143,7 @@ void main() {
     expect(find.text('ZX98YU'), findsOneWidget);
     await tester.tap(find.text('Закрити'));
     await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('accountSignOut')));
-    await tester.pumpAndSettle();
-    expect(find.text('Ви не увійшли'), findsOneWidget);
+    expect(find.text('ZX98YU'), findsNothing);
   });
 
   testAppWidgets('an account linked to another profile offers to switch to it', (tester) async {

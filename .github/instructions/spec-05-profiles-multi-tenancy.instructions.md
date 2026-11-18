@@ -51,7 +51,7 @@ class Profile {
 
 - **Profile picker** shown at startup when there are ≥ 2 profiles (TV-friendly grid of large focusable avatars,
   "Add profile" tile). Skip when only one profile exists. Option "remember last profile / don't ask" in settings.
-- Account menu: active profile on top, "Switch profile", "Manage profiles".
+- Account menu: active profile on top (name + linked account). "Switch profile" and "Profiles" (manage) live in Settings.
 - Manage profiles (settings sub-page): add, rename, change color, link Google account (or TV pairing code on TV),
   unlink, delete (confirm; deleting removes the local collection only — never deletes Firebase data).
 - On TV, linking a profile uses the pairing-code flow (spec-04 §4.3) into that profile's Firebase app.

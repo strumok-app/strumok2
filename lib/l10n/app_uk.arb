@@ -539,6 +539,14 @@
   "@settingsLanguageSection": {
     "description": "Settings section: app language"
   },
+  "settingsTvSection": "Телевізор",
+  "@settingsTvSection": {
+    "description": "Settings section: connect a TV to the signed-in account (pairing code)"
+  },
+  "settingsConnectTvSubtitle": "Показати код для входу в цей обліковий запис на телевізорі",
+  "@settingsConnectTvSubtitle": {
+    "description": "Subtitle of the Connect TV item in Settings"
+  },
   "settingsLanguageHint": "Мова інтерфейсу та рекомендованих постачальників",
   "@settingsLanguageHint": {
     "description": "Explains what the language setting affects"

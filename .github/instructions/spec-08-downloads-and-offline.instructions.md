@@ -23,7 +23,7 @@ applyTo: 'lib/features/downloads/**'
 - Android: run inside a **foreground service** (type `dataSync`) with a progress notification so downloads continue
   when the app is backgrounded; request notification permission and battery-optimization exemption politely.
 - Desktop: run in-process (isolate or async), same scheduler.
-- UI: download queue indicator (badge in top bar / account menu), queue sheet with progress, speed, cancel.
+- UI: download queue indicator (badge on the Downloads navigation destination), queue sheet with progress, speed, cancel.
 
 ## 8.2 What is downloaded
 

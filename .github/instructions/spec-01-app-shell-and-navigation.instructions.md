@@ -16,10 +16,11 @@ applyTo: 'lib/app/**, lib/features/home/**, lib/features/search/**, lib/features
 | 5a | **Video player** | `/video/:supplier/:id` | – | Full-screen player. |
 | 5b | **Manga reader** | `/manga/:supplier/:id` | – | |
 | 6 | **Settings** | `/settings` | via account menu / side rail bottom | Sub-route `/settings/suppliers`. |
-| – | Downloads (offline items) | `/downloads` | via account menu | See spec-08. |
+| – | Downloads (offline items) | `/downloads` | main navigation (4th) | See spec-08. |
 
-Main navigation order: Home, Search, Collection. Settings, Downloads, Profile/Account are reached from the
-account menu (avatar button) shown as the last bottom-bar item (bottom-nav layout) or at the bottom of the side rail.
+Main navigation order: Home, Search, Collection, Downloads (badge = active downloads). Settings and Profile/Account
+are reached from the account menu (avatar button) shown as the last bottom-bar item (bottom-nav layout) or at the
+bottom of the side rail.
 
 ## Shell layouts
 

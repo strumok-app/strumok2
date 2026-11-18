@@ -19,9 +19,10 @@ Sections (order):
 4. **Theme** — brightness (light / system / dark), color scheme picker.
 5. **Downloads** — downloads directory picker (desktop only), max parallel downloads (the offline mode switch is in
    the account menu only).
-6. **Suppliers & recommendations** → sub-page: reorder suppliers (drag on touch/mouse; move up/down buttons on TV),
+6. **TV** — "Connect TV" pairing code (spec-04 §4.3); only when signed in and not on TV.
+7. **Suppliers & recommendations** → sub-page: reorder suppliers (drag on touch/mouse; move up/down buttons on TV),
    enable/disable each supplier, choose recommendation channels per supplier.
-7. **Profiles** → manage profiles (spec-05), "ask for profile on startup".
+8. **Profiles** → manage profiles (spec-05), "ask for profile on startup"; "Switch profile" opens the picker.
 
 ## Preference keys
 

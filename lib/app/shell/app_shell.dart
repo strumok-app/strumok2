@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/localization.dart';
 import '../../core/platform/device_class.dart';
+import '../../features/downloads/presentation/downloads_providers.dart';
 import '../router.dart';
 import 'account_menu.dart';
 
@@ -13,7 +14,7 @@ const bottomNavMaxWidth = 450.0;
 /// Compact bottom bar (Material default is 80); labels are hidden, so icons and the indicator fit.
 const bottomNavHeight = 50.0;
 
-const _destinations = [AppRoutes.home, AppRoutes.search, AppRoutes.collection];
+const _destinations = [AppRoutes.home, AppRoutes.search, AppRoutes.collection, AppRoutes.downloads];
 
 class AppShell extends ConsumerStatefulWidget {
   final String location;
@@ -82,6 +83,11 @@ class _AppShellState extends ConsumerState<AppShell> {
               selectedIcon: const Icon(Icons.favorite),
               label: l10n.navCollection,
             ),
+            NavigationDestination(
+              icon: const _DownloadsBadge(child: Icon(Icons.download_outlined)),
+              selectedIcon: const _DownloadsBadge(child: Icon(Icons.download)),
+              label: l10n.navDownloads,
+            ),
             NavigationDestination(key: accountMenuKey, icon: const AccountAvatar(), label: l10n.accountMenuTooltip),
           ],
         ),
@@ -125,6 +131,11 @@ class _AppShellState extends ConsumerState<AppShell> {
                   selectedIcon: _RailIcon(Icons.favorite, tooltip: l10n.navCollection),
                   label: Text(l10n.navCollection),
                 ),
+                NavigationRailDestination(
+                  icon: _DownloadsBadge(child: _RailIcon(Icons.download_outlined, tooltip: l10n.navDownloads)),
+                  selectedIcon: _DownloadsBadge(child: _RailIcon(Icons.download, tooltip: l10n.navDownloads)),
+                  label: Text(l10n.navDownloads),
+                ),
               ],
             ),
             Expanded(
@@ -137,6 +148,19 @@ class _AppShellState extends ConsumerState<AppShell> {
         ),
       ),
     );
+  }
+}
+
+/// Number of active downloads (spec-08 §8.1 queue indicator).
+class _DownloadsBadge extends ConsumerWidget {
+  final Widget child;
+
+  const _DownloadsBadge({required this.child});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(activeDownloadCountProvider);
+    return Badge.count(key: const Key('downloadsBadge'), count: count, isLabelVisible: count > 0, child: child);
   }
 }
 

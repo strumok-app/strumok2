@@ -403,6 +403,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageSection => 'Language';
 
   @override
+  String get settingsTvSection => 'TV';
+
+  @override
+  String get settingsConnectTvSubtitle => 'Show a code to sign in to this account on a TV';
+
+  @override
   String get settingsLanguageHint => 'Interface language and default suppliers';
 
   @override

@@ -37,7 +37,7 @@ Authorization: Bearer <Firebase ID token of current user>
 → 200 {"code": "AB12CD"}
 → ≥400 on error
 ```
-UI: account menu item "Connect TV" → shows the 6-char code in large text with a dismiss button.
+UI: Settings → "TV" section, item "Connect TV" (signed in, not on TV) → shows the 6-char code in large text with a dismiss button.
 
 ### Exchange code (on the TV, or any signed-out device)
 ```
@@ -54,6 +54,7 @@ field (on-screen keyboard), submit on enter/OK, check button, cancel button; bac
 accept button instead of discarding input. Show "invalid code" snackbar on error.
 
 ## 4.4 Account UI (account menu)
-- Signed out: "Sign in with Google" (not on TV), "Enter TV code" (pairing), offline-mode toggle, Settings, Downloads.
-- Signed in: avatar + name, "Connect TV" (generate code; not on TV), "Sign out", offline-mode toggle, Settings, Downloads.
-- With profiles enabled: current profile on top + "Switch profile" (spec-05).
+- Signed out: "Sign in with Google" (not on TV), "Enter TV code" (pairing), offline-mode toggle, Settings.
+- Signed in: avatar + name with a "Sign out" icon button right of it, offline-mode toggle, Settings.
+  "Connect TV" lives in Settings (spec-09).
+- With profiles enabled: current profile on top; "Switch profile" lives in Settings (spec-05).

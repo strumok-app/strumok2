@@ -158,11 +158,11 @@ void main() {
 
     await tester.tap(find.byKey(const Key('accountMenuButton')));
     await tester.pumpAndSettle();
-    expect(find.text('Завантаження'), findsOneWidget);
+    expect(find.byType(Dialog), findsOneWidget);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
-    expect(find.text('Завантаження'), findsNothing);
+    expect(find.byType(Dialog), findsNothing);
     expect(router.state.uri.path, AppRoutes.settings);
   });
 
@@ -171,7 +171,6 @@ void main() {
 
     await tester.tap(find.byKey(const Key('accountMenuButton')));
     await tester.pumpAndSettle();
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     await tester.pumpAndSettle();
 

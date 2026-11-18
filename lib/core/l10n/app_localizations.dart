@@ -848,6 +848,18 @@ abstract class AppLocalizations {
   /// **'Мова'**
   String get settingsLanguageSection;
 
+  /// Settings section: connect a TV to the signed-in account (pairing code)
+  ///
+  /// In uk, this message translates to:
+  /// **'Телевізор'**
+  String get settingsTvSection;
+
+  /// Subtitle of the Connect TV item in Settings
+  ///
+  /// In uk, this message translates to:
+  /// **'Показати код для входу в цей обліковий запис на телевізорі'**
+  String get settingsConnectTvSubtitle;
+
   /// Explains what the language setting affects
   ///
   /// In uk, this message translates to:

@@ -128,6 +128,8 @@
   "settingsLanguageSection": "Language",
   "settingsLanguageHint": "Interface language and default suppliers",
   "settingsThemeSection": "Theme",
+  "settingsTvSection": "TV",
+  "settingsConnectTvSubtitle": "Show a code to sign in to this account on a TV",
   "settingsThemeLight": "Light",
   "settingsThemeSystem": "System",
   "settingsThemeDark": "Dark",

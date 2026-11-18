@@ -160,7 +160,7 @@ void main() {
     final details = File(p.join(folder().path, 'alpha_m1', 'details.json'));
     expect(jsonDecode(details.readAsStringSync()), containsPair('title', 'Show'));
 
-    // The sheet closed itself; the queue indicator is on the account avatar.
+    // The sheet closed itself; the queue indicator is on the Downloads destination.
     expect(find.byKey(const ValueKey('download-source-1')), findsNothing);
     expect(find.descendant(of: find.byKey(const Key('downloadsBadge')), matching: find.text('3')), findsOneWidget);
   });
