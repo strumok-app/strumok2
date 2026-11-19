@@ -138,27 +138,39 @@ class _RandomPickDialogState<T extends ContentInfo> extends State<RandomPickDial
     }
 
     return AlertDialog(
-      title: Text(l10n.rowPickRandom),
+      title: Row(
+        children: [
+          Expanded(child: Text(l10n.rowPickRandom)),
+          IconButton(
+            key: const Key('randomPickClose'),
+            focusNode: _closeFocus,
+            tooltip: l10n.commonClose,
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close),
+          ),
+        ],
+      ),
       content: SizedBox(
         width: contentWidth,
         child: SingleChildScrollView(child: content),
       ),
-      actions: [
-        TextButton(focusNode: _closeFocus, onPressed: () => Navigator.of(context).pop(), child: Text(l10n.commonClose)),
-        if (current != null) ...[
-          TextButton(
-            key: const Key('randomPickAnother'),
-            onPressed: pool!.length > 1 ? () => setState(_pickNext) : null,
-            child: Text(l10n.randomPickAnother),
-          ),
-          FilledButton(
-            key: const Key('randomPickOpen'),
-            focusNode: _openFocus,
-            onPressed: () => Navigator.of(context).pop(current),
-            child: Text(l10n.randomPickOpen),
-          ),
-        ],
-      ],
+      actionsAlignment: MainAxisAlignment.spaceBetween,
+      actions: current == null
+          ? null
+          : [
+              OutlinedButton.icon(
+                key: const Key('randomPickAnother'),
+                onPressed: pool!.length > 1 ? () => setState(_pickNext) : null,
+                icon: const Icon(Icons.casino_outlined),
+                label: Text(l10n.randomPickAnother),
+              ),
+              FilledButton(
+                key: const Key('randomPickOpen'),
+                focusNode: _openFocus,
+                onPressed: () => Navigator.of(context).pop(current),
+                child: Text(l10n.randomPickOpen),
+              ),
+            ],
     );
   }
 }
