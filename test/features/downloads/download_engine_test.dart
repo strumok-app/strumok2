@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -121,14 +120,15 @@ void main() {
     expect(runner.started, hasLength(3));
 
     var idle = false;
-    unawaited(engine.whenIdle().then((_) => idle = true));
+    final whenIdle = engine.whenIdle().then((_) => idle = true);
     runner.complete('alpha_a_0');
     runner.complete('alpha_b_0');
     await settle();
     expect(idle, isFalse);
     runner.complete('alpha_c_0');
-    await settle();
+    await whenIdle;
     expect(idle, isTrue);
+    await store.flushed;
     expect((await store.load()).tasks.every((t) => t.state == DownloadState.completed), isTrue);
   });
 
