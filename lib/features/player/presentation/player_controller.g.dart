@@ -13,7 +13,12 @@ part of 'player_controller.dart';
 final videoBackendFactoryProvider = VideoBackendFactoryProvider._();
 
 final class VideoBackendFactoryProvider
-    extends $FunctionalProvider<VideoBackend Function(), VideoBackend Function(), VideoBackend Function()>
+    extends
+        $FunctionalProvider<
+          VideoBackend Function(),
+          VideoBackend Function(),
+          VideoBackend Function()
+        >
     with $Provider<VideoBackend Function()> {
   VideoBackendFactoryProvider._()
     : super(
@@ -31,7 +36,9 @@ final class VideoBackendFactoryProvider
 
   @$internal
   @override
-  $ProviderElement<VideoBackend Function()> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<VideoBackend Function()> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   VideoBackend Function() create(Ref ref) {
@@ -40,11 +47,15 @@ final class VideoBackendFactoryProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(VideoBackend Function() value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<VideoBackend Function()>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<VideoBackend Function()>(value),
+    );
   }
 }
 
-String _$videoBackendFactoryHash() => r'506e30b37416763370b86454c667e80d70da4208';
+String _$videoBackendFactoryHash() =>
+    r'506e30b37416763370b86454c667e80d70da4208';
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
 /// Kept alive so the session can outlive the player route (floating player / PiP, M6).
@@ -54,7 +65,8 @@ final playerControllerProvider = PlayerControllerProvider._();
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
 /// Kept alive so the session can outlive the player route (floating player / PiP, M6).
-final class PlayerControllerProvider extends $NotifierProvider<PlayerController, PlayerSession?> {
+final class PlayerControllerProvider
+    extends $NotifierProvider<PlayerController, PlayerSession?> {
   /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
   /// Kept alive so the session can outlive the player route (floating player / PiP, M6).
   PlayerControllerProvider._()
@@ -77,7 +89,10 @@ final class PlayerControllerProvider extends $NotifierProvider<PlayerController,
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(PlayerSession? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<PlayerSession?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PlayerSession?>(value),
+    );
   }
 }
 
@@ -94,7 +109,12 @@ abstract class _$PlayerController extends $Notifier<PlayerSession?> {
     final ref = this.ref as $Ref<PlayerSession?, PlayerSession?>;
     final element =
         ref.element
-            as $ClassProviderElement<AnyNotifier<PlayerSession?, PlayerSession?>, PlayerSession?, Object?, Object?>;
+            as $ClassProviderElement<
+              AnyNotifier<PlayerSession?, PlayerSession?>,
+              PlayerSession?,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }

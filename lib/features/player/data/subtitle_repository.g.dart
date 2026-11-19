@@ -13,7 +13,12 @@ part of 'subtitle_repository.dart';
 final subtitleRepositoryProvider = SubtitleRepositoryProvider._();
 
 final class SubtitleRepositoryProvider
-    extends $FunctionalProvider<SubtitleRepository, SubtitleRepository, SubtitleRepository>
+    extends
+        $FunctionalProvider<
+          SubtitleRepository,
+          SubtitleRepository,
+          SubtitleRepository
+        >
     with $Provider<SubtitleRepository> {
   SubtitleRepositoryProvider._()
     : super(
@@ -31,7 +36,9 @@ final class SubtitleRepositoryProvider
 
   @$internal
   @override
-  $ProviderElement<SubtitleRepository> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<SubtitleRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   SubtitleRepository create(Ref ref) {
@@ -40,8 +47,12 @@ final class SubtitleRepositoryProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(SubtitleRepository value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<SubtitleRepository>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SubtitleRepository>(value),
+    );
   }
 }
 
-String _$subtitleRepositoryHash() => r'f29eb0d292c871c31de8539d44a269b08ec239eb';
+String _$subtitleRepositoryHash() =>
+    r'f29eb0d292c871c31de8539d44a269b08ec239eb';

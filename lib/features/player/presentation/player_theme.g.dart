@@ -19,7 +19,9 @@ final playerThemeProvider = PlayerThemeProvider._();
 /// (sliders, progress, focus) stay visible on black (e.g. the monochrome scheme is black on light). Side sheets
 /// are routes and keep the app theme.
 
-final class PlayerThemeProvider extends $FunctionalProvider<ThemeData, ThemeData, ThemeData> with $Provider<ThemeData> {
+final class PlayerThemeProvider
+    extends $FunctionalProvider<ThemeData, ThemeData, ThemeData>
+    with $Provider<ThemeData> {
   /// Controls sit on video: the dark variant of the user's color scheme whatever the app brightness, so accents
   /// (sliders, progress, focus) stay visible on black (e.g. the monochrome scheme is black on light). Side sheets
   /// are routes and keep the app theme.
@@ -39,7 +41,8 @@ final class PlayerThemeProvider extends $FunctionalProvider<ThemeData, ThemeData
 
   @$internal
   @override
-  $ProviderElement<ThemeData> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<ThemeData> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   ThemeData create(Ref ref) {
@@ -48,7 +51,10 @@ final class PlayerThemeProvider extends $FunctionalProvider<ThemeData, ThemeData
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ThemeData value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<ThemeData>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ThemeData>(value),
+    );
   }
 }
 

@@ -15,7 +15,9 @@ final singleInstanceProvider = SingleInstanceProvider._();
 
 /// The lock of the running desktop instance; null on Android (the system keeps one activity task).
 
-final class SingleInstanceProvider extends $FunctionalProvider<SingleInstance?, SingleInstance?, SingleInstance?>
+final class SingleInstanceProvider
+    extends
+        $FunctionalProvider<SingleInstance?, SingleInstance?, SingleInstance?>
     with $Provider<SingleInstance?> {
   /// The lock of the running desktop instance; null on Android (the system keeps one activity task).
   SingleInstanceProvider._()
@@ -34,7 +36,8 @@ final class SingleInstanceProvider extends $FunctionalProvider<SingleInstance?, 
 
   @$internal
   @override
-  $ProviderElement<SingleInstance?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<SingleInstance?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   SingleInstance? create(Ref ref) {
@@ -43,7 +46,10 @@ final class SingleInstanceProvider extends $FunctionalProvider<SingleInstance?, 
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(SingleInstance? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<SingleInstance?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SingleInstance?>(value),
+    );
   }
 }
 

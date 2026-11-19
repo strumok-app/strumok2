@@ -16,7 +16,8 @@ final mangaReaderControllerProvider = MangaReaderControllerFamily._();
 
 /// UI-agnostic reader (spec-07): loads chapters, translations and pages, remembers the chapter, translation and
 /// page in the collection (spec-03 §3.3).
-final class MangaReaderControllerProvider extends $NotifierProvider<MangaReaderController, MangaReaderState> {
+final class MangaReaderControllerProvider
+    extends $NotifierProvider<MangaReaderController, MangaReaderState> {
   /// UI-agnostic reader (spec-07): loads chapters, translations and pages, remembers the chapter, translation and
   /// page in the collection (spec-03 §3.3).
   MangaReaderControllerProvider._({
@@ -46,7 +47,10 @@ final class MangaReaderControllerProvider extends $NotifierProvider<MangaReaderC
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(MangaReaderState value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<MangaReaderState>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MangaReaderState>(value),
+    );
   }
 
   @override
@@ -60,7 +64,8 @@ final class MangaReaderControllerProvider extends $NotifierProvider<MangaReaderC
   }
 }
 
-String _$mangaReaderControllerHash() => r'fd4ad9e485ffb7fc7b13cbf8c195b4b34c2af9f5';
+String _$mangaReaderControllerHash() =>
+    r'fd4ad9e485ffb7fc7b13cbf8c195b4b34c2af9f5';
 
 /// UI-agnostic reader (spec-07): loads chapters, translations and pages, remembers the chapter, translation and
 /// page in the collection (spec-03 §3.3).

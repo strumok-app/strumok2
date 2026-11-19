@@ -14,7 +14,9 @@ part of 'collection_providers.dart';
 final collectionItemsProvider = CollectionItemsProvider._();
 
 /// Active profile's collection by item key; kept current from repository change events.
-final class CollectionItemsProvider extends $AsyncNotifierProvider<CollectionItems, Map<String, CollectionItem>> {
+final class CollectionItemsProvider
+    extends
+        $AsyncNotifierProvider<CollectionItems, Map<String, CollectionItem>> {
   /// Active profile's collection by item key; kept current from repository change events.
   CollectionItemsProvider._()
     : super(
@@ -39,16 +41,25 @@ String _$collectionItemsHash() => r'5cafaeff3ae1cae13bf36e7ac7e19d1d12b060e5';
 
 /// Active profile's collection by item key; kept current from repository change events.
 
-abstract class _$CollectionItems extends $AsyncNotifier<Map<String, CollectionItem>> {
+abstract class _$CollectionItems
+    extends $AsyncNotifier<Map<String, CollectionItem>> {
   FutureOr<Map<String, CollectionItem>> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<Map<String, CollectionItem>>, Map<String, CollectionItem>>;
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<Map<String, CollectionItem>>,
+              Map<String, CollectionItem>
+            >;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<Map<String, CollectionItem>>, Map<String, CollectionItem>>,
+              AnyNotifier<
+                AsyncValue<Map<String, CollectionItem>>,
+                Map<String, CollectionItem>
+              >,
               AsyncValue<Map<String, CollectionItem>>,
               Object?,
               Object?
@@ -60,16 +71,20 @@ abstract class _$CollectionItems extends $AsyncNotifier<Map<String, CollectionIt
 @ProviderFor(collectionItem)
 final collectionItemProvider = CollectionItemFamily._();
 
-final class CollectionItemProvider extends $FunctionalProvider<CollectionItem?, CollectionItem?, CollectionItem?>
+final class CollectionItemProvider
+    extends
+        $FunctionalProvider<CollectionItem?, CollectionItem?, CollectionItem?>
     with $Provider<CollectionItem?> {
-  CollectionItemProvider._({required CollectionItemFamily super.from, required (String, String) super.argument})
-    : super(
-        retry: null,
-        name: r'collectionItemProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  CollectionItemProvider._({
+    required CollectionItemFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'collectionItemProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$collectionItemHash();
@@ -83,7 +98,8 @@ final class CollectionItemProvider extends $FunctionalProvider<CollectionItem?, 
 
   @$internal
   @override
-  $ProviderElement<CollectionItem?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<CollectionItem?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   CollectionItem? create(Ref ref) {
@@ -93,7 +109,10 @@ final class CollectionItemProvider extends $FunctionalProvider<CollectionItem?, 
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(CollectionItem? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<CollectionItem?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CollectionItem?>(value),
+    );
   }
 
   @override
@@ -109,7 +128,8 @@ final class CollectionItemProvider extends $FunctionalProvider<CollectionItem?, 
 
 String _$collectionItemHash() => r'158a44cf7995eb92aa0ff68ef750423c5a7e56d3';
 
-final class CollectionItemFamily extends $Family with $FunctionalFamilyOverride<CollectionItem?, (String, String)> {
+final class CollectionItemFamily extends $Family
+    with $FunctionalFamilyOverride<CollectionItem?, (String, String)> {
   CollectionItemFamily._()
     : super(
         retry: null,
@@ -129,7 +149,8 @@ final class CollectionItemFamily extends $Family with $FunctionalFamilyOverride<
 @ProviderFor(CollectionFilterNotifier)
 final collectionFilterProvider = CollectionFilterNotifierProvider._();
 
-final class CollectionFilterNotifierProvider extends $NotifierProvider<CollectionFilterNotifier, CollectionFilter> {
+final class CollectionFilterNotifierProvider
+    extends $NotifierProvider<CollectionFilterNotifier, CollectionFilter> {
   CollectionFilterNotifierProvider._()
     : super(
         from: null,
@@ -150,11 +171,15 @@ final class CollectionFilterNotifierProvider extends $NotifierProvider<Collectio
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(CollectionFilter value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<CollectionFilter>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CollectionFilter>(value),
+    );
   }
 }
 
-String _$collectionFilterNotifierHash() => r'651b622150cb7a6d1e28a2fa10d9d5a57841217b';
+String _$collectionFilterNotifierHash() =>
+    r'651b622150cb7a6d1e28a2fa10d9d5a57841217b';
 
 abstract class _$CollectionFilterNotifier extends $Notifier<CollectionFilter> {
   CollectionFilter build();
@@ -201,8 +226,8 @@ final class CollectionGroupsProvider
 
   @$internal
   @override
-  $ProviderElement<List<(CollectionStatus, List<CollectionItem>)>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<List<(CollectionStatus, List<CollectionItem>)>>
+  $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   List<(CollectionStatus, List<CollectionItem>)> create(Ref ref) {
@@ -210,10 +235,15 @@ final class CollectionGroupsProvider
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<(CollectionStatus, List<CollectionItem>)> value) {
+  Override overrideWithValue(
+    List<(CollectionStatus, List<CollectionItem>)> value,
+  ) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<List<(CollectionStatus, List<CollectionItem>)>>(value),
+      providerOverride:
+          $SyncValueProvider<List<(CollectionStatus, List<CollectionItem>)>>(
+            value,
+          ),
     );
   }
 }
@@ -227,7 +257,8 @@ final collectionSuppliersProvider = CollectionSuppliersProvider._();
 
 /// Supplier filter options: present in the collection and installed (spec-01 Collection).
 
-final class CollectionSuppliersProvider extends $FunctionalProvider<List<String>, List<String>, List<String>>
+final class CollectionSuppliersProvider
+    extends $FunctionalProvider<List<String>, List<String>, List<String>>
     with $Provider<List<String>> {
   /// Supplier filter options: present in the collection and installed (spec-01 Collection).
   CollectionSuppliersProvider._()
@@ -246,7 +277,8 @@ final class CollectionSuppliersProvider extends $FunctionalProvider<List<String>
 
   @$internal
   @override
-  $ProviderElement<List<String>> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<List<String>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   List<String> create(Ref ref) {
@@ -255,17 +287,26 @@ final class CollectionSuppliersProvider extends $FunctionalProvider<List<String>
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<String> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<String>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
   }
 }
 
-String _$collectionSuppliersHash() => r'25f937045e6e010b9b792b389bbf8599330beca7';
+String _$collectionSuppliersHash() =>
+    r'25f937045e6e010b9b792b389bbf8599330beca7';
 
 @ProviderFor(continueWatching)
 final continueWatchingProvider = ContinueWatchingProvider._();
 
 final class ContinueWatchingProvider
-    extends $FunctionalProvider<List<CollectionItem>, List<CollectionItem>, List<CollectionItem>>
+    extends
+        $FunctionalProvider<
+          List<CollectionItem>,
+          List<CollectionItem>,
+          List<CollectionItem>
+        >
     with $Provider<List<CollectionItem>> {
   ContinueWatchingProvider._()
     : super(
@@ -283,7 +324,9 @@ final class ContinueWatchingProvider
 
   @$internal
   @override
-  $ProviderElement<List<CollectionItem>> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<List<CollectionItem>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   List<CollectionItem> create(Ref ref) {
@@ -292,7 +335,10 @@ final class ContinueWatchingProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<CollectionItem> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<CollectionItem>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<CollectionItem>>(value),
+    );
   }
 }
 

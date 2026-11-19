@@ -16,7 +16,8 @@ final downloadsFolderProvider = DownloadsFolderProvider._();
 
 /// Downloads folder (spec-08 §8.3, spec-09 key `offline_downloads_directory`): user-selectable on desktop; a folder
 /// that no longer exists falls back to the default.
-final class DownloadsFolderProvider extends $NotifierProvider<DownloadsFolder, Directory> {
+final class DownloadsFolderProvider
+    extends $NotifierProvider<DownloadsFolder, Directory> {
   /// Downloads folder (spec-08 §8.3, spec-09 key `offline_downloads_directory`): user-selectable on desktop; a folder
   /// that no longer exists falls back to the default.
   DownloadsFolderProvider._()
@@ -39,7 +40,10 @@ final class DownloadsFolderProvider extends $NotifierProvider<DownloadsFolder, D
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Directory value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<Directory>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Directory>(value),
+    );
   }
 }
 
@@ -55,7 +59,13 @@ abstract class _$DownloadsFolder extends $Notifier<Directory> {
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<Directory, Directory>;
     final element =
-        ref.element as $ClassProviderElement<AnyNotifier<Directory, Directory>, Directory, Object?, Object?>;
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Directory, Directory>,
+              Directory,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }
@@ -66,7 +76,8 @@ abstract class _$DownloadsFolder extends $Notifier<Directory> {
 final maxParallelDownloadsProvider = MaxParallelDownloadsProvider._();
 
 /// Global concurrency limit (spec-08 §8.1: default 3, range 1–5).
-final class MaxParallelDownloadsProvider extends $NotifierProvider<MaxParallelDownloads, int> {
+final class MaxParallelDownloadsProvider
+    extends $NotifierProvider<MaxParallelDownloads, int> {
   /// Global concurrency limit (spec-08 §8.1: default 3, range 1–5).
   MaxParallelDownloadsProvider._()
     : super(
@@ -88,11 +99,15 @@ final class MaxParallelDownloadsProvider extends $NotifierProvider<MaxParallelDo
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(int value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<int>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
   }
 }
 
-String _$maxParallelDownloadsHash() => r'70d57353353b481796b802d2b768baa319ab9271';
+String _$maxParallelDownloadsHash() =>
+    r'70d57353353b481796b802d2b768baa319ab9271';
 
 /// Global concurrency limit (spec-08 §8.1: default 3, range 1–5).
 
@@ -102,7 +117,14 @@ abstract class _$MaxParallelDownloads extends $Notifier<int> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<int, int>;
-    final element = ref.element as $ClassProviderElement<AnyNotifier<int, int>, int, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }
@@ -115,7 +137,12 @@ final downloadServiceProvider = DownloadServiceProvider._();
 /// The download manager (spec-08 §8.1): an Android foreground service isolate, in-process elsewhere.
 
 final class DownloadServiceProvider
-    extends $FunctionalProvider<AsyncValue<DownloadService>, DownloadService, FutureOr<DownloadService>>
+    extends
+        $FunctionalProvider<
+          AsyncValue<DownloadService>,
+          DownloadService,
+          FutureOr<DownloadService>
+        >
     with $FutureModifier<DownloadService>, $FutureProvider<DownloadService> {
   /// The download manager (spec-08 §8.1): an Android foreground service isolate, in-process elsewhere.
   DownloadServiceProvider._()
@@ -134,7 +161,9 @@ final class DownloadServiceProvider
 
   @$internal
   @override
-  $FutureProviderElement<DownloadService> $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+  $FutureProviderElement<DownloadService> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<DownloadService> create(Ref ref) {
@@ -150,7 +179,8 @@ String _$downloadServiceHash() => r'd6321aaf1d6a280e03fe306b510dffd085954059';
 final downloadTasksProvider = DownloadTasksProvider._();
 
 /// Current queue; updates with throttled progress, so watch it with `select` outside the downloads page.
-final class DownloadTasksProvider extends $AsyncNotifierProvider<DownloadTasks, DownloadQueue> {
+final class DownloadTasksProvider
+    extends $AsyncNotifierProvider<DownloadTasks, DownloadQueue> {
   /// Current queue; updates with throttled progress, so watch it with `select` outside the downloads page.
   DownloadTasksProvider._()
     : super(
@@ -200,7 +230,9 @@ final activeDownloadCountProvider = ActiveDownloadCountProvider._();
 
 /// Active (queued + running) tasks, for badges.
 
-final class ActiveDownloadCountProvider extends $FunctionalProvider<int, int, int> with $Provider<int> {
+final class ActiveDownloadCountProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
   /// Active (queued + running) tasks, for badges.
   ActiveDownloadCountProvider._()
     : super(
@@ -218,7 +250,8 @@ final class ActiveDownloadCountProvider extends $FunctionalProvider<int, int, in
 
   @$internal
   @override
-  $ProviderElement<int> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   int create(Ref ref) {
@@ -227,11 +260,15 @@ final class ActiveDownloadCountProvider extends $FunctionalProvider<int, int, in
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(int value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<int>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
   }
 }
 
-String _$activeDownloadCountHash() => r'ca19ad8d4b6e939f8ebfd15306b2b88b619d31af';
+String _$activeDownloadCountHash() =>
+    r'ca19ad8d4b6e939f8ebfd15306b2b88b619d31af';
 
 /// The task of one media item, if any.
 
@@ -240,7 +277,8 @@ final itemDownloadTaskProvider = ItemDownloadTaskFamily._();
 
 /// The task of one media item, if any.
 
-final class ItemDownloadTaskProvider extends $FunctionalProvider<DownloadTask?, DownloadTask?, DownloadTask?>
+final class ItemDownloadTaskProvider
+    extends $FunctionalProvider<DownloadTask?, DownloadTask?, DownloadTask?>
     with $Provider<DownloadTask?> {
   /// The task of one media item, if any.
   ItemDownloadTaskProvider._({
@@ -266,7 +304,8 @@ final class ItemDownloadTaskProvider extends $FunctionalProvider<DownloadTask?, 
 
   @$internal
   @override
-  $ProviderElement<DownloadTask?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<DownloadTask?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   DownloadTask? create(Ref ref) {
@@ -276,7 +315,10 @@ final class ItemDownloadTaskProvider extends $FunctionalProvider<DownloadTask?, 
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(DownloadTask? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<DownloadTask?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DownloadTask?>(value),
+    );
   }
 
   @override
@@ -308,7 +350,10 @@ final class ItemDownloadTaskFamily extends $Family
   /// The task of one media item, if any.
 
   ItemDownloadTaskProvider call(String supplier, String id, int itemIndex) =>
-      ItemDownloadTaskProvider._(argument: (supplier, id, itemIndex), from: this);
+      ItemDownloadTaskProvider._(
+        argument: (supplier, id, itemIndex),
+        from: this,
+      );
 
   @override
   String toString() => r'itemDownloadTaskProvider';
@@ -320,7 +365,8 @@ final class ItemDownloadTaskFamily extends $Family
 final offlineRevisionProvider = OfflineRevisionProvider._();
 
 /// Changes whenever downloaded files appear or are deleted.
-final class OfflineRevisionProvider extends $NotifierProvider<OfflineRevision, int> {
+final class OfflineRevisionProvider
+    extends $NotifierProvider<OfflineRevision, int> {
   /// Changes whenever downloaded files appear or are deleted.
   OfflineRevisionProvider._()
     : super(
@@ -342,7 +388,10 @@ final class OfflineRevisionProvider extends $NotifierProvider<OfflineRevision, i
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(int value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<int>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
   }
 }
 
@@ -356,7 +405,14 @@ abstract class _$OfflineRevision extends $Notifier<int> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<int, int>;
-    final element = ref.element as $ClassProviderElement<AnyNotifier<int, int>, int, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<int, int>,
+              int,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }
@@ -364,7 +420,8 @@ abstract class _$OfflineRevision extends $Notifier<int> {
 @ProviderFor(offlineStorage)
 final offlineStorageProvider = OfflineStorageProvider._();
 
-final class OfflineStorageProvider extends $FunctionalProvider<OfflineStorage, OfflineStorage, OfflineStorage>
+final class OfflineStorageProvider
+    extends $FunctionalProvider<OfflineStorage, OfflineStorage, OfflineStorage>
     with $Provider<OfflineStorage> {
   OfflineStorageProvider._()
     : super(
@@ -382,7 +439,8 @@ final class OfflineStorageProvider extends $FunctionalProvider<OfflineStorage, O
 
   @$internal
   @override
-  $ProviderElement<OfflineStorage> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<OfflineStorage> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   OfflineStorage create(Ref ref) {
@@ -391,7 +449,10 @@ final class OfflineStorageProvider extends $FunctionalProvider<OfflineStorage, O
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(OfflineStorage value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<OfflineStorage>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<OfflineStorage>(value),
+    );
   }
 }
 
@@ -407,7 +468,9 @@ final class OfflineContentsProvider
           List<DownloadedContent>,
           FutureOr<List<DownloadedContent>>
         >
-    with $FutureModifier<List<DownloadedContent>>, $FutureProvider<List<DownloadedContent>> {
+    with
+        $FutureModifier<List<DownloadedContent>>,
+        $FutureProvider<List<DownloadedContent>> {
   OfflineContentsProvider._()
     : super(
         from: null,
@@ -424,8 +487,9 @@ final class OfflineContentsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<DownloadedContent>> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<List<DownloadedContent>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<List<DownloadedContent>> create(Ref ref) {
@@ -439,16 +503,25 @@ String _$offlineContentsHash() => r'9402be932fb0bb567d53ac867c67c69488d8699c';
 final offlineContentProvider = OfflineContentFamily._();
 
 final class OfflineContentProvider
-    extends $FunctionalProvider<AsyncValue<DownloadedContent?>, DownloadedContent?, FutureOr<DownloadedContent?>>
-    with $FutureModifier<DownloadedContent?>, $FutureProvider<DownloadedContent?> {
-  OfflineContentProvider._({required OfflineContentFamily super.from, required (String, String) super.argument})
-    : super(
-        retry: null,
-        name: r'offlineContentProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+    extends
+        $FunctionalProvider<
+          AsyncValue<DownloadedContent?>,
+          DownloadedContent?,
+          FutureOr<DownloadedContent?>
+        >
+    with
+        $FutureModifier<DownloadedContent?>,
+        $FutureProvider<DownloadedContent?> {
+  OfflineContentProvider._({
+    required OfflineContentFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'offlineContentProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$offlineContentHash();
@@ -462,8 +535,9 @@ final class OfflineContentProvider
 
   @$internal
   @override
-  $FutureProviderElement<DownloadedContent?> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<DownloadedContent?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<DownloadedContent?> create(Ref ref) {
@@ -485,7 +559,11 @@ final class OfflineContentProvider
 String _$offlineContentHash() => r'25b02cd8c111ad8ff2cacbde164d5aa265ff432f';
 
 final class OfflineContentFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<DownloadedContent?>, (String, String)> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<DownloadedContent?>,
+          (String, String)
+        > {
   OfflineContentFamily._()
     : super(
         retry: null,
@@ -533,7 +611,10 @@ final class OfflineFilesProvider extends $NotifierProvider<OfflineFiles, void> {
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(void value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<void>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
   }
 }
 
@@ -548,7 +629,14 @@ abstract class _$OfflineFiles extends $Notifier<void> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<void, void>;
-    final element = ref.element as $ClassProviderElement<AnyNotifier<void, void>, void, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }

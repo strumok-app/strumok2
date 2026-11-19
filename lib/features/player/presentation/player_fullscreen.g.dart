@@ -14,7 +14,8 @@ part of 'player_fullscreen.dart';
 final playerFullscreenProvider = PlayerFullscreenProvider._();
 
 /// Desktop window full screen while in the player; left when the player closes.
-final class PlayerFullscreenProvider extends $NotifierProvider<PlayerFullscreen, bool> {
+final class PlayerFullscreenProvider
+    extends $NotifierProvider<PlayerFullscreen, bool> {
   /// Desktop window full screen while in the player; left when the player closes.
   PlayerFullscreenProvider._()
     : super(
@@ -36,7 +37,10 @@ final class PlayerFullscreenProvider extends $NotifierProvider<PlayerFullscreen,
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
   }
 }
 
@@ -50,7 +54,14 @@ abstract class _$PlayerFullscreen extends $Notifier<bool> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
-    final element = ref.element as $ClassProviderElement<AnyNotifier<bool, bool>, bool, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }

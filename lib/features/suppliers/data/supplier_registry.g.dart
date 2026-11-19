@@ -15,7 +15,9 @@ final bundleDownloadKeyProvider = BundleDownloadKeyProvider._();
 
 /// Download key for this device's platform/ABI; computed in main().
 
-final class BundleDownloadKeyProvider extends $FunctionalProvider<String?, String?, String?> with $Provider<String?> {
+final class BundleDownloadKeyProvider
+    extends $FunctionalProvider<String?, String?, String?>
+    with $Provider<String?> {
   /// Download key for this device's platform/ABI; computed in main().
   BundleDownloadKeyProvider._()
     : super(
@@ -33,7 +35,8 @@ final class BundleDownloadKeyProvider extends $FunctionalProvider<String?, Strin
 
   @$internal
   @override
-  $ProviderElement<String?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   String? create(Ref ref) {
@@ -42,7 +45,10 @@ final class BundleDownloadKeyProvider extends $FunctionalProvider<String?, Strin
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<String?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
   }
 }
 
@@ -56,7 +62,12 @@ final initialSupplierBundleProvider = InitialSupplierBundleProvider._();
 /// Bundle loaded before runApp(); overridden in main().
 
 final class InitialSupplierBundleProvider
-    extends $FunctionalProvider<SupplierBundleState, SupplierBundleState, SupplierBundleState>
+    extends
+        $FunctionalProvider<
+          SupplierBundleState,
+          SupplierBundleState,
+          SupplierBundleState
+        >
     with $Provider<SupplierBundleState> {
   /// Bundle loaded before runApp(); overridden in main().
   InitialSupplierBundleProvider._()
@@ -75,7 +86,9 @@ final class InitialSupplierBundleProvider
 
   @$internal
   @override
-  $ProviderElement<SupplierBundleState> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<SupplierBundleState> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   SupplierBundleState create(Ref ref) {
@@ -84,17 +97,26 @@ final class InitialSupplierBundleProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(SupplierBundleState value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<SupplierBundleState>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SupplierBundleState>(value),
+    );
   }
 }
 
-String _$initialSupplierBundleHash() => r'521e9f1d5dfb92b5ccbe90f54bdc23a1fa177b88';
+String _$initialSupplierBundleHash() =>
+    r'521e9f1d5dfb92b5ccbe90f54bdc23a1fa177b88';
 
 @ProviderFor(supplierBundleInstaller)
 final supplierBundleInstallerProvider = SupplierBundleInstallerProvider._();
 
 final class SupplierBundleInstallerProvider
-    extends $FunctionalProvider<SupplierBundleInstaller, SupplierBundleInstaller, SupplierBundleInstaller>
+    extends
+        $FunctionalProvider<
+          SupplierBundleInstaller,
+          SupplierBundleInstaller,
+          SupplierBundleInstaller
+        >
     with $Provider<SupplierBundleInstaller> {
   SupplierBundleInstallerProvider._()
     : super(
@@ -112,7 +134,9 @@ final class SupplierBundleInstallerProvider
 
   @$internal
   @override
-  $ProviderElement<SupplierBundleInstaller> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<SupplierBundleInstaller> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   SupplierBundleInstaller create(Ref ref) {
@@ -121,16 +145,21 @@ final class SupplierBundleInstallerProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(SupplierBundleInstaller value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<SupplierBundleInstaller>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SupplierBundleInstaller>(value),
+    );
   }
 }
 
-String _$supplierBundleInstallerHash() => r'097c848fd486db782a9cd570c1a8512d05ff7128';
+String _$supplierBundleInstallerHash() =>
+    r'097c848fd486db782a9cd570c1a8512d05ff7128';
 
 @ProviderFor(SupplierRegistry)
 final supplierRegistryProvider = SupplierRegistryProvider._();
 
-final class SupplierRegistryProvider extends $NotifierProvider<SupplierRegistry, SupplierBundleState> {
+final class SupplierRegistryProvider
+    extends $NotifierProvider<SupplierRegistry, SupplierBundleState> {
   SupplierRegistryProvider._()
     : super(
         from: null,
@@ -151,7 +180,10 @@ final class SupplierRegistryProvider extends $NotifierProvider<SupplierRegistry,
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(SupplierBundleState value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<SupplierBundleState>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SupplierBundleState>(value),
+    );
   }
 }
 
@@ -179,7 +211,12 @@ abstract class _$SupplierRegistry extends $Notifier<SupplierBundleState> {
 final suppliersProvider = SuppliersProvider._();
 
 final class SuppliersProvider
-    extends $FunctionalProvider<List<ContentSupplier>, List<ContentSupplier>, List<ContentSupplier>>
+    extends
+        $FunctionalProvider<
+          List<ContentSupplier>,
+          List<ContentSupplier>,
+          List<ContentSupplier>
+        >
     with $Provider<List<ContentSupplier>> {
   SuppliersProvider._()
     : super(
@@ -197,7 +234,9 @@ final class SuppliersProvider
 
   @$internal
   @override
-  $ProviderElement<List<ContentSupplier>> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<List<ContentSupplier>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   List<ContentSupplier> create(Ref ref) {
@@ -206,7 +245,10 @@ final class SuppliersProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<ContentSupplier> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<ContentSupplier>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<ContentSupplier>>(value),
+    );
   }
 }
 
@@ -215,16 +257,20 @@ String _$suppliersHash() => r'cd6a54eab96558705497020b1b2dc78fffef143f';
 @ProviderFor(supplierByName)
 final supplierByNameProvider = SupplierByNameFamily._();
 
-final class SupplierByNameProvider extends $FunctionalProvider<ContentSupplier, ContentSupplier, ContentSupplier>
+final class SupplierByNameProvider
+    extends
+        $FunctionalProvider<ContentSupplier, ContentSupplier, ContentSupplier>
     with $Provider<ContentSupplier> {
-  SupplierByNameProvider._({required SupplierByNameFamily super.from, required String super.argument})
-    : super(
-        retry: null,
-        name: r'supplierByNameProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  SupplierByNameProvider._({
+    required SupplierByNameFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'supplierByNameProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$supplierByNameHash();
@@ -238,7 +284,8 @@ final class SupplierByNameProvider extends $FunctionalProvider<ContentSupplier, 
 
   @$internal
   @override
-  $ProviderElement<ContentSupplier> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<ContentSupplier> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   ContentSupplier create(Ref ref) {
@@ -248,7 +295,10 @@ final class SupplierByNameProvider extends $FunctionalProvider<ContentSupplier, 
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ContentSupplier value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<ContentSupplier>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ContentSupplier>(value),
+    );
   }
 
   @override
@@ -264,7 +314,8 @@ final class SupplierByNameProvider extends $FunctionalProvider<ContentSupplier, 
 
 String _$supplierByNameHash() => r'933671f01b2d5208080a432d914547b17d1f5485';
 
-final class SupplierByNameFamily extends $Family with $FunctionalFamilyOverride<ContentSupplier, String> {
+final class SupplierByNameFamily extends $Family
+    with $FunctionalFamilyOverride<ContentSupplier, String> {
   SupplierByNameFamily._()
     : super(
         retry: null,
@@ -274,7 +325,8 @@ final class SupplierByNameFamily extends $Family with $FunctionalFamilyOverride<
         isAutoDispose: true,
       );
 
-  SupplierByNameProvider call(String name) => SupplierByNameProvider._(argument: name, from: this);
+  SupplierByNameProvider call(String name) =>
+      SupplierByNameProvider._(argument: name, from: this);
 
   @override
   String toString() => r'supplierByNameProvider';

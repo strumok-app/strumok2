@@ -12,7 +12,13 @@ part of 'window_fullscreen.dart';
 @ProviderFor(windowFullscreen)
 final windowFullscreenProvider = WindowFullscreenProvider._();
 
-final class WindowFullscreenProvider extends $FunctionalProvider<WindowFullscreen, WindowFullscreen, WindowFullscreen>
+final class WindowFullscreenProvider
+    extends
+        $FunctionalProvider<
+          WindowFullscreen,
+          WindowFullscreen,
+          WindowFullscreen
+        >
     with $Provider<WindowFullscreen> {
   WindowFullscreenProvider._()
     : super(
@@ -30,7 +36,8 @@ final class WindowFullscreenProvider extends $FunctionalProvider<WindowFullscree
 
   @$internal
   @override
-  $ProviderElement<WindowFullscreen> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<WindowFullscreen> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   WindowFullscreen create(Ref ref) {
@@ -39,7 +46,10 @@ final class WindowFullscreenProvider extends $FunctionalProvider<WindowFullscree
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(WindowFullscreen value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<WindowFullscreen>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<WindowFullscreen>(value),
+    );
   }
 }
 

@@ -14,7 +14,8 @@ part of 'search_providers.dart';
 final searchFiltersProvider = SearchFiltersNotifierProvider._();
 
 /// Persisted filters (spec-09 keys `selected_content_language|type|suppliers`).
-final class SearchFiltersNotifierProvider extends $NotifierProvider<SearchFiltersNotifier, SearchFilters> {
+final class SearchFiltersNotifierProvider
+    extends $NotifierProvider<SearchFiltersNotifier, SearchFilters> {
   /// Persisted filters (spec-09 keys `selected_content_language|type|suppliers`).
   SearchFiltersNotifierProvider._()
     : super(
@@ -36,11 +37,15 @@ final class SearchFiltersNotifierProvider extends $NotifierProvider<SearchFilter
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(SearchFilters value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<SearchFilters>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SearchFilters>(value),
+    );
   }
 }
 
-String _$searchFiltersNotifierHash() => r'f1a026a59bab61e3febab96ad2bb8c39363548ec';
+String _$searchFiltersNotifierHash() =>
+    r'f1a026a59bab61e3febab96ad2bb8c39363548ec';
 
 /// Persisted filters (spec-09 keys `selected_content_language|type|suppliers`).
 
@@ -52,7 +57,12 @@ abstract class _$SearchFiltersNotifier extends $Notifier<SearchFilters> {
     final ref = this.ref as $Ref<SearchFilters, SearchFilters>;
     final element =
         ref.element
-            as $ClassProviderElement<AnyNotifier<SearchFilters, SearchFilters>, SearchFilters, Object?, Object?>;
+            as $ClassProviderElement<
+              AnyNotifier<SearchFilters, SearchFilters>,
+              SearchFilters,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }
@@ -63,7 +73,8 @@ abstract class _$SearchFiltersNotifier extends $Notifier<SearchFilters> {
 final searchHistoryProvider = SearchHistoryProvider._();
 
 /// Per profile (spec-05 §5.2).
-final class SearchHistoryProvider extends $NotifierProvider<SearchHistory, List<SearchHistoryEntry>> {
+final class SearchHistoryProvider
+    extends $NotifierProvider<SearchHistory, List<SearchHistoryEntry>> {
   /// Per profile (spec-05 §5.2).
   SearchHistoryProvider._()
     : super(
@@ -85,7 +96,10 @@ final class SearchHistoryProvider extends $NotifierProvider<SearchHistory, List<
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<SearchHistoryEntry> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<SearchHistoryEntry>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<SearchHistoryEntry>>(value),
+    );
   }
 }
 
@@ -98,7 +112,8 @@ abstract class _$SearchHistory extends $Notifier<List<SearchHistoryEntry>> {
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<List<SearchHistoryEntry>, List<SearchHistoryEntry>>;
+    final ref =
+        this.ref as $Ref<List<SearchHistoryEntry>, List<SearchHistoryEntry>>;
     final element =
         ref.element
             as $ClassProviderElement<
@@ -117,7 +132,8 @@ abstract class _$SearchHistory extends $Notifier<List<SearchHistoryEntry>> {
 final searchQueryProvider = SearchQueryProvider._();
 
 /// The submitted query; kept while the app runs so results survive tab switches.
-final class SearchQueryProvider extends $NotifierProvider<SearchQuery, String?> {
+final class SearchQueryProvider
+    extends $NotifierProvider<SearchQuery, String?> {
   /// The submitted query; kept while the app runs so results survive tab switches.
   SearchQueryProvider._()
     : super(
@@ -139,7 +155,10 @@ final class SearchQueryProvider extends $NotifierProvider<SearchQuery, String?> 
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<String?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
   }
 }
 
@@ -153,7 +172,14 @@ abstract class _$SearchQuery extends $Notifier<String?> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<String?, String?>;
-    final element = ref.element as $ClassProviderElement<AnyNotifier<String?, String?>, String?, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String?, String?>,
+              String?,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }
@@ -161,7 +187,8 @@ abstract class _$SearchQuery extends $Notifier<String?> {
 @ProviderFor(searchSupplierNames)
 final searchSupplierNamesProvider = SearchSupplierNamesProvider._();
 
-final class SearchSupplierNamesProvider extends $FunctionalProvider<List<String>, List<String>, List<String>>
+final class SearchSupplierNamesProvider
+    extends $FunctionalProvider<List<String>, List<String>, List<String>>
     with $Provider<List<String>> {
   SearchSupplierNamesProvider._()
     : super(
@@ -179,7 +206,8 @@ final class SearchSupplierNamesProvider extends $FunctionalProvider<List<String>
 
   @$internal
   @override
-  $ProviderElement<List<String>> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<List<String>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   List<String> create(Ref ref) {
@@ -188,11 +216,15 @@ final class SearchSupplierNamesProvider extends $FunctionalProvider<List<String>
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<String> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<String>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
   }
 }
 
-String _$searchSupplierNamesHash() => r'371c166c2283477c3dc806ea181b93fb260bc3c4';
+String _$searchSupplierNamesHash() =>
+    r'371c166c2283477c3dc806ea181b93fb260bc3c4';
 
 /// One supplier's results for a query; suppliers load in parallel, each paginates independently.
 
@@ -200,16 +232,19 @@ String _$searchSupplierNamesHash() => r'371c166c2283477c3dc806ea181b93fb260bc3c4
 final searchItemsProvider = SearchItemsFamily._();
 
 /// One supplier's results for a query; suppliers load in parallel, each paginates independently.
-final class SearchItemsProvider extends $NotifierProvider<SearchItems, PagedItems<ContentInfo>> {
+final class SearchItemsProvider
+    extends $NotifierProvider<SearchItems, PagedItems<ContentInfo>> {
   /// One supplier's results for a query; suppliers load in parallel, each paginates independently.
-  SearchItemsProvider._({required SearchItemsFamily super.from, required (String, String) super.argument})
-    : super(
-        retry: null,
-        name: r'searchItemsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  SearchItemsProvider._({
+    required SearchItemsFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'searchItemsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$searchItemsHash();
@@ -227,7 +262,10 @@ final class SearchItemsProvider extends $NotifierProvider<SearchItems, PagedItem
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(PagedItems<ContentInfo> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<PagedItems<ContentInfo>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PagedItems<ContentInfo>>(value),
+    );
   }
 
   @override
@@ -283,7 +321,8 @@ abstract class _$SearchItems extends $Notifier<PagedItems<ContentInfo>> {
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<PagedItems<ContentInfo>, PagedItems<ContentInfo>>;
+    final ref =
+        this.ref as $Ref<PagedItems<ContentInfo>, PagedItems<ContentInfo>>;
     final element =
         ref.element
             as $ClassProviderElement<
@@ -303,7 +342,9 @@ final searchNothingFoundProvider = SearchNothingFoundProvider._();
 
 /// True once every searched supplier finished its first page with no results.
 
-final class SearchNothingFoundProvider extends $FunctionalProvider<bool, bool, bool> with $Provider<bool> {
+final class SearchNothingFoundProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
   /// True once every searched supplier finished its first page with no results.
   SearchNothingFoundProvider._()
     : super(
@@ -321,7 +362,8 @@ final class SearchNothingFoundProvider extends $FunctionalProvider<bool, bool, b
 
   @$internal
   @override
-  $ProviderElement<bool> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   bool create(Ref ref) {
@@ -330,8 +372,12 @@ final class SearchNothingFoundProvider extends $FunctionalProvider<bool, bool, b
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
   }
 }
 
-String _$searchNothingFoundHash() => r'ed590412931d7ed08bd8a4ed97eac828ec824ab4';
+String _$searchNothingFoundHash() =>
+    r'ed590412931d7ed08bd8a4ed97eac828ec824ab4';

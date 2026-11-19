@@ -18,18 +18,25 @@ final contentDetailsProvider = ContentDetailsFamily._();
 /// with the download (spec-08 §8.4).
 
 final class ContentDetailsProvider
-    extends $FunctionalProvider<AsyncValue<ContentDetails>, ContentDetails, FutureOr<ContentDetails>>
+    extends
+        $FunctionalProvider<
+          AsyncValue<ContentDetails>,
+          ContentDetails,
+          FutureOr<ContentDetails>
+        >
     with $FutureModifier<ContentDetails>, $FutureProvider<ContentDetails> {
   /// Supplier details; in offline mode (or when the supplier fails and the content is downloaded) the details saved
   /// with the download (spec-08 §8.4).
-  ContentDetailsProvider._({required ContentDetailsFamily super.from, required (String, String) super.argument})
-    : super(
-        retry: null,
-        name: r'contentDetailsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  ContentDetailsProvider._({
+    required ContentDetailsFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'contentDetailsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$contentDetailsHash();
@@ -43,7 +50,9 @@ final class ContentDetailsProvider
 
   @$internal
   @override
-  $FutureProviderElement<ContentDetails> $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+  $FutureProviderElement<ContentDetails> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<ContentDetails> create(Ref ref) {
@@ -104,17 +113,21 @@ final class MediaItemsProvider
           List<ContentMediaItem>,
           FutureOr<List<ContentMediaItem>>
         >
-    with $FutureModifier<List<ContentMediaItem>>, $FutureProvider<List<ContentMediaItem>> {
+    with
+        $FutureModifier<List<ContentMediaItem>>,
+        $FutureProvider<List<ContentMediaItem>> {
   /// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
   /// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
-  MediaItemsProvider._({required MediaItemsFamily super.from, required (String, String) super.argument})
-    : super(
-        retry: null,
-        name: r'mediaItemsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  MediaItemsProvider._({
+    required MediaItemsFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'mediaItemsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$mediaItemsHash();
@@ -128,8 +141,9 @@ final class MediaItemsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<ContentMediaItem>> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<List<ContentMediaItem>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<List<ContentMediaItem>> create(Ref ref) {
@@ -154,7 +168,11 @@ String _$mediaItemsHash() => r'2ebcd8fec4304beb917a563d3f89d4d413ee6f4c';
 /// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
 
 final class MediaItemsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<ContentMediaItem>>, (String, String)> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<ContentMediaItem>>,
+          (String, String)
+        > {
   MediaItemsFamily._()
     : super(
         retry: null,
@@ -167,7 +185,8 @@ final class MediaItemsFamily extends $Family
   /// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
   /// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].
 
-  MediaItemsProvider call(String supplier, String id) => MediaItemsProvider._(argument: (supplier, id), from: this);
+  MediaItemsProvider call(String supplier, String id) =>
+      MediaItemsProvider._(argument: (supplier, id), from: this);
 
   @override
   String toString() => r'mediaItemsProvider';

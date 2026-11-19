@@ -15,7 +15,13 @@ final firebaseOptionsProvider = FirebaseOptionsProvider._();
 
 /// From the `FIREBASE` define; null disables accounts and sync (e.g. builds without secrets, tests).
 
-final class FirebaseOptionsProvider extends $FunctionalProvider<FirebaseOptions?, FirebaseOptions?, FirebaseOptions?>
+final class FirebaseOptionsProvider
+    extends
+        $FunctionalProvider<
+          FirebaseOptions?,
+          FirebaseOptions?,
+          FirebaseOptions?
+        >
     with $Provider<FirebaseOptions?> {
   /// From the `FIREBASE` define; null disables accounts and sync (e.g. builds without secrets, tests).
   FirebaseOptionsProvider._()
@@ -34,7 +40,8 @@ final class FirebaseOptionsProvider extends $FunctionalProvider<FirebaseOptions?
 
   @$internal
   @override
-  $ProviderElement<FirebaseOptions?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<FirebaseOptions?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   FirebaseOptions? create(Ref ref) {
@@ -43,7 +50,10 @@ final class FirebaseOptionsProvider extends $FunctionalProvider<FirebaseOptions?
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(FirebaseOptions? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<FirebaseOptions?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FirebaseOptions?>(value),
+    );
   }
 }
 
@@ -52,7 +62,9 @@ String _$firebaseOptionsHash() => r'02bdbfbf91551e8f8b84d952225e6fcad8f473d4';
 @ProviderFor(accountsAvailable)
 final accountsAvailableProvider = AccountsAvailableProvider._();
 
-final class AccountsAvailableProvider extends $FunctionalProvider<bool, bool, bool> with $Provider<bool> {
+final class AccountsAvailableProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
   AccountsAvailableProvider._()
     : super(
         from: null,
@@ -69,7 +81,8 @@ final class AccountsAvailableProvider extends $FunctionalProvider<bool, bool, bo
 
   @$internal
   @override
-  $ProviderElement<bool> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   bool create(Ref ref) {
@@ -78,7 +91,10 @@ final class AccountsAvailableProvider extends $FunctionalProvider<bool, bool, bo
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
   }
 }
 
@@ -88,7 +104,12 @@ String _$accountsAvailableHash() => r'afbd11e91ff350d6e7b44071ebd80b3b9bfe5da4';
 final profileFirebaseAppsProvider = ProfileFirebaseAppsProvider._();
 
 final class ProfileFirebaseAppsProvider
-    extends $FunctionalProvider<ProfileFirebaseApps?, ProfileFirebaseApps?, ProfileFirebaseApps?>
+    extends
+        $FunctionalProvider<
+          ProfileFirebaseApps?,
+          ProfileFirebaseApps?,
+          ProfileFirebaseApps?
+        >
     with $Provider<ProfileFirebaseApps?> {
   ProfileFirebaseAppsProvider._()
     : super(
@@ -106,7 +127,9 @@ final class ProfileFirebaseAppsProvider
 
   @$internal
   @override
-  $ProviderElement<ProfileFirebaseApps?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<ProfileFirebaseApps?> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   ProfileFirebaseApps? create(Ref ref) {
@@ -115,11 +138,15 @@ final class ProfileFirebaseAppsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ProfileFirebaseApps? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<ProfileFirebaseApps?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProfileFirebaseApps?>(value),
+    );
   }
 }
 
-String _$profileFirebaseAppsHash() => r'0f48834a7c058df217a45beb2f5cdd99fa9f770b';
+String _$profileFirebaseAppsHash() =>
+    r'0f48834a7c058df217a45beb2f5cdd99fa9f770b';
 
 /// Creates a profile's auth session in its own Firebase app; null when accounts are unavailable. Overridden in tests.
 
@@ -129,7 +156,12 @@ final profileAuthFactoryProvider = ProfileAuthFactoryProvider._();
 /// Creates a profile's auth session in its own Firebase app; null when accounts are unavailable. Overridden in tests.
 
 final class ProfileAuthFactoryProvider
-    extends $FunctionalProvider<ProfileAuthFactory?, ProfileAuthFactory?, ProfileAuthFactory?>
+    extends
+        $FunctionalProvider<
+          ProfileAuthFactory?,
+          ProfileAuthFactory?,
+          ProfileAuthFactory?
+        >
     with $Provider<ProfileAuthFactory?> {
   /// Creates a profile's auth session in its own Firebase app; null when accounts are unavailable. Overridden in tests.
   ProfileAuthFactoryProvider._()
@@ -148,7 +180,9 @@ final class ProfileAuthFactoryProvider
 
   @$internal
   @override
-  $ProviderElement<ProfileAuthFactory?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<ProfileAuthFactory?> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   ProfileAuthFactory? create(Ref ref) {
@@ -157,11 +191,15 @@ final class ProfileAuthFactoryProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ProfileAuthFactory? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<ProfileAuthFactory?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ProfileAuthFactory?>(value),
+    );
   }
 }
 
-String _$profileAuthFactoryHash() => r'8f569e03594a17ce6b5fd8e697de724e74a90970';
+String _$profileAuthFactoryHash() =>
+    r'8f569e03594a17ce6b5fd8e697de724e74a90970';
 
 /// Auth session of a profile (spec-05 §5.2); null when accounts are unavailable.
 
@@ -171,17 +209,24 @@ final profileAuthProvider = ProfileAuthFamily._();
 /// Auth session of a profile (spec-05 §5.2); null when accounts are unavailable.
 
 final class ProfileAuthProvider
-    extends $FunctionalProvider<AsyncValue<ProfileAuth?>, ProfileAuth?, FutureOr<ProfileAuth?>>
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProfileAuth?>,
+          ProfileAuth?,
+          FutureOr<ProfileAuth?>
+        >
     with $FutureModifier<ProfileAuth?>, $FutureProvider<ProfileAuth?> {
   /// Auth session of a profile (spec-05 §5.2); null when accounts are unavailable.
-  ProfileAuthProvider._({required ProfileAuthFamily super.from, required String super.argument})
-    : super(
-        retry: null,
-        name: r'profileAuthProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  ProfileAuthProvider._({
+    required ProfileAuthFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'profileAuthProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$profileAuthHash();
@@ -195,7 +240,9 @@ final class ProfileAuthProvider
 
   @$internal
   @override
-  $FutureProviderElement<ProfileAuth?> $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+  $FutureProviderElement<ProfileAuth?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<ProfileAuth?> create(Ref ref) {
@@ -218,7 +265,8 @@ String _$profileAuthHash() => r'5680bb04a1b21e0beec4f2b7a241b8f260ed9b1a';
 
 /// Auth session of a profile (spec-05 §5.2); null when accounts are unavailable.
 
-final class ProfileAuthFamily extends $Family with $FunctionalFamilyOverride<FutureOr<ProfileAuth?>, String> {
+final class ProfileAuthFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ProfileAuth?>, String> {
   ProfileAuthFamily._()
     : super(
         retry: null,
@@ -230,7 +278,8 @@ final class ProfileAuthFamily extends $Family with $FunctionalFamilyOverride<Fut
 
   /// Auth session of a profile (spec-05 §5.2); null when accounts are unavailable.
 
-  ProfileAuthProvider call(String profileId) => ProfileAuthProvider._(argument: profileId, from: this);
+  ProfileAuthProvider call(String profileId) =>
+      ProfileAuthProvider._(argument: profileId, from: this);
 
   @override
   String toString() => r'profileAuthProvider';
@@ -244,7 +293,12 @@ final googleSignInServiceProvider = GoogleSignInServiceProvider._();
 /// Native on Android phones/tablets, browser consent on desktop, none on TV (pairing code only, spec-04 §4.2).
 
 final class GoogleSignInServiceProvider
-    extends $FunctionalProvider<GoogleSignInService, GoogleSignInService, GoogleSignInService>
+    extends
+        $FunctionalProvider<
+          GoogleSignInService,
+          GoogleSignInService,
+          GoogleSignInService
+        >
     with $Provider<GoogleSignInService> {
   /// Native on Android phones/tablets, browser consent on desktop, none on TV (pairing code only, spec-04 §4.2).
   GoogleSignInServiceProvider._()
@@ -263,7 +317,9 @@ final class GoogleSignInServiceProvider
 
   @$internal
   @override
-  $ProviderElement<GoogleSignInService> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<GoogleSignInService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   GoogleSignInService create(Ref ref) {
@@ -272,16 +328,22 @@ final class GoogleSignInServiceProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(GoogleSignInService value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<GoogleSignInService>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GoogleSignInService>(value),
+    );
   }
 }
 
-String _$googleSignInServiceHash() => r'397d873598c651671c55b7a1e7ff538c6194493b';
+String _$googleSignInServiceHash() =>
+    r'397d873598c651671c55b7a1e7ff538c6194493b';
 
 @ProviderFor(googleSignInAvailable)
 final googleSignInAvailableProvider = GoogleSignInAvailableProvider._();
 
-final class GoogleSignInAvailableProvider extends $FunctionalProvider<bool, bool, bool> with $Provider<bool> {
+final class GoogleSignInAvailableProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
   GoogleSignInAvailableProvider._()
     : super(
         from: null,
@@ -298,7 +360,8 @@ final class GoogleSignInAvailableProvider extends $FunctionalProvider<bool, bool
 
   @$internal
   @override
-  $ProviderElement<bool> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   bool create(Ref ref) {
@@ -307,16 +370,21 @@ final class GoogleSignInAvailableProvider extends $FunctionalProvider<bool, bool
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
   }
 }
 
-String _$googleSignInAvailableHash() => r'1fdd4bc5fd590d64d1809e8b79d2f7e6a8d8a9bd';
+String _$googleSignInAvailableHash() =>
+    r'1fdd4bc5fd590d64d1809e8b79d2f7e6a8d8a9bd';
 
 @ProviderFor(pairingApi)
 final pairingApiProvider = PairingApiProvider._();
 
-final class PairingApiProvider extends $FunctionalProvider<PairingApi?, PairingApi?, PairingApi?>
+final class PairingApiProvider
+    extends $FunctionalProvider<PairingApi?, PairingApi?, PairingApi?>
     with $Provider<PairingApi?> {
   PairingApiProvider._()
     : super(
@@ -334,7 +402,8 @@ final class PairingApiProvider extends $FunctionalProvider<PairingApi?, PairingA
 
   @$internal
   @override
-  $ProviderElement<PairingApi?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<PairingApi?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   PairingApi? create(Ref ref) {
@@ -343,7 +412,10 @@ final class PairingApiProvider extends $FunctionalProvider<PairingApi?, PairingA
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(PairingApi? value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<PairingApi?>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PairingApi?>(value),
+    );
   }
 }
 
@@ -358,18 +430,22 @@ final authUserProvider = AuthUserFamily._();
 /// Signed-in user of a profile. Firebase is only started for linked profiles; the first event is the restored
 /// session. Cached account details on the profile follow the session, and a lost session unlinks the profile.
 
-final class AuthUserProvider extends $FunctionalProvider<AsyncValue<AppUser?>, AppUser?, Stream<AppUser?>>
+final class AuthUserProvider
+    extends
+        $FunctionalProvider<AsyncValue<AppUser?>, AppUser?, Stream<AppUser?>>
     with $FutureModifier<AppUser?>, $StreamProvider<AppUser?> {
   /// Signed-in user of a profile. Firebase is only started for linked profiles; the first event is the restored
   /// session. Cached account details on the profile follow the session, and a lost session unlinks the profile.
-  AuthUserProvider._({required AuthUserFamily super.from, required String super.argument})
-    : super(
-        retry: null,
-        name: r'authUserProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  AuthUserProvider._({
+    required AuthUserFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'authUserProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$authUserHash();
@@ -383,7 +459,8 @@ final class AuthUserProvider extends $FunctionalProvider<AsyncValue<AppUser?>, A
 
   @$internal
   @override
-  $StreamProviderElement<AppUser?> $createElement($ProviderPointer pointer) => $StreamProviderElement(pointer);
+  $StreamProviderElement<AppUser?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
 
   @override
   Stream<AppUser?> create(Ref ref) {
@@ -407,7 +484,8 @@ String _$authUserHash() => r'56e065ca640e994cb16df171d837a690e6d866d6';
 /// Signed-in user of a profile. Firebase is only started for linked profiles; the first event is the restored
 /// session. Cached account details on the profile follow the session, and a lost session unlinks the profile.
 
-final class AuthUserFamily extends $Family with $FunctionalFamilyOverride<Stream<AppUser?>, String> {
+final class AuthUserFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<AppUser?>, String> {
   AuthUserFamily._()
     : super(
         retry: null,
@@ -420,7 +498,8 @@ final class AuthUserFamily extends $Family with $FunctionalFamilyOverride<Stream
   /// Signed-in user of a profile. Firebase is only started for linked profiles; the first event is the restored
   /// session. Cached account details on the profile follow the session, and a lost session unlinks the profile.
 
-  AuthUserProvider call(String profileId) => AuthUserProvider._(argument: profileId, from: this);
+  AuthUserProvider call(String profileId) =>
+      AuthUserProvider._(argument: profileId, from: this);
 
   @override
   String toString() => r'authUserProvider';
@@ -430,7 +509,12 @@ final class AuthUserFamily extends $Family with $FunctionalFamilyOverride<Stream
 final activeAuthUserProvider = ActiveAuthUserProvider._();
 
 final class ActiveAuthUserProvider
-    extends $FunctionalProvider<AsyncValue<AppUser?>, AsyncValue<AppUser?>, AsyncValue<AppUser?>>
+    extends
+        $FunctionalProvider<
+          AsyncValue<AppUser?>,
+          AsyncValue<AppUser?>,
+          AsyncValue<AppUser?>
+        >
     with $Provider<AsyncValue<AppUser?>> {
   ActiveAuthUserProvider._()
     : super(
@@ -448,7 +532,9 @@ final class ActiveAuthUserProvider
 
   @$internal
   @override
-  $ProviderElement<AsyncValue<AppUser?>> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<AsyncValue<AppUser?>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   AsyncValue<AppUser?> create(Ref ref) {
@@ -457,7 +543,10 @@ final class ActiveAuthUserProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AsyncValue<AppUser?> value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<AsyncValue<AppUser?>>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<AppUser?>>(value),
+    );
   }
 }
 
@@ -469,7 +558,8 @@ String _$activeAuthUserHash() => r'04a67915e9feab186841e68e6e09cd92ab7f4f36';
 final accountControllerProvider = AccountControllerProvider._();
 
 /// Account actions for a profile (spec-04 §4.2–4.4, spec-05 §5.4). Methods throw [AuthException]s.
-final class AccountControllerProvider extends $NotifierProvider<AccountController, void> {
+final class AccountControllerProvider
+    extends $NotifierProvider<AccountController, void> {
   /// Account actions for a profile (spec-04 §4.2–4.4, spec-05 §5.4). Methods throw [AuthException]s.
   AccountControllerProvider._()
     : super(
@@ -491,7 +581,10 @@ final class AccountControllerProvider extends $NotifierProvider<AccountControlle
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(void value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<void>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
   }
 }
 
@@ -505,7 +598,14 @@ abstract class _$AccountController extends $Notifier<void> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<void, void>;
-    final element = ref.element as $ClassProviderElement<AnyNotifier<void, void>, void, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
     return element.handleCreate(ref, build);
   }
 }

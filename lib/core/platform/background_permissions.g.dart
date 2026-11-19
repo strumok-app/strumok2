@@ -13,7 +13,12 @@ part of 'background_permissions.dart';
 final backgroundPermissionsProvider = BackgroundPermissionsProvider._();
 
 final class BackgroundPermissionsProvider
-    extends $FunctionalProvider<BackgroundPermissions, BackgroundPermissions, BackgroundPermissions>
+    extends
+        $FunctionalProvider<
+          BackgroundPermissions,
+          BackgroundPermissions,
+          BackgroundPermissions
+        >
     with $Provider<BackgroundPermissions> {
   BackgroundPermissionsProvider._()
     : super(
@@ -31,7 +36,9 @@ final class BackgroundPermissionsProvider
 
   @$internal
   @override
-  $ProviderElement<BackgroundPermissions> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<BackgroundPermissions> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
   BackgroundPermissions create(Ref ref) {
@@ -40,16 +47,22 @@ final class BackgroundPermissionsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(BackgroundPermissions value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<BackgroundPermissions>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<BackgroundPermissions>(value),
+    );
   }
 }
 
-String _$backgroundPermissionsHash() => r'2b04d76dcecc2d5466f79bba673f3c48be4a5b89';
+String _$backgroundPermissionsHash() =>
+    r'2b04d76dcecc2d5466f79bba673f3c48be4a5b89';
 
 @ProviderFor(directoryPicker)
 final directoryPickerProvider = DirectoryPickerProvider._();
 
-final class DirectoryPickerProvider extends $FunctionalProvider<DirectoryPicker, DirectoryPicker, DirectoryPicker>
+final class DirectoryPickerProvider
+    extends
+        $FunctionalProvider<DirectoryPicker, DirectoryPicker, DirectoryPicker>
     with $Provider<DirectoryPicker> {
   DirectoryPickerProvider._()
     : super(
@@ -67,7 +80,8 @@ final class DirectoryPickerProvider extends $FunctionalProvider<DirectoryPicker,
 
   @$internal
   @override
-  $ProviderElement<DirectoryPicker> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
+  $ProviderElement<DirectoryPicker> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
 
   @override
   DirectoryPicker create(Ref ref) {
@@ -76,7 +90,10 @@ final class DirectoryPickerProvider extends $FunctionalProvider<DirectoryPicker,
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(DirectoryPicker value) {
-    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<DirectoryPicker>(value));
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DirectoryPicker>(value),
+    );
   }
 }
 
