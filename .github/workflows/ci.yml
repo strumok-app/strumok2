@@ -27,7 +27,13 @@ jobs:
       - name: Verify generated code is up to date
         run: |
           flutter gen-l10n
-          dart run build_runner build -dW
+          dart run build_runner build -d
+
+      - name: Analyze
+        run: |
+          flutter analyze
+          (cd packages/content_suppliers_api && dart analyze)
+          (cd packages/content_suppliers_rust && dart analyze)
 
       - name: Test
         run: flutter test
