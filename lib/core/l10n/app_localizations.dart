@@ -518,6 +518,18 @@ abstract class AppLocalizations {
   /// **'Розділи'**
   String get detailsChapters;
 
+  /// Details: video media items failed to load; shown instead of Watch with a Retry button
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося завантажити епізоди'**
+  String get detailsEpisodesLoadError;
+
+  /// Details: manga media items failed to load; shown instead of Read with a Retry button
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося завантажити розділи'**
+  String get detailsChaptersLoadError;
+
   /// Details: similar content row
   ///
   /// In uk, this message translates to:

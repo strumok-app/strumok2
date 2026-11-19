@@ -299,6 +299,14 @@
   "@detailsChapters": {
     "description": "Details: manga media items section"
   },
+  "detailsEpisodesLoadError": "Не вдалося завантажити епізоди",
+  "@detailsEpisodesLoadError": {
+    "description": "Details: video media items failed to load; shown instead of Watch with a Retry button"
+  },
+  "detailsChaptersLoadError": "Не вдалося завантажити розділи",
+  "@detailsChaptersLoadError": {
+    "description": "Details: manga media items failed to load; shown instead of Read with a Retry button"
+  },
   "detailsSimilar": "Схоже",
   "@detailsSimilar": {
     "description": "Details: similar content row"

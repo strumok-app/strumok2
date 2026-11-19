@@ -98,7 +98,7 @@ class _PosterHeaderState extends State<PosterHeader> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(16, 48, 16, 8),
-                                    child: WatchButton(details: widget.details),
+                                    child: WatchAction(details: widget.details),
                                   ),
                                 ),
                               ],

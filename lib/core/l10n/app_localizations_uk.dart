@@ -229,6 +229,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get detailsChapters => 'Розділи';
 
   @override
+  String get detailsEpisodesLoadError => 'Не вдалося завантажити епізоди';
+
+  @override
+  String get detailsChaptersLoadError => 'Не вдалося завантажити розділи';
+
+  @override
   String get detailsSimilar => 'Схоже';
 
   @override

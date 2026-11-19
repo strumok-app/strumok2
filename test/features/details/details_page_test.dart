@@ -145,7 +145,12 @@ void main() {
   testAppWidgets('keys: coming back up to Watch reveals the title above it', (tester) async {
     await open(
       tester,
-      FakeDetails('alpha', 'm1', similar: [for (var i = 0; i < 3; i++) FakeInfo('alpha', 's$i')]),
+      FakeDetails(
+        'alpha',
+        'm1',
+        similar: [for (var i = 0; i < 3; i++) FakeInfo('alpha', 's$i')],
+        loadItems: () async => items,
+      ),
       size: const Size(1280, 420),
     );
     ScrollPosition position() => tester
@@ -191,9 +196,12 @@ void main() {
   });
 
   testAppWidgets('manga details use Read and open the reader', (tester) async {
-    final (container, _) = await open(tester, FakeDetails('alpha', 'k1', mediaType: MediaType.manga));
+    final (container, _) = await open(
+      tester,
+      FakeDetails('alpha', 'k1', mediaType: MediaType.manga, loadItems: () async => [const FakeMediaItem(0, 'Ch 1')]),
+    );
 
-    expect(find.text('Розділи'), findsNothing, reason: 'empty item list is hidden');
+    expect(find.text('Розділи'), findsNothing, reason: 'single chapter has no chapters button');
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
     expect(container.read(routerProvider).state.uri.path, AppRoutes.manga('alpha', 'k1'));
@@ -343,18 +351,76 @@ void main() {
     expect(tester.getRect(find.byType(PosterHeader)).height, lessThan(250));
   });
 
-  testAppWidgets('media items error is retryable in the sheet', (tester) async {
+  final mediaActions = [
+    find.widgetWithText(FilledButton, 'Дивитися'),
+    find.byKey(const Key('downloadButton')),
+    find.byKey(const Key('mediaItemsButton')),
+  ];
+
+  for (final (layout, size) in [('wide', const Size(1280, 720)), ('narrow', const Size(400, 800))]) {
+    testAppWidgets('$layout: media actions are hidden while items load; loader is as tall as Watch', (tester) async {
+      final gate = Completer<List<ContentMediaItem>>();
+      final details = FakeDetails('alpha', 'm1', loadItems: () => gate.future);
+      final container = await pumpApp(
+        tester,
+        size: size,
+        bundle: SupplierBundleReady(
+          FakeBundle([
+            FakeSupplier('alpha', details: {'m1': details}),
+          ]),
+          bundleInfo('4.0.0'),
+        ),
+      );
+      unawaited(container.read(routerProvider).push(AppRoutes.details('alpha', 'm1')));
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(find.text('Fake title'), findsOneWidget);
+      final loader = find.byKey(const Key('mediaItemsLoading'));
+      expect(loader, findsOneWidget);
+      for (final action in mediaActions) {
+        expect(action.hitTestable(), findsNothing);
+      }
+      final loaderRect = tester.getRect(loader);
+
+      gate.complete(items);
+      await tester.pumpAndSettle();
+      expect(loader, findsNothing);
+      for (final action in mediaActions) {
+        expect(action, findsOneWidget);
+      }
+      final watchRect = tester.getRect(mediaActions.first);
+      expect(watchRect.height, loaderRect.height);
+      expect(watchRect.top, loaderRect.top, reason: 'no jump when Watch replaces the loader');
+    });
+  }
+
+  testAppWidgets('media actions are hidden when there are no items', (tester) async {
+    await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => const []));
+    for (final action in mediaActions) {
+      expect(action, findsNothing);
+    }
+    expect(find.byKey(const Key('collectionButton')), findsOneWidget);
+  });
+
+  testAppWidgets('media items error is shown in place of Watch with an autofocused retry', (tester) async {
     var fail = true;
     await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => fail ? throw StateError('x') : items));
 
-    await tester.tap(find.byKey(const Key('mediaItemsButton')));
-    await tester.pumpAndSettle();
-    expect(find.text('Не вдалося завантажити'), findsOneWidget);
+    expect(find.text('Не вдалося завантажити епізоди'), findsOneWidget);
+    for (final action in mediaActions) {
+      expect(action, findsNothing);
+    }
+    final retry = find.text('Повторити');
+    expect(Focus.of(tester.element(retry)).hasFocus, isTrue);
 
     fail = false;
-    await tester.tap(find.text('Повторити'));
+    await tester.tap(retry);
     await tester.pumpAndSettle();
-    expect(find.widgetWithText(Tab, 'Season 1'), findsOneWidget);
+    expect(find.byKey(const Key('mediaItemsError')), findsNothing);
+    for (final action in mediaActions) {
+      expect(action, findsOneWidget);
+    }
   });
 
   testAppWidgets('unknown content shows not found with retry', (tester) async {

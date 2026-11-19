@@ -71,6 +71,8 @@
   "detailsLess": "Less",
   "detailsEpisodes": "Episodes",
   "detailsChapters": "Chapters",
+  "detailsEpisodesLoadError": "Failed to load episodes",
+  "detailsChaptersLoadError": "Failed to load chapters",
   "detailsSimilar": "Similar",
   "detailsNotFound": "Content not found",
   "detailsSupplierUnavailable": "Supplier \"{supplier}\" is not available",

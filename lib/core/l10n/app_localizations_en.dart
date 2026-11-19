@@ -229,6 +229,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailsChapters => 'Chapters';
 
   @override
+  String get detailsEpisodesLoadError => 'Failed to load episodes';
+
+  @override
+  String get detailsChaptersLoadError => 'Failed to load chapters';
+
+  @override
   String get detailsSimilar => 'Similar';
 
   @override

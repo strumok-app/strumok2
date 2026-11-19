@@ -45,7 +45,7 @@ class DetailsInfo extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    WatchButton(details: details),
+                    WatchAction(details: details),
                     DownloadButton(details: details),
                     MediaItemsButton(details: details),
                   ],
@@ -102,8 +102,85 @@ class DetailsTitle extends StatelessWidget {
               color: supplierStyle?.color,
               shadows: overlay ? _shadows : null,
             ),
-            Flexible(child: Text(details.supplier, style: supplierStyle, overflow: TextOverflow.ellipsis)),
+            Flexible(
+              child: Text(details.supplier, style: supplierStyle, overflow: TextOverflow.ellipsis),
+            ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+/// True once the media items are loaded and there is at least one.
+bool _hasMediaItems(WidgetRef ref, ContentDetails details) =>
+    switch (ref.watch(mediaItemsProvider(details.supplier, details.id))) {
+      AsyncData(:final value) => value.isNotEmpty,
+      _ => false,
+    };
+
+/// Watch/Read slot driven by the media items: a progress indicator while they load, [WatchButton] once there are
+/// any, nothing when there are none, and [MediaItemsLoadError] when loading failed.
+class WatchAction extends ConsumerWidget {
+  final ContentDetails details;
+
+  const WatchAction({super.key, required this.details});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = mediaItemsProvider(details.supplier, details.id);
+    return switch (ref.watch(provider)) {
+      AsyncData(:final value) when value.isEmpty => const SizedBox.shrink(),
+      AsyncData() => WatchButton(details: details),
+      AsyncError(isLoading: false) => MediaItemsLoadError(details: details, onRetry: () => ref.invalidate(provider)),
+      _ => Stack(
+        key: const Key('mediaItemsLoading'),
+        alignment: Alignment.centerLeft,
+        children: [
+          // Invisible Watch button reserving its exact size, so nothing moves when the real one appears.
+          ExcludeFocus(
+            child: Visibility(
+              visible: false,
+              maintainState: true,
+              maintainAnimation: true,
+              maintainSize: true,
+              child: WatchButton(details: details),
+            ),
+          ),
+          const SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 3)),
+        ],
+      ),
+    };
+  }
+}
+
+/// Inline media items load error with a Retry action; autofocused so TV lands on it in place of Watch.
+class MediaItemsLoadError extends StatelessWidget {
+  final ContentDetails details;
+  final VoidCallback onRetry;
+
+  const MediaItemsLoadError({super.key, required this.details, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      key: const Key('mediaItemsError'),
+      mainAxisSize: MainAxisSize.min,
+      spacing: 8,
+      children: [
+        Icon(Icons.error_outline, color: colors.error),
+        Flexible(
+          child: Text(
+            details.mediaType == MediaType.video ? l10n.detailsEpisodesLoadError : l10n.detailsChaptersLoadError,
+          ),
+        ),
+        FilledButton.tonalIcon(
+          autofocus: true,
+          onPressed: onRetry,
+          icon: const Icon(Icons.refresh),
+          label: Text(l10n.commonRetry),
         ),
       ],
     );
@@ -223,7 +300,7 @@ class CollectionButton extends ConsumerWidget {
   }
 }
 
-/// Opens the episodes/chapters side panel; hidden while loading and for single-item content.
+/// Opens the episodes/chapters side panel; hidden while loading, on error and for single-item content.
 class MediaItemsButton extends ConsumerWidget {
   final ContentDetails details;
 
@@ -234,7 +311,6 @@ class MediaItemsButton extends ConsumerWidget {
     final l10n = context.l10n;
     final visible = switch (ref.watch(mediaItemsProvider(details.supplier, details.id))) {
       AsyncData(:final value) => value.length > 1,
-      AsyncError() => true,
       _ => false,
     };
     if (!visible) return const SizedBox.shrink();
@@ -250,7 +326,8 @@ class MediaItemsButton extends ConsumerWidget {
   }
 }
 
-/// Opens the download sheet (spec-08 §8.2); hidden in offline mode, where there is nothing to download from.
+/// Opens the download sheet (spec-08 §8.2); hidden until there are media items, and in offline mode, where there is
+/// nothing to download from.
 class DownloadButton extends ConsumerWidget {
   final ContentDetails details;
 
@@ -258,7 +335,7 @@ class DownloadButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (ref.watch(offlineModeProvider)) return const SizedBox.shrink();
+    if (ref.watch(offlineModeProvider) || !_hasMediaItems(ref, details)) return const SizedBox.shrink();
     return IconButton.filledTonal(
       key: const Key('downloadButton'),
       tooltip: context.l10n.detailsDownload,
