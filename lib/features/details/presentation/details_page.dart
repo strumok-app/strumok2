@@ -172,7 +172,7 @@ class _WidePoster extends StatelessWidget {
   );
 }
 
-/// Poster header with the title, episodes and Watch over it, then collection status and info below (legacy layout).
+/// Poster header with the title and Watch over it, then collection, download and episodes actions and info below.
 class _NarrowDetails extends StatelessWidget {
   final ContentDetails details;
   final Size viewport;
@@ -194,7 +194,21 @@ class _NarrowDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 12,
               children: [
-                SizedBox(width: double.infinity, child: CollectionButton(details: details)),
+                FocusTraversalGroup(
+                  child: Row(
+                    spacing: 8,
+                    children: [
+                      Expanded(
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: CollectionButton(details: details),
+                        ),
+                      ),
+                      DownloadButton(details: details),
+                      MediaItemsButton(details: details),
+                    ],
+                  ),
+                ),
                 DetailsMeta(details: details),
               ],
             ),

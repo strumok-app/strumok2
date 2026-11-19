@@ -9,8 +9,8 @@ import '../../../app/widgets/network_image_aspect_ratio.dart';
 import '../../../app/widgets/reveal_on_focus.dart';
 import 'details_widgets.dart';
 
-/// Narrow details header (legacy layout): full-width poster at its own aspect ratio with the title and episodes
-/// button on a dark scrim at the top and the Watch action on a fade to `surface` at the bottom.
+/// Narrow details header: full-width poster at its own aspect ratio with the title on a dark scrim at the top
+/// and the Watch action on a fade to `surface` at the bottom.
 ///
 /// Tapping the poster toggles both bars.
 ///
@@ -83,15 +83,7 @@ class _PosterHeaderState extends State<PosterHeader> {
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      spacing: 8,
-                                      children: [
-                                        Expanded(child: DetailsTitle(details: widget.details, overlay: true)),
-                                        DownloadButton(details: widget.details),
-                                        MediaItemsButton(details: widget.details),
-                                      ],
-                                    ),
+                                    child: DetailsTitle(details: widget.details, overlay: true),
                                   ),
                                 ),
                                 const Spacer(),

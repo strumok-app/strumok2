@@ -216,7 +216,7 @@ void main() {
     expect(tester.getRect(similar).right, poster.left, reason: 'rows end flush with the poster, never under it');
   });
 
-  testAppWidgets('narrow layout: title and actions over the poster, collection status below', (tester) async {
+  testAppWidgets('narrow layout: title and Watch over the poster, secondary actions in a row below', (tester) async {
     await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => items), size: const Size(400, 800));
     final header = find.byType(PosterHeader);
     final headerRect = tester.getRect(header);
@@ -224,15 +224,27 @@ void main() {
       expect(find.descendant(of: header, matching: finder), findsOneWidget);
     }
     final episodes = find.byKey(const Key('mediaItemsButton'));
-    expect(find.descendant(of: header, matching: episodes), findsOneWidget);
-    expect(tester.getRect(episodes).top, lessThan(tester.getRect(find.text('Fake title')).bottom), reason: 'title row');
-    expect(tester.getRect(episodes).left, greaterThan(tester.getRect(find.text('Fake title')).right));
+    final download = find.byKey(const Key('downloadButton'));
     expect(headerRect.bottom - tester.getRect(find.widgetWithText(FilledButton, 'Дивитися')).bottom, 8);
 
     final collection = find.byKey(const Key('collectionButton'));
-    expect(find.descendant(of: header, matching: collection), findsNothing);
-    expect(tester.getRect(collection).top, greaterThan(headerRect.bottom));
-    expect(tester.getSize(collection).width, tester.getSize(find.byType(DetailsPage)).width - 32, reason: 'full width');
+    for (final action in [collection, download, episodes]) {
+      expect(find.descendant(of: header, matching: action), findsNothing);
+      expect(tester.getRect(action).top, greaterThan(headerRect.bottom));
+      expect(tester.getCenter(action).dy, tester.getCenter(collection).dy);
+    }
+    final pane = tester.getRect(find.byType(DetailsPage));
+    expect(tester.getRect(collection).left, pane.left + 16);
+    expect(tester.getRect(episodes).right, pane.right - 16);
+    expect(tester.getRect(download).left - tester.getRect(collection).right, greaterThanOrEqualTo(8));
+    expect(tester.getRect(episodes).left, greaterThan(tester.getRect(download).right));
+    tester.view.physicalSize = const Size(600, 800);
+    await tester.pumpAndSettle();
+    expect(tester.getRect(download).left - tester.getRect(collection).right, greaterThan(8), reason: 'spacer');
+    tester.view.physicalSize = const Size(320, 800);
+    await tester.pumpAndSettle();
+    expect(tester.getRect(episodes).right, 304);
+    expect(tester.getCenter(download).dy, tester.getCenter(collection).dy);
     expect(find.text('Description'), findsOneWidget);
   });
 
@@ -262,10 +274,16 @@ void main() {
 
     await tester.tapAt(poster);
     await tester.pumpAndSettle();
-    for (final finder in [watch, title, episodes]) {
+    for (final finder in [watch, title]) {
       expect(finder.hitTestable(), findsNothing);
     }
-    expect(find.byKey(const Key('collectionButton')).hitTestable(), findsOneWidget, reason: 'below the poster');
+    for (final finder in [
+      find.byKey(const Key('collectionButton')),
+      find.byKey(const Key('downloadButton')),
+      episodes,
+    ]) {
+      expect(finder.hitTestable(), findsOneWidget, reason: 'below the poster');
+    }
 
     await tester.tapAt(poster);
     await tester.pumpAndSettle();
