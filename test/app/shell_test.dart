@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:strumok/app/router.dart';
 import 'package:strumok/app/shell/app_shell.dart';
+import 'package:strumok/app/shell/shell_page.dart';
 import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/features/home/presentation/home_page.dart';
 import 'package:strumok/features/settings/presentation/settings_page.dart';
@@ -81,6 +84,70 @@ void main() {
     final home = tester.element(find.byType(HomePage, skipOffstage: false));
     final settings = tester.element(find.byType(SettingsPage));
     expect(Material.of(home), isNot(same(Material.of(settings))));
+  });
+
+  testWidgets('mobile back transition keeps the surface behind the outgoing page content', (tester) async {
+    tester.view.physicalSize = phone;
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final captureKey = GlobalKey();
+    const markerKey = Key('surfaceMarker');
+    const surface = Color(0xFFEEEEEE);
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const ColoredBox(color: Colors.red),
+        ),
+        GoRoute(
+          path: '/details',
+          pageBuilder: (_, state) => ShellPage(
+            state: state,
+            child: const Center(
+              child: SizedBox.square(
+                key: markerKey,
+                dimension: 40,
+                child: ColoredBox(color: surface),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      RepaintBoundary(
+        key: captureKey,
+        child: MaterialApp.router(
+          theme: ThemeData(
+            platform: TargetPlatform.android,
+            colorScheme: const ColorScheme.light(surface: surface),
+          ),
+          routerConfig: router,
+        ),
+      ),
+    );
+    unawaited(router.push('/details'));
+    await tester.pumpAndSettle();
+
+    router.pop();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.byKey(markerKey), findsOneWidget, reason: 'sample while the outgoing page is still visible');
+    final center = tester.getCenter(find.byKey(markerKey));
+    final boundary = captureKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    final pixels = await tester.runAsync(() async {
+      final image = await boundary.toImage();
+      try {
+        return await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      } finally {
+        image.dispose();
+      }
+    });
+    int pixelAt(Offset point) => pixels!.getUint32((point.dy.floor() * phone.width.toInt() + point.dx.floor()) * 4);
+    expect(pixelAt(center + const Offset(40, 0)), pixelAt(center), reason: 'no underlying page bleeds through');
+    await tester.pumpAndSettle();
+    expect(router.state.uri.path, '/');
   });
 
   testAppWidgets('account dialog opens settings with back button', (tester) async {

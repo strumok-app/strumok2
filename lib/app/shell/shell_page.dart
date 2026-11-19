@@ -28,10 +28,10 @@ class _ShellPageRoute extends PageRoute<void> with MaterialRouteTransitionMixin<
   // Read from the current page so updates with the same key rebuild with the new child.
   ShellPage get _page => settings as ShellPage;
 
-  // Own ink layer per page: on the shared shell Material, ink of a covered page (its fade-out frozen while
-  // the route is offstage) would paint through the transparent page above.
+  // Keep the surface with the page during transitions and isolate ink from covered pages.
   @override
-  Widget buildContent(BuildContext context) => Material(type: MaterialType.transparency, child: _page.child);
+  Widget buildContent(BuildContext context) =>
+      Material(color: Theme.of(context).colorScheme.surface, child: _page.child);
 
   // With `parentScope` edges, arrows search the whole shell navigator; covered pages (kept alive) must not be
   // reachable. Built here because transitions rebuild whenever `isCurrent` changes.
