@@ -27,7 +27,7 @@ jobs:
       - name: Verify generated code is up to date
         run: |
           flutter gen-l10n
-          dart run build_runner build -d
+          dart run build_runner build
 
       - name: Analyze
         run: |
