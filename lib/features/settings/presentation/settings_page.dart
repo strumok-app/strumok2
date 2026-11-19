@@ -66,12 +66,6 @@ class SettingsPage extends ConsumerWidget {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.push(AppRoutes.settingsProfiles),
               ),
-              ListTile(
-                leading: const Icon(Icons.switch_account_outlined),
-                title: Text(l10n.profilesSwitch),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.push(AppRoutes.profiles),
-              ),
             ],
           ),
         ),

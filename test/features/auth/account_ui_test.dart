@@ -43,11 +43,16 @@ void main() {
     return container;
   }
 
-  testAppWidgets('signed out: sign in with a code, then the menu shows the account actions', (tester) async {
-    final container = await openAccountMenu(tester);
+  testAppWidgets('desktop: Google sign-in only, no pairing code', (tester) async {
+    await openAccountMenu(tester);
     expect(find.text('Ви не увійшли'), findsOneWidget);
     expect(find.byKey(const Key('accountSignInGoogle')), findsOneWidget);
-    expect(find.byKey(const Key('accountConnectTv')), findsNothing);
+    expect(find.byKey(const Key('accountSignInWithCode')), findsNothing);
+  });
+
+  testAppWidgets('tv: sign in with a code, then the menu shows the account actions', (tester) async {
+    final container = await openAccountMenu(tester, deviceClass: DeviceClass.tv);
+    expect(find.text('Ви не увійшли'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('accountSignInWithCode')));
     await tester.pumpAndSettle();
@@ -69,7 +74,7 @@ void main() {
   });
 
   testAppWidgets('a rejected code shows a snackbar and keeps the dialog open', (tester) async {
-    await openAccountMenu(tester);
+    await openAccountMenu(tester, deviceClass: DeviceClass.tv);
     await tester.tap(find.byKey(const Key('accountSignInWithCode')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('pairingCodeField')), 'zzzzzz');

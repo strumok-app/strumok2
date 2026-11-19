@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 
 import '../../../core/localization.dart';
 import '../../../core/platform/app_platform.dart';
+import '../../../core/platform/device_class.dart';
 import '../../profiles/presentation/profiles_providers.dart';
 import '../domain/app_user.dart';
 import 'auth_providers.dart';
@@ -128,40 +129,11 @@ class _SignInProgressDialog extends StatelessWidget {
   }
 }
 
-/// Sign-in choices for a profile: Google (when available on this device) or a pairing code (spec-05 §5.4).
+/// Sign-in for a profile: pairing code on TV, Google elsewhere (spec-04 §4.4, spec-05 §5.4).
 Future<void> signInFlow(BuildContext context, WidgetRef ref, String profileId) async {
-  if (!ref.read(googleSignInAvailableProvider)) {
+  if (ref.read(deviceClassProvider) == DeviceClass.tv) {
     await showPairingCodeDialog(context, profileId);
-    return;
-  }
-  final l10n = context.l10n;
-  final choice = await showDialog<_SignInMethod>(
-    context: context,
-    builder: (context) => SimpleDialog(
-      title: Text(l10n.accountSignIn),
-      children: [
-        ListTile(
-          autofocus: true,
-          leading: const Icon(Icons.account_circle_outlined),
-          title: Text(l10n.accountSignInGoogle),
-          onTap: () => Navigator.of(context).pop(_SignInMethod.google),
-        ),
-        ListTile(
-          leading: const Icon(Icons.pin_outlined),
-          title: Text(l10n.accountSignInWithCode),
-          onTap: () => Navigator.of(context).pop(_SignInMethod.code),
-        ),
-      ],
-    ),
-  );
-  if (!context.mounted) return;
-  switch (choice) {
-    case _SignInMethod.google:
-      await signInWithGoogleFlow(context, ref, profileId);
-    case _SignInMethod.code:
-      await showPairingCodeDialog(context, profileId);
-    case null:
+  } else {
+    await signInWithGoogleFlow(context, ref, profileId);
   }
 }
-
-enum _SignInMethod { google, code }

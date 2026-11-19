@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/localization.dart';
+import '../../core/platform/device_class.dart';
 import '../../features/auth/presentation/account_flows.dart';
 import '../../features/auth/presentation/auth_providers.dart';
 import '../../features/auth/presentation/pairing_code_dialog.dart';
@@ -17,7 +18,7 @@ const accountMenuKey = Key('accountMenuButton');
 Future<void> showAccountDialog(BuildContext context) =>
     showDialog<void>(context: context, builder: (_) => const AccountDialog());
 
-/// Active profile avatar opening [AccountDialog]: account actions, Settings, offline mode.
+/// Active profile avatar opening [AccountDialog]: account actions, profile switch, Settings, offline mode.
 class AccountMenu extends StatelessWidget {
   const AccountMenu({super.key});
 
@@ -69,12 +70,13 @@ class AccountDialog extends ConsumerWidget {
             title: Text(l10n.accountSignInGoogle),
             onTap: () => signInWithGoogleFlow(context, ref, profile.id),
           ),
-        ListTile(
-          key: const Key('accountSignInWithCode'),
-          leading: const Icon(Icons.pin_outlined),
-          title: Text(l10n.accountSignInWithCode),
-          onTap: () => showPairingCodeDialog(context, profile.id),
-        ),
+        if (ref.watch(deviceClassProvider) == DeviceClass.tv)
+          ListTile(
+            key: const Key('accountSignInWithCode'),
+            leading: const Icon(Icons.pin_outlined),
+            title: Text(l10n.accountSignInWithCode),
+            onTap: () => showPairingCodeDialog(context, profile.id),
+          ),
       ],
     ];
 
@@ -123,6 +125,11 @@ class AccountDialog extends ConsumerWidget {
                   ),
                 ),
                 ...accountActions,
+                ListTile(
+                  leading: const Icon(Icons.switch_account_outlined),
+                  title: Text(l10n.profilesSwitch),
+                  onTap: () => open(AppRoutes.profiles),
+                ),
                 const Divider(height: 16),
                 ListTile(
                   autofocus: true,

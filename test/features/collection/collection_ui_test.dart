@@ -12,7 +12,6 @@ import 'package:strumok/features/collection/domain/collection_item.dart';
 import 'package:strumok/features/collection/presentation/collection_providers.dart';
 import 'package:strumok/features/profiles/domain/profile.dart';
 import 'package:strumok/features/profiles/presentation/profiles_providers.dart';
-import 'package:strumok/features/settings/presentation/settings_page.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
 
 import '../../helpers/test_app.dart';
@@ -160,21 +159,12 @@ void main() {
     expect(container.read(profilesProvider), hasLength(1));
   });
 
-  testAppWidgets('account dialog shows the active profile; settings opens the picker', (tester) async {
+  testAppWidgets('account dialog shows the active profile and opens the picker', (tester) async {
     final container = await pumpApp(tester);
     await tester.tap(find.byKey(const Key('accountMenuButton')));
     await tester.pumpAndSettle();
     expect(find.text('Основний'), findsOneWidget);
-    expect(find.text('Змінити профіль'), findsNothing);
 
-    await tester.tap(find.descendant(of: find.byType(Dialog), matching: find.text('Налаштування')));
-    await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(
-      find.text('Змінити профіль'),
-      200,
-      scrollable: find.descendant(of: find.byType(SettingsPage), matching: find.byType(Scrollable)).first,
-    );
-    await tester.pumpAndSettle();
     await tester.tap(find.text('Змінити профіль'));
     await tester.pumpAndSettle();
     expect(container.read(routerProvider).state.uri.path, AppRoutes.profiles);

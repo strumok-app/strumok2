@@ -22,7 +22,7 @@ Sections (order):
 6. **TV** — "Connect TV" pairing code (spec-04 §4.3); only when signed in and not on TV.
 7. **Suppliers & recommendations** → sub-page: reorder suppliers (drag on touch/mouse; move up/down buttons on TV),
    enable/disable each supplier, choose recommendation channels per supplier.
-8. **Profiles** → manage profiles (spec-05), "ask for profile on startup"; "Switch profile" opens the picker.
+8. **Profiles** → manage profiles (spec-05), "ask for profile on startup".
 
 ## Preference keys
 
