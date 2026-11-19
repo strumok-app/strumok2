@@ -98,11 +98,12 @@ jobs:
             --build-number="${GITHUB_RUN_NUMBER}" \
             --dart-define-from-file=secrets.env
           mkdir -p release-artifacts
-          cp build/app/outputs/flutter-apk/app-release.apk release-artifacts/app-release.apk
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "release-artifacts/strumok-${RELEASE_VERSION}.apk"
       - uses: actions/upload-artifact@v4
         with:
           name: release-android
-          path: release-artifacts/app-release.apk
+          path: release-artifacts/strumok-${{ needs.version.outputs.version }}.apk
           if-no-files-found: error
 
   linux:
@@ -142,11 +143,12 @@ jobs:
           cp linux/packaging/app.strumok.desktop build/linux/x64/release/bundle/
           cp linux/packaging/app.strumok.svg build/linux/x64/release/bundle/
           mkdir -p release-artifacts
-          tar -C build/linux/x64/release/bundle -czf release-artifacts/strumok-linux.tar.gz .
+          tar -C build/linux/x64/release/bundle \
+            -czf "release-artifacts/strumok-${RELEASE_VERSION}.tar.gz" .
       - uses: actions/upload-artifact@v4
         with:
           name: release-linux
-          path: release-artifacts/strumok-linux.tar.gz
+          path: release-artifacts/strumok-${{ needs.version.outputs.version }}.tar.gz
           if-no-files-found: error
 
   windows:
@@ -201,10 +203,13 @@ jobs:
             /DAppVersion=$env:RELEASE_VERSION `
             /Orelease-artifacts
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Move-Item `
+            release-artifacts\StrumokSetup.exe `
+            "release-artifacts\strumok-$env:RELEASE_VERSION.exe"
       - uses: actions/upload-artifact@v4
         with:
           name: release-windows
-          path: release-artifacts/StrumokSetup.exe
+          path: release-artifacts/strumok-${{ needs.version.outputs.version }}.exe
           if-no-files-found: error
 
   publish:
@@ -235,9 +240,9 @@ jobs:
             --title "v${{ needs.version.outputs.version }}" \
             --generate-notes \
             --target "$GITHUB_SHA" \
-            release-artifacts/app-release.apk \
-            release-artifacts/strumok-linux.tar.gz \
-            release-artifacts/StrumokSetup.exe
+            "release-artifacts/strumok-${{ needs.version.outputs.version }}.apk" \
+            "release-artifacts/strumok-${{ needs.version.outputs.version }}.tar.gz" \
+            "release-artifacts/strumok-${{ needs.version.outputs.version }}.exe"
       - name: Publish semantic release
         if: needs.version.outputs.bootstrap != 'true'
         env:

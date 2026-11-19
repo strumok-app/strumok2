@@ -19,15 +19,15 @@
       {
         "assets": [
           {
-            "path": "release-artifacts/app-release.apk",
+            "path": "release-artifacts/strumok-*.apk",
             "label": "Android APK"
           },
           {
-            "path": "release-artifacts/strumok-linux.tar.gz",
+            "path": "release-artifacts/strumok-*.tar.gz",
             "label": "Linux x64 bundle"
           },
           {
-            "path": "release-artifacts/StrumokSetup.exe",
+            "path": "release-artifacts/strumok-*.exe",
             "label": "Windows x64 installer"
           }
         ]

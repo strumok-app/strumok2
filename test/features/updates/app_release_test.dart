@@ -44,6 +44,39 @@ void main() {
     expect(apkOnly.assetFor(AppPlatform.windows), isNull);
   });
 
+  test('selects versioned release assets and prefers them over legacy names', () {
+    final release = AppRelease.tryParse({
+      'name': 'v2.4.3',
+      'assets': [
+        {'name': 'app-release.apk', 'browser_download_url': 'legacy-apk'},
+        {'name': 'strumok-linux.tar.gz', 'browser_download_url': 'legacy-linux'},
+        {'name': 'StrumokSetup.exe', 'browser_download_url': 'legacy-windows'},
+        {'name': 'strumok-2.4.3.apk', 'browser_download_url': 'apk'},
+        {'name': 'strumok-2.4.3.tar.gz', 'browser_download_url': 'linux'},
+        {'name': 'strumok-2.4.3.exe', 'browser_download_url': 'windows'},
+      ],
+    })!;
+
+    expect(release.assetFor(AppPlatform.android)?.downloadUrl, 'apk');
+    expect(release.assetFor(AppPlatform.linux)?.downloadUrl, 'linux');
+    expect(release.assetFor(AppPlatform.windows)?.downloadUrl, 'windows');
+  });
+
+  test('does not select unrelated assets with matching extensions', () {
+    final release = AppRelease.tryParse({
+      'name': '2.0.0',
+      'assets': [
+        {'name': 'checksums.apk.sha256', 'browser_download_url': 'checksum'},
+        {'name': 'other.tar.gz', 'browser_download_url': 'archive'},
+        {'name': 'uninstaller.exe', 'browser_download_url': 'exe'},
+      ],
+    })!;
+
+    expect(release.assetFor(AppPlatform.android), isNull);
+    expect(release.assetFor(AppPlatform.linux), isNull);
+    expect(release.assetFor(AppPlatform.windows), isNull);
+  });
+
   test('round-trips through cache JSON', () {
     final release = AppRelease.tryParse(releaseJson)!;
     final again = AppRelease.tryParse(release.toJson())!;

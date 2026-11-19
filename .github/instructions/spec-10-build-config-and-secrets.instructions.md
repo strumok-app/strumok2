@@ -28,10 +28,11 @@ applyTo: 'pubspec.yaml, android/**, linux/**, windows/**, .github/workflows/**'
 |--------|----------|
 | Android | universal release APK (`arm64-v8a`, `armeabi-v7a`, `x86_64`). **`applicationId = namespace = "app.strumok"`** (new app; see §Application id below). minSdk ≥ 24 (PiP auto-enter needs 31+, guarded). |
 | Linux | release bundle tarball; requires system `libmpv`; `APPLICATION_ID "app.strumok"`; `.desktop` file `app.strumok.desktop` + SVG icon `app.strumok.svg` (+ `app.strumok.png` bundled into `data/` as the window icon) |
-| Windows | release bundle + installer `StrumokSetup.exe` (asset name must end with `.exe` for self-update) |
+| Windows | release bundle + installer `strumok-<release>.exe` |
 
-Release asset names are part of the self-update contract (spec-11 §11.2): Android `app-release.apk`,
-Linux `strumok-linux.tar.gz`, Windows `StrumokSetup.exe`.
+Release asset names are part of the self-update contract (spec-11 §11.2): `strumok-<release>.apk`,
+`strumok-<release>.tar.gz`, and `strumok-<release>.exe`. For example, release `2.0.0` publishes
+`strumok-2.0.0.apk`, `strumok-2.0.0.tar.gz`, and `strumok-2.0.0.exe`.
 
 ## Application id `app.strumok` (new app)
 

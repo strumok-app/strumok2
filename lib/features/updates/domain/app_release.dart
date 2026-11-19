@@ -45,11 +45,34 @@ final class AppRelease {
   };
 
   ReleaseAsset? assetFor(AppPlatform platform) {
-    bool matches(ReleaseAsset a) => switch (platform) {
-      AppPlatform.android => a.name.contains('app-release.apk'),
-      AppPlatform.windows => a.name.endsWith('.exe'),
-      AppPlatform.linux => a.name.contains('linux'),
-    };
+    final versionedName = RegExp(
+      r'^strumok-\d+\.\d+\.\d+(?:-[0-9a-z.-]+)?(?:\+[0-9a-z.-]+)?\.(?:apk|tar\.gz|exe)$',
+      caseSensitive: false,
+    );
+
+    bool matches(ReleaseAsset asset) {
+      final name = asset.name.toLowerCase();
+      final isVersioned = versionedName.hasMatch(name);
+      return switch (platform) {
+        AppPlatform.android => isVersioned && name.endsWith('.apk') || name == 'app-release.apk',
+        AppPlatform.linux =>
+          isVersioned && name.endsWith('.tar.gz') || name.contains('linux') && name.endsWith('.tar.gz'),
+        AppPlatform.windows => isVersioned && name.endsWith('.exe') || name == 'strumoksetup.exe',
+      };
+    }
+
+    bool isPreferred(ReleaseAsset asset) {
+      final name = asset.name.toLowerCase();
+      return switch (platform) {
+        AppPlatform.android => name == 'strumok-$version.apk',
+        AppPlatform.linux => name == 'strumok-$version.tar.gz',
+        AppPlatform.windows => name == 'strumok-$version.exe',
+      };
+    }
+
+    for (final asset in assets) {
+      if (matches(asset) && isPreferred(asset)) return asset;
+    }
     for (final asset in assets) {
       if (matches(asset)) return asset;
     }

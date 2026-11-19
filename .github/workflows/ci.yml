@@ -22,7 +22,10 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
+          (cd packages/content_suppliers_api && dart pub get)
+          (cd packages/content_suppliers_rust && dart pub get)
 
       - name: Verify generated code is up to date
         run: |

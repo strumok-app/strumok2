@@ -47,9 +47,9 @@ required user flows.
 {
   "name": "v1.32.0",
   "assets": [
-    { "name": "app-release.apk",        "browser_download_url": "https://.../app-release.apk" },
-    { "name": "strumok-linux.tar.gz",   "browser_download_url": "https://.../strumok-linux.tar.gz" },
-    { "name": "StrumokSetup.exe",       "browser_download_url": "https://.../StrumokSetup.exe" }
+    { "name": "strumok-1.32.0.apk",     "browser_download_url": "https://.../strumok-1.32.0.apk" },
+    { "name": "strumok-1.32.0.tar.gz",  "browser_download_url": "https://.../strumok-1.32.0.tar.gz" },
+    { "name": "strumok-1.32.0.exe",     "browser_download_url": "https://.../strumok-1.32.0.exe" }
   ]
 }
 ```
@@ -68,9 +68,9 @@ required user flows.
 
 | Platform | Asset match | Flow |
 |----------|-------------|------|
-| Android (phone/tablet/TV) | name contains `app-release.apk` | Download to `<cacheDir>/install/<version>.apk` (delete other files in that dir first) with progress → invoke native installer. |
-| Windows | name ends with `.exe` | Download installer to temp dir with progress → launch it (`Process.start`, detached) → exit the app so files can be replaced. |
-| Linux | name contains `linux` | Open `browser_download_url` in the system browser (installation methods vary: tarball, distro packages). Show the release notes link. |
+| Android (phone/tablet/TV) | `strumok-<release>.apk` | Download to `<cacheDir>/install/<version>.apk` (delete other files in that dir first) with progress → invoke native installer. |
+| Windows | `strumok-<release>.exe` | Download installer to temp dir with progress → launch it (`Process.start`, detached) → exit the app so files can be replaced. |
+| Linux | `strumok-<release>.tar.gz` | Open `browser_download_url` in the system browser (installation methods vary: tarball, distro packages). Show the release notes link. |
 
 Android native installer contract (keep names for continuity):
 - MethodChannel **`install_apk`**, method **`installApk`** with argument `{ "filePath": "<abs path>" }` → returns `bool`.
