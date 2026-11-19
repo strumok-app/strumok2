@@ -15,4 +15,3 @@ if (updated === pubspec) {
 }
 
 fs.writeFileSync(pubspecPath, updated);
-fs.writeFileSync('.next-release-version', `${version}\n`);

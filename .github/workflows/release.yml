@@ -1,4 +1,4 @@
-name: Release 2.x
+name: Release
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: release-2x
+  group: release
   cancel-in-progress: false
 
 env:
@@ -44,6 +44,7 @@ jobs:
           npx --yes \
             --package semantic-release@24 \
             --package @semantic-release/exec@6 \
+            --package conventional-changelog-conventionalcommits@8 \
             semantic-release --dry-run
 
           test -f .next-release-version || {
@@ -253,4 +254,5 @@ jobs:
           npx --yes \
             --package semantic-release@24 \
             --package @semantic-release/exec@6 \
+            --package conventional-changelog-conventionalcommits@8 \
             semantic-release

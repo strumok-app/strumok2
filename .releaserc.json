@@ -6,11 +6,44 @@
   ],
   "tagFormat": "v${version}",
   "plugins": [
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits",
+        "releaseRules": [
+          { "type": "style", "release": "patch" },
+          { "type": "refactor", "release": "patch" },
+          { "type": "perf", "release": "patch" },
+          { "type": "build", "release": "patch" },
+          { "type": "chore", "release": "patch" },
+          { "type": "docs", "release": "patch" },
+          { "type": "revert", "release": "patch" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits",
+        "presetConfig": {
+          "types": [
+            { "type": "feat", "section": "Features" },
+            { "type": "fix", "section": "Bug Fixes" },
+            { "type": "perf", "section": "Performance Improvements" },
+            { "type": "revert", "section": "Reverts" },
+            { "type": "refactor", "section": "Code Refactoring" },
+            { "type": "style", "section": "Styles" },
+            { "type": "build", "section": "Build System" },
+            { "type": "chore", "section": "Chores" },
+            { "type": "docs", "section": "Documentation" }
+          ]
+        }
+      }
+    ],
     [
       "@semantic-release/exec",
       {
+        "verifyReleaseCmd": "node .github/scripts/write-next-version.mjs ${nextRelease.version}",
         "prepareCmd": "node .github/scripts/prepare-release.mjs ${nextRelease.version}"
       }
     ],
