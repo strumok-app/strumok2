@@ -1,0 +1,148 @@
+name: Manual Test Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - android
+          - linux
+          - windows
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-build-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SECRETS_ENV_BASE64: ${{ secrets.SECRETS_ENV_BASE64 }}
+  GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+  ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+  ANDROID_KEYSTORE_PROPERTIES_BASE64: ${{ secrets.ANDROID_KEYSTORE_PROPERTIES_BASE64 }}
+
+jobs:
+  android:
+    if: inputs.platform == 'all' || inputs.platform == 'android'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: flutter-version
+        shell: bash
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Decode build secrets
+        shell: bash
+        run: bash .github/scripts/decode-build-secrets.sh
+      - name: Prepare project
+        run: |
+          flutter pub get
+          dart run build_runner build -d
+          flutter gen-l10n
+      - name: Build Android APK
+        run: flutter build apk --release --dart-define-from-file=secrets.env
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-build-android-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+  linux:
+    if: inputs.platform == 'all' || inputs.platform == 'linux'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: flutter-version
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build pkg-config
+      - name: Decode build secrets
+        run: bash .github/scripts/decode-build-secrets.sh
+      - name: Prepare project
+        run: |
+          flutter pub get
+          dart run build_runner build -d
+          flutter gen-l10n
+      - name: Build Linux bundle
+        run: flutter build linux --release --dart-define-from-file=secrets.env
+      - name: Package Linux bundle
+        run: |
+          mkdir -p release-artifacts
+          cp linux/packaging/app.strumok.desktop build/linux/x64/release/bundle/
+          cp linux/packaging/app.strumok.svg build/linux/x64/release/bundle/
+          tar -C build/linux/x64/release/bundle -czf release-artifacts/strumok-linux.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-build-linux-${{ github.run_number }}
+          path: release-artifacts/strumok-linux.tar.gz
+          if-no-files-found: error
+
+  windows:
+    if: inputs.platform == 'all' || inputs.platform == 'windows'
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: flutter-version
+        shell: bash
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Decode build secrets
+        shell: bash
+        run: bash .github/scripts/decode-build-secrets.sh
+      - name: Prepare project
+        run: |
+          flutter pub get
+          dart run build_runner build -d
+          flutter gen-l10n
+      - name: Build Windows bundle
+        run: flutter build windows --release --dart-define-from-file=secrets.env
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-artifacts | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress --yes
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          if (-not (Test-Path $iscc)) {
+            throw "Inno Setup compiler was not found after installation."
+          }
+          & $iscc windows\packaging\strumok.iss `
+            /DAppVersion=0.1.0-test.${{ github.run_number }} `
+            /Orelease-artifacts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-build-windows-${{ github.run_number }}
+          path: release-artifacts/StrumokSetup.exe
+          if-no-files-found: error

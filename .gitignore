@@ -50,3 +50,4 @@ android/keystore.properties
 *.jks
 *.keystore
 client_secret*.json
+.next-release-version

@@ -1,0 +1,249 @@
+name: Release 2.x
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-2x
+  cancel-in-progress: false
+
+env:
+  SECRETS_ENV_BASE64: ${{ secrets.SECRETS_ENV_BASE64 }}
+  GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+  ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+  ANDROID_KEYSTORE_PROPERTIES_BASE64: ${{ secrets.ANDROID_KEYSTORE_PROPERTIES_BASE64 }}
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release-version.outputs.version }}
+      bootstrap: ${{ steps.release-version.outputs.bootstrap }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Determine semantic version
+        id: release-version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! git tag --list 'v[0-9]*.[0-9]*.[0-9]*' | grep -q .; then
+            echo "version=2.0.0" >> "$GITHUB_OUTPUT"
+            echo "bootstrap=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          npx --yes \
+            --package semantic-release@24 \
+            --package @semantic-release/exec@6 \
+            semantic-release --dry-run
+
+          test -f .next-release-version || {
+            echo "No releasable conventional commits were found." >&2
+            exit 1
+          }
+          version="$(cat .next-release-version)"
+          if [[ ! "$version" =~ ^2\.[0-9]+\.[0-9]+$ ]]; then
+            echo "This workflow only publishes the 2.x series; calculated $version." >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "bootstrap=false" >> "$GITHUB_OUTPUT"
+
+  android:
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: flutter-version
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Require and decode build secrets
+        shell: bash
+        run: |
+          : "${SECRETS_ENV_BASE64:?Missing SECRETS_ENV_BASE64 repository secret}"
+          : "${GOOGLE_SERVICES_JSON_BASE64:?Missing GOOGLE_SERVICES_JSON_BASE64 repository secret}"
+          : "${ANDROID_KEYSTORE_BASE64:?Missing ANDROID_KEYSTORE_BASE64 repository secret}"
+          : "${ANDROID_KEYSTORE_PROPERTIES_BASE64:?Missing ANDROID_KEYSTORE_PROPERTIES_BASE64 repository secret}"
+          bash .github/scripts/decode-build-secrets.sh
+      - name: Prepare project
+        run: |
+          flutter pub get
+          dart run build_runner build -d
+          flutter gen-l10n
+      - name: Build Android release
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          flutter build apk --release \
+            --build-name="$RELEASE_VERSION" \
+            --build-number="${GITHUB_RUN_NUMBER}" \
+            --dart-define-from-file=secrets.env
+          mkdir -p release-artifacts
+          cp build/app/outputs/flutter-apk/app-release.apk release-artifacts/app-release.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: release-artifacts/app-release.apk
+          if-no-files-found: error
+
+  linux:
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: flutter-version
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake libgtk-3-dev ninja-build pkg-config
+      - name: Require and decode build secrets
+        run: |
+          : "${SECRETS_ENV_BASE64:?Missing SECRETS_ENV_BASE64 repository secret}"
+          bash .github/scripts/decode-build-secrets.sh
+      - name: Prepare project
+        run: |
+          flutter pub get
+          dart run build_runner build -d
+          flutter gen-l10n
+      - name: Build and package Linux release
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          flutter build linux --release \
+            --build-name="$RELEASE_VERSION" \
+            --build-number="${GITHUB_RUN_NUMBER}" \
+            --dart-define-from-file=secrets.env
+          cp linux/packaging/app.strumok.desktop build/linux/x64/release/bundle/
+          cp linux/packaging/app.strumok.svg build/linux/x64/release/bundle/
+          mkdir -p release-artifacts
+          tar -C build/linux/x64/release/bundle -czf release-artifacts/strumok-linux.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: release-artifacts/strumok-linux.tar.gz
+          if-no-files-found: error
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - id: flutter-version
+        shell: bash
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+      - name: Require and decode build secrets
+        shell: bash
+        run: |
+          : "${SECRETS_ENV_BASE64:?Missing SECRETS_ENV_BASE64 repository secret}"
+          bash .github/scripts/decode-build-secrets.sh
+      - name: Prepare project
+        run: |
+          flutter pub get
+          dart run build_runner build -d
+          flutter gen-l10n
+      - name: Build Windows release
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          flutter build windows --release `
+            --build-name="$env:RELEASE_VERSION" `
+            --build-number="${{ github.run_number }}" `
+            --dart-define-from-file=secrets.env
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build Windows installer
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          New-Item -ItemType Directory -Force release-artifacts | Out-Null
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            choco install innosetup --no-progress --yes
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          if (-not (Test-Path $iscc)) {
+            throw "Inno Setup compiler was not found after installation."
+          }
+          & $iscc windows\packaging\strumok.iss `
+            /DAppVersion=$env:RELEASE_VERSION `
+            /Orelease-artifacts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: release-artifacts/StrumokSetup.exe
+          if-no-files-found: error
+
+  publish:
+    needs:
+      - version
+      - android
+      - linux
+      - windows
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release-artifacts
+          merge-multiple: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bootstrap v2.0.0
+        if: needs.version.outputs.bootstrap == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ needs.version.outputs.version }}" \
+            --title "v${{ needs.version.outputs.version }}" \
+            --generate-notes \
+            --target "$GITHUB_SHA" \
+            release-artifacts/app-release.apk \
+            release-artifacts/strumok-linux.tar.gz \
+            release-artifacts/StrumokSetup.exe
+      - name: Publish semantic release
+        if: needs.version.outputs.bootstrap != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx --yes \
+            --package semantic-release@24 \
+            --package @semantic-release/exec@6 \
+            semantic-release

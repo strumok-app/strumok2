@@ -21,6 +21,23 @@ flutter build windows --release --dart-define-from-file=secrets.env
 Linux requires system `libmpv`. Android release signing reads `android/keystore.properties`
 (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`; git-ignored).
 
+## GitHub Actions
+
+`Manual Test Build` can build one or all target platforms without creating a release. `Release 2.x`
+is a manual semantic-release workflow for `v2.x.x` releases. The first run bootstraps `v2.0.0`;
+later versions are derived from conventional commits. Releasable commits include `fix:` (patch),
+`feat:` (minor), and a `BREAKING CHANGE:` footer (major, but the workflow rejects versions outside 2.x).
+
+Configure these repository secrets before running a signed release:
+
+- `SECRETS_ENV_BASE64`: base64-encoded `secrets.env`
+- `GOOGLE_SERVICES_JSON_BASE64`: base64-encoded `android/app/google-services.json`
+- `ANDROID_KEYSTORE_BASE64`: base64-encoded release keystore
+- `ANDROID_KEYSTORE_PROPERTIES_BASE64`: base64-encoded `android/keystore.properties`
+
+The keystore properties must refer to `storeFile=strumok-release.jks`, which is decoded from the Android
+keystore secret. Manual test builds allow the secrets to be absent and then use local-only configuration.
+
 Accounts and collection sync need `FIREBASE` (FirebaseOptions JSON) and `CLOUD_FUN_DOMAIN` (TV pairing);
 desktop Google sign-in needs `GOOGLE_AUTH` (`{"identifier": ..., "secret": ...}` installed-app OAuth client).
 Without them the app runs with local-only collections. Android Google sign-in additionally needs
