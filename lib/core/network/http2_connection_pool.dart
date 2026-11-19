@@ -85,7 +85,12 @@ class Http2OriginPool {
         },
       ),
     );
-    final transport = ClientTransportConnection.viaStreams(incoming, _SocketSink(socket));
+    // The protocol's default 64 KiB windows cap throughput at 64 KiB per round trip per connection.
+    final transport = ClientTransportConnection.viaStreams(
+      incoming,
+      _SocketSink(socket),
+      settings: const ClientSettings(streamWindowSize: 4 * 1024 * 1024, connectionWindowSize: 16 * 1024 * 1024),
+    );
     final connection = Http2PooledConnection._(this, transport);
     unawaited(died.future.then((_) => connection._onSocketClosed()));
 
