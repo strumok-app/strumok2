@@ -81,6 +81,10 @@ class DetailsTitle extends StatelessWidget {
       color: overlay ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
       shadows: overlay ? _shadows : null,
     );
+    final supplierStyle = textTheme.labelMedium?.copyWith(
+      color: overlay ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
+      shadows: overlay ? _shadows : null,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: overlay ? 4 : 12,
@@ -88,6 +92,19 @@ class DetailsTitle extends StatelessWidget {
         SelectableText(details.title, style: titleStyle),
         if (details.originalTitle case final original? when original.isNotEmpty)
           SelectableText(original, style: originalStyle),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 4,
+          children: [
+            Icon(
+              Icons.source_outlined,
+              size: (supplierStyle?.fontSize ?? 12) + 2,
+              color: supplierStyle?.color,
+              shadows: overlay ? _shadows : null,
+            ),
+            Flexible(child: Text(details.supplier, style: supplierStyle, overflow: TextOverflow.ellipsis)),
+          ],
+        ),
       ],
     );
   }

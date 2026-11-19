@@ -70,6 +70,7 @@ void main() {
 
     expect(find.text('Fake title'), findsOneWidget);
     expect(find.text('Original'), findsOneWidget);
+    expect(find.text('alpha'), findsOneWidget, reason: 'supplier label');
     expect(find.text('Схоже'), findsOneWidget);
     expect(find.text('Episode 1'), findsNothing, reason: 'episodes live in the side sheet');
 
@@ -219,7 +220,7 @@ void main() {
     await open(tester, FakeDetails('alpha', 'm1', loadItems: () async => items), size: const Size(400, 800));
     final header = find.byType(PosterHeader);
     final headerRect = tester.getRect(header);
-    for (final finder in [find.text('Fake title'), find.text('Original'), find.text('Дивитися')]) {
+    for (final finder in [find.text('Fake title'), find.text('Original'), find.text('alpha'), find.text('Дивитися')]) {
       expect(find.descendant(of: header, matching: finder), findsOneWidget);
     }
     final episodes = find.byKey(const Key('mediaItemsButton'));
@@ -231,6 +232,7 @@ void main() {
     final collection = find.byKey(const Key('collectionButton'));
     expect(find.descendant(of: header, matching: collection), findsNothing);
     expect(tester.getRect(collection).top, greaterThan(headerRect.bottom));
+    expect(tester.getSize(collection).width, tester.getSize(find.byType(DetailsPage)).width - 32, reason: 'full width');
     expect(find.text('Description'), findsOneWidget);
   });
 

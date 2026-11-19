@@ -194,7 +194,7 @@ class _NarrowDetails extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 12,
               children: [
-                CollectionButton(details: details),
+                SizedBox(width: double.infinity, child: CollectionButton(details: details)),
                 DetailsMeta(details: details),
               ],
             ),
