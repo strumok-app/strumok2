@@ -93,6 +93,8 @@ void main() {
     expect(focusedIn<ContentCard>()?.info.title, 'Shadows');
 
     await press(LogicalKeyboardKey.arrowUp);
+    expect(focusedIn<IconButton>()?.key, const Key('rowPickRandom'), reason: 'row actions sit between');
+    await press(LogicalKeyboardKey.arrowUp);
     expect(focusedIn<TextField>(), isNotNull, reason: 'up from the first row returns to the field');
 
     await press(LogicalKeyboardKey.arrowRight);

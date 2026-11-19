@@ -139,6 +139,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rowLoadMore => 'Load more';
 
   @override
+  String get rowReload => 'Reload';
+
+  @override
+  String get rowPickRandom => 'Pick random';
+
+  @override
+  String get randomPickAnother => 'Another one';
+
+  @override
+  String get randomPickOpen => 'Open';
+
+  @override
+  String get randomPickEmpty => 'Nothing to pick from';
+
+  @override
   String get homeEmpty => 'Choose suppliers and recommendation channels in settings';
 
   @override

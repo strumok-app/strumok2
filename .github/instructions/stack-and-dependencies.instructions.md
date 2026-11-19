@@ -45,7 +45,7 @@ Use these only if you need the capability; they are proven on all target platfor
 | Image caching | `cached_network_image` |
 | JSON models | `json_serializable` + `json_annotation` |
 | Value equality | `equatable` *(or Dart records / `freezed`)* |
-| HTTP | `http` API backed by `rhttp` (`RhttpCompatibleClient`, Rust reqwest: HTTP/2 via ALPN, HTTP/1.1 fallback); single shared client, see `architecture-and-state` instructions. Never use `http.Client()`/`dart:io` `HttpClient` directly (HTTP/1.1 only). |
+| HTTP | `http` API backed by `http2` through our `AlpnHttpClient` (`lib/core/network/`: HTTP/2 via ALPN with per-origin multiplexing, HTTP/1.1 fallback via `IOClient`); single shared client, see `architecture-and-state` instructions. Pure Dart on purpose: native HTTP plugins break the second FlutterEngine of the download foreground service. Never use `http.Client()`/`dart:io` `HttpClient` directly outside `core/network` (HTTP/1.1 only). |
 | Logging | `logging` |
 | App version (self-update) | `package_info_plus` |
 | Open URLs (Linux update link, OAuth consent) | `url_launcher` |

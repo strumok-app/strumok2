@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="-181.76 -181.76 875.52 875.52">
+<!-- Android adaptive icon foreground layer (108dp): the stream of app_Strumok.svg; the 72dp mask area equals its card. -->
+<defs><clipPath id="maskClip"><rect x="-35.84" y="-35.84" width="583.68" height="583.68"/></clipPath></defs>
+<path clip-path="url(#maskClip)" fill="#21a1de" d="M291.442,200c-117.336-32-144-45.328-96-98.664C229.09,63.953,281.02,25.313,319.208,0L387.1,-45H342.6L262.254,0 C204.63,32.25,139.122,70.984,99.442,120c-45.336,56-30.367,95.711,16,128c74.664,52,166.664,56,109.328,120 c-59.562,66.484-99.539,112.602-134.664,144L36.4,560H325.65L356.926,512c26.821-41.156,73.641-118.211,81.18-165.336 C448.77,280,413.692,233.344,291.442,200z"/>
+</svg>

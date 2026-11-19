@@ -7,7 +7,8 @@ import '../../core/localization.dart';
 import '../../core/paging/paged_items.dart';
 import '../../core/platform/device_class.dart';
 import 'content_card.dart';
-import 'reveal_on_focus.dart';
+import 'content_row_frame.dart';
+import 'random_pick_dialog.dart';
 
 /// Horizontal list of content cards with independent paging (spec-01): lazy load-more for touch/mouse,
 /// an explicit focusable "Load more" tile on TV.
@@ -20,6 +21,12 @@ class ContentRow extends ConsumerWidget {
   final bool hideWhenEmpty;
   final bool autofocusFirst;
 
+  /// Header action reloading the row from its first page.
+  final VoidCallback? onReload;
+
+  /// Header action picking a random item out of this pool.
+  final Future<List<ContentInfo>> Function()? randomPool;
+
   const ContentRow({
     super.key,
     required this.title,
@@ -29,6 +36,8 @@ class ContentRow extends ConsumerWidget {
     this.onRetry,
     this.hideWhenEmpty = false,
     this.autofocusFirst = false,
+    this.onReload,
+    this.randomPool,
   });
 
   /// Static list without paging.
@@ -41,13 +50,14 @@ class ContentRow extends ConsumerWidget {
   }) : state = PagedItems(items: items, hasMore: false),
        onLoadMore = null,
        onRetry = null,
+       onReload = null,
+       randomPool = null,
        hideWhenEmpty = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (hideWhenEmpty && state.isEmptyResult) return const SizedBox.shrink();
 
-    final theme = Theme.of(context);
     final l10n = context.l10n;
     final isTv = ref.watch(deviceClassProvider) == DeviceClass.tv;
     final cardWidth = isTv ? 160.0 : 136.0;
@@ -119,32 +129,23 @@ class ContentRow extends ConsumerWidget {
       );
     }
 
-    return RevealOnFocus(
-      margin: 0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: title),
-                  if (subtitle != null)
-                    TextSpan(
-                      text: '  $subtitle',
-                      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                ],
-              ),
-              style: theme.textTheme.titleMedium,
-            ),
+    return ContentRowFrame(
+      title: title,
+      label: subtitle,
+      actions: [
+        if (randomPool case final pool?)
+          RowAction(
+            key: const Key('rowPickRandom'),
+            icon: Icons.casino_outlined,
+            tooltip: l10n.rowPickRandom,
+            onPressed: () => showRandomPickDialog(context, loadPool: pool),
           ),
-          SizedBox(
-            height: rowHeight,
-            child: TrailingFade(child: body),
-          ),
-        ],
+        if (onReload case final reload?)
+          RowAction(key: const Key('rowReload'), icon: Icons.refresh, tooltip: l10n.rowReload, onPressed: reload),
+      ],
+      body: SizedBox(
+        height: rowHeight,
+        child: TrailingFade(child: body),
       ),
     );
   }

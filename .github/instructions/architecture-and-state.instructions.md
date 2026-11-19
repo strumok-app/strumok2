@@ -66,7 +66,7 @@ split widgets by device class (`*_desktop.dart`, `*_mobile.dart`, `*_tv.dart`) w
 ## Networking
 
 - One shared HTTP client provider (`httpClientProvider`) used by app code (supplier libs do their own networking in Rust).
-  It is an `rhttp` client created in `main()` and must support HTTP/2; every app HTTP operation goes through it.
+  It is an `AlpnHttpClient` (pure Dart, `http2` package, HTTP/1.1 fallback) created in `main()` and must support HTTP/2; every app HTTP operation goes through it.
 - Always forward supplier-provided `headers` when fetching media, subtitles, manga pages or downloads.
 - Timeouts: 30 s default. Never retry on 4xx.
 

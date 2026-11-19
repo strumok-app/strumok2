@@ -338,6 +338,36 @@ abstract class AppLocalizations {
   /// **'Завантажити ще'**
   String get rowLoadMore;
 
+  /// Content row header button: reload the row from its first page
+  ///
+  /// In uk, this message translates to:
+  /// **'Оновити'**
+  String get rowReload;
+
+  /// Content row header button and dialog title: pick a random item of the row
+  ///
+  /// In uk, this message translates to:
+  /// **'Випадковий вибір'**
+  String get rowPickRandom;
+
+  /// Random pick dialog: pick another random item
+  ///
+  /// In uk, this message translates to:
+  /// **'Інший'**
+  String get randomPickAnother;
+
+  /// Random pick dialog: open details of the picked item
+  ///
+  /// In uk, this message translates to:
+  /// **'Відкрити'**
+  String get randomPickOpen;
+
+  /// Random pick dialog: the row has no items
+  ///
+  /// In uk, this message translates to:
+  /// **'Немає з чого обирати'**
+  String get randomPickEmpty;
+
   /// Home: no recommendation channels are enabled
   ///
   /// In uk, this message translates to:

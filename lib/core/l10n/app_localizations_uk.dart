@@ -139,6 +139,21 @@ class AppLocalizationsUk extends AppLocalizations {
   String get rowLoadMore => 'Завантажити ще';
 
   @override
+  String get rowReload => 'Оновити';
+
+  @override
+  String get rowPickRandom => 'Випадковий вибір';
+
+  @override
+  String get randomPickAnother => 'Інший';
+
+  @override
+  String get randomPickOpen => 'Відкрити';
+
+  @override
+  String get randomPickEmpty => 'Немає з чого обирати';
+
+  @override
   String get homeEmpty => 'Оберіть постачальників і канали рекомендацій у налаштуваннях';
 
   @override

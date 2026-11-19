@@ -73,12 +73,15 @@ class _ChannelRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = channelItemsProvider(row.supplier, row.channel);
+    final notifier = ref.read(provider.notifier);
     return ContentRow(
       title: row.channel,
       subtitle: row.supplier,
       state: ref.watch(provider),
-      onLoadMore: ref.read(provider.notifier).loadMore,
-      onRetry: ref.read(provider.notifier).retry,
+      onLoadMore: notifier.loadMore,
+      onRetry: notifier.retry,
+      onReload: notifier.reload,
+      randomPool: notifier.randomPool,
       autofocusFirst: autofocusFirst,
     );
   }

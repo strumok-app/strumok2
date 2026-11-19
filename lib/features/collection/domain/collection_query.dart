@@ -74,6 +74,13 @@ List<(CollectionStatus, List<CollectionItem>)> groupCollection(
   return groups;
 }
 
+/// Random pick weight: higher priority is picked more often, low priority still can be.
+double collectionPickWeight(CollectionItem item) => switch (item.priority) {
+  CollectionPriority.low => 1,
+  CollectionPriority.normal => 2,
+  CollectionPriority.high => 4,
+};
+
 /// Home "Continue" row: in-progress items, or watch-later ones when there are none (spec-01 Home).
 List<CollectionItem> continueItems(Iterable<CollectionItem> items) {
   List<CollectionItem> withStatus(CollectionStatus s) => [

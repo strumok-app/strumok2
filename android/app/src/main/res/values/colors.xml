@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launch screen fill: the icon yellow. -->
+    <color name="launch_background">#FFCB13</color>
+    <color name="ic_launcher_background">#FFCB13</color>
+</resources>

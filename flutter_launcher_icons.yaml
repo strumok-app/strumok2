@@ -1,0 +1,29 @@
+# Launcher icons: `dart run flutter_launcher_icons`.
+#
+# Master artwork: data/icons/app_Strumok.svg (flat). The PNGs below are rendered from the SVGs next to them,
+# e.g. `rsvg-convert -w 1024 data/icons/app_Strumok.svg -o data/icons/app_icon.png`.
+# Not generated here (keep in sync by hand):
+# - Linux: linux/packaging/app.strumok.svg (copy of the master) and app.strumok.png (256 px);
+# - Android TV banner and pre-Android 12 launch icon: vector drawables
+#   android/app/src/main/res/drawable/{tv_banner,launch_icon}.xml.
+flutter_launcher_icons:
+  image_path: "data/icons/app_icon.png"
+
+  android: true
+  min_sdk_android: 24
+  adaptive_icon_background: "#FFCB13"
+  adaptive_icon_foreground: "data/icons/app_icon_adaptive_foreground.png"
+  # The foreground is drawn on the full 108dp canvas already.
+  adaptive_icon_foreground_inset: 0
+  adaptive_icon_monochrome: "data/icons/app_icon_monochrome.png"
+
+  ios: false
+  web:
+    generate: false
+  macos:
+    generate: false
+
+  windows:
+    generate: true
+    image_path: "data/icons/app_icon.png"
+    icon_size: 256

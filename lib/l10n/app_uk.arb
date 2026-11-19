@@ -179,6 +179,26 @@
   "@rowLoadMore": {
     "description": "TV: tile at the end of a row that loads the next page"
   },
+  "rowReload": "Оновити",
+  "@rowReload": {
+    "description": "Content row header button: reload the row from its first page"
+  },
+  "rowPickRandom": "Випадковий вибір",
+  "@rowPickRandom": {
+    "description": "Content row header button and dialog title: pick a random item of the row"
+  },
+  "randomPickAnother": "Інший",
+  "@randomPickAnother": {
+    "description": "Random pick dialog: pick another random item"
+  },
+  "randomPickOpen": "Відкрити",
+  "@randomPickOpen": {
+    "description": "Random pick dialog: open details of the picked item"
+  },
+  "randomPickEmpty": "Немає з чого обирати",
+  "@randomPickEmpty": {
+    "description": "Random pick dialog: the row has no items"
+  },
   "homeEmpty": "Оберіть постачальників і канали рекомендацій у налаштуваннях",
   "@homeEmpty": {
     "description": "Home: no recommendation channels are enabled"

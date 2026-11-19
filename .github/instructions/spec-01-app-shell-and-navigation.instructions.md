@@ -39,6 +39,11 @@ bottom of the side rail.
 - For each enabled supplier (user-defined order) and each enabled channel: horizontal list from
   `loadChannel(channel, page)`; pages are **1-based**; "load more" at the end of the row (lazy for touch/mouse, explicit focusable tile on TV).
 - Empty state hint: "configure recommendations in settings".
+- Recommendation row header ends with two actions: **Pick random** (loads up to 3 more pages until ~60 items,
+  then a dialog with the pick: *Open* details, *Another one* without repeats, *Close*) and **Reload** (drops the
+  loaded pages and loads page 1 again; pages requested before the reload are discarded).
+- D-pad: row header actions are reached with ↑ from the row's cards; ↓ returns to the last focused card, ↑ continues
+  to the row above.
 - In offline mode Home shows downloaded content instead (spec-08).
 
 ## Search
@@ -56,6 +61,8 @@ bottom of the side rail.
 - Filters: status, media type (video/manga), supplier (only suppliers present in collection ∩ installed suppliers).
 - Sort inside group: `priority` desc, then `lastSeen` desc.
 - Item card: image, title, progress (episode N / total, progress bar), supplier badge.
+- Each group header ends with **Pick random** (same dialog as Home) over the group's filtered items, weighted by
+  priority (low 1 : normal 2 : high 4).
 - Updates live as sync events arrive (spec-03).
 
 ## Details

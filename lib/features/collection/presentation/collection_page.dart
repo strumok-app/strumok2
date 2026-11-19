@@ -51,6 +51,7 @@ class _CollectionPageState extends ConsumerState<CollectionPage> {
           title: l10n.collectionStatus(groups[index].$1),
           items: groups[index].$2,
           autofocusFirst: isTv && index == 0,
+          pickRandom: true,
         ),
       ),
       _ => const Center(child: CircularProgressIndicator()),
