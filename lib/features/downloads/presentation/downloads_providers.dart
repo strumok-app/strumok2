@@ -231,3 +231,6 @@ bool isLocalSource(Object source) => source is LocalMediaSource;
 
 /// Locale-independent widget key helper for tests.
 Key downloadTaskKey(String id) => ValueKey('downloadTask-$id');
+
+/// Locale-independent widget key helper for a content download group.
+Key downloadGroupKey(String contentKey) => ValueKey('downloadGroup-$contentKey');

@@ -1658,6 +1658,12 @@ abstract class AppLocalizations {
   /// **'Тут з’являтимуться завантажені фільми, серіали та манга'**
   String get downloadsEmpty;
 
+  /// Downloads page: the queue tab has no tasks
+  ///
+  /// In uk, this message translates to:
+  /// **'Черга завантажень порожня'**
+  String get downloadsQueueEmpty;
+
   /// Cancel one task
   ///
   /// In uk, this message translates to:
@@ -1699,6 +1705,30 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Скасовано'**
   String get downloadsStateCanceled;
+
+  /// Number of failed items in a content download group
+  ///
+  /// In uk, this message translates to:
+  /// **'{count} з помилкою'**
+  String downloadsFailedCount(int count);
+
+  /// Downloaded vs total items in a content download group
+  ///
+  /// In uk, this message translates to:
+  /// **'{done}/{total}'**
+  String downloadsGroupItems(int done, int total);
+
+  /// Expand a content download group to show its items
+  ///
+  /// In uk, this message translates to:
+  /// **'Розгорнути'**
+  String get downloadsExpand;
+
+  /// Collapse a content download group
+  ///
+  /// In uk, this message translates to:
+  /// **'Згорнути'**
+  String get downloadsCollapse;
 
   /// Running task: progress and speed
   ///

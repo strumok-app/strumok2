@@ -255,6 +255,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('50% · '), findsOneWidget);
 
+    // Downloaded contents live on their own tab, always reachable regardless of the queue length.
+    await tester.tap(find.text('Завантажене'));
+    await settle(tester);
     expect(find.text('Show'), findsOneWidget);
     expect(find.text('1 серія · 3.0 МБ · alpha'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('deleteContent-alpha_m1')));
@@ -263,6 +266,49 @@ void main() {
     await settle(tester);
     expect(Directory(p.join(folder().path, 'alpha_m1')).existsSync(), isFalse);
     expect(find.text('Тут з’являтимуться завантажені фільми, серіали та манга'), findsOneWidget);
+  });
+
+  testAppWidgets('downloads page: a multi-item content collapses into an expandable group', (tester) async {
+    await start(tester);
+    final service = await container.read(downloadServiceProvider.future);
+    await service.send(
+      EnqueueDownloads([
+        downloadRequest('show', 0, root: folder().path),
+        downloadRequest('show', 1, root: folder().path),
+        downloadRequest('show', 2, root: folder().path),
+      ]),
+    );
+    runner.runs['alpha_show_0']!.progress(0.5, 100);
+    await go(tester, AppRoutes.downloads);
+
+    // Collapsed: one group row, its items are not built yet (so hundreds of chapters stay cheap).
+    expect(find.byKey(downloadGroupKey('alpha_show')), findsOneWidget);
+    expect(find.byKey(downloadTaskKey('alpha_show_0')), findsNothing);
+
+    // Expanding the group reveals its items.
+    await tester.tap(find.byKey(downloadGroupKey('alpha_show')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(downloadTaskKey('alpha_show_0')), findsOneWidget);
+    expect(find.byKey(downloadTaskKey('alpha_show_2')), findsOneWidget);
+
+    // One group action cancels the whole series.
+    await tester.tap(find.byKey(const ValueKey('cancelGroup-alpha_show')));
+    await tester.pumpAndSettle();
+    expect(queue().tasks.where((t) => t.state.active), isEmpty);
+    expect(find.byKey(const ValueKey('retryGroup-alpha_show')), findsOneWidget);
+  });
+
+  testAppWidgets('downloads page: with no queued tasks the downloaded contents show without tabs', (tester) async {
+    await start(tester);
+    putDetails('alpha', 'm1', {'title': 'Show', 'mediaType': 'video'});
+    put('alpha_m1/0/B.mp4');
+    container.read(offlineRevisionProvider.notifier).bump();
+    await go(tester, AppRoutes.downloads);
+
+    expect(find.byType(TabBar), findsNothing, reason: 'no queue, no tabs');
+    expect(find.text('Черга'), findsNothing);
+    expect(find.text('Show'), findsOneWidget);
+    expect(find.byKey(const ValueKey('deleteContent-alpha_m1')), findsOneWidget);
   });
 
   testAppWidgets('settings: parallel downloads and folder; offline mode is in the account menu', (tester) async {

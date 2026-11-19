@@ -134,6 +134,28 @@ void main() {
       expect(startRunnable(q.apply(const SetMaxConcurrentDownloads(1))).tasks.first.state, DownloadState.started);
     });
 
+    test('retry and dismiss per content affect only that group', () {
+      var q = enqueue(const DownloadQueue(), [request('a', 0), request('a', 1), request('b', 0)]);
+      q = finish(finish(q, 'alpha_a_0', DownloadState.failed), 'alpha_a_1', DownloadState.canceled);
+      q = finish(q, 'alpha_b_0', DownloadState.failed);
+
+      final retried = q.apply(const RetryContentDownloads('alpha_a'));
+      expect([retried['alpha_a_0']!.state, retried['alpha_a_1']!.state], everyElement(DownloadState.queued));
+      expect(retried['alpha_b_0']!.state, DownloadState.failed, reason: 'other groups untouched');
+
+      final dismissed = q.apply(const DismissContentDownloads('alpha_a'));
+      expect(dismissed.tasks.map((t) => t.id), ['alpha_b_0']);
+    });
+
+    test('dismiss per content keeps active tasks of the group', () {
+      var q = startRunnable(enqueue(const DownloadQueue(maxConcurrent: 2), [request('a', 0), request('b', 0)]));
+      q = enqueue(q, [request('a', 1)]);
+      q = finish(q, 'alpha_a_0');
+      final dismissed = q.apply(const DismissContentDownloads('alpha_a'));
+      expect(dismissed['alpha_a_0'], isNull, reason: 'the finished episode is removed');
+      expect(dismissed['alpha_a_1']!.state, DownloadState.queued, reason: 'the queued episode stays');
+    });
+
     test('dismiss and clear remove only finished tasks', () {
       var q = enqueue(const DownloadQueue(), [request('a', 0), request('b', 0), request('c', 0)]);
       q = finish(finish(q, 'alpha_a_0'), 'alpha_b_0', DownloadState.canceled);
@@ -149,7 +171,9 @@ void main() {
         const CancelContentDownloads('alpha_a'),
         const CancelAllDownloads(),
         const RetryDownload('x'),
+        const RetryContentDownloads('alpha_a'),
         const DismissDownload('x'),
+        const DismissContentDownloads('alpha_a'),
         const ClearFinishedDownloads(),
         const SetMaxConcurrentDownloads(4),
       ];

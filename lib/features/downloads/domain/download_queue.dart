@@ -16,7 +16,9 @@ sealed class DownloadCommand {
     'cancelContent' => CancelContentDownloads(json['contentKey'] as String),
     'cancelAll' => const CancelAllDownloads(),
     'retry' => RetryDownload(json['id'] as String),
+    'retryContent' => RetryContentDownloads(json['contentKey'] as String),
     'dismiss' => DismissDownload(json['id'] as String),
+    'dismissContent' => DismissContentDownloads(json['contentKey'] as String),
     'clearFinished' => const ClearFinishedDownloads(),
     'maxConcurrent' => SetMaxConcurrentDownloads((json['value'] as num).toInt()),
     final type => throw FormatException('Unknown download command: $type'),
@@ -72,6 +74,16 @@ final class RetryDownload extends DownloadCommand {
   Map<String, Object?> toJson() => {'type': 'retry', 'id': id};
 }
 
+/// Queues every failed or canceled task of one content again (spec-08: per group).
+final class RetryContentDownloads extends DownloadCommand {
+  final String contentKey;
+
+  const RetryContentDownloads(this.contentKey);
+
+  @override
+  Map<String, Object?> toJson() => {'type': 'retryContent', 'contentKey': contentKey};
+}
+
 /// Removes a finished task from the list.
 final class DismissDownload extends DownloadCommand {
   final String id;
@@ -80,6 +92,16 @@ final class DismissDownload extends DownloadCommand {
 
   @override
   Map<String, Object?> toJson() => {'type': 'dismiss', 'id': id};
+}
+
+/// Removes every finished task of one content from the list (spec-08: per group).
+final class DismissContentDownloads extends DownloadCommand {
+  final String contentKey;
+
+  const DismissContentDownloads(this.contentKey);
+
+  @override
+  Map<String, Object?> toJson() => {'type': 'dismissContent', 'contentKey': contentKey};
 }
 
 final class ClearFinishedDownloads extends DownloadCommand {
@@ -122,23 +144,11 @@ final class DownloadQueue {
     CancelDownload(:final id) => _cancelWhere((t) => t.id == id),
     CancelContentDownloads(:final contentKey) => _cancelWhere((t) => t.contentKey == contentKey),
     CancelAllDownloads() => _cancelWhere((_) => true),
-    RetryDownload(:final id) => _map(
-      (t) => t.id == id && (t.state == DownloadState.failed || t.state == DownloadState.canceled)
-          ? t.copyWith(state: DownloadState.queued, speed: 0, clearFailure: true)
-          : t,
-    ),
-    DismissDownload(:final id) => _copy(
-      tasks: [
-        for (final t in tasks)
-          if (t.id != id || t.state.active) t,
-      ],
-    ),
-    ClearFinishedDownloads() => _copy(
-      tasks: [
-        for (final t in tasks)
-          if (t.state.active) t,
-      ],
-    ),
+    RetryDownload(:final id) => _retryWhere((t) => t.id == id),
+    RetryContentDownloads(:final contentKey) => _retryWhere((t) => t.contentKey == contentKey),
+    DismissDownload(:final id) => _dismissWhere((t) => t.id == id),
+    DismissContentDownloads(:final contentKey) => _dismissWhere((t) => t.contentKey == contentKey),
+    ClearFinishedDownloads() => _dismissWhere((_) => true),
     SetMaxConcurrentDownloads(:final value) => _copy(maxConcurrent: value.clamp(minConcurrent, maxConcurrentLimit)),
   };
 
@@ -212,6 +222,21 @@ final class DownloadQueue {
 
   DownloadQueue _cancelWhere(bool Function(DownloadTask task) test) =>
       _map((t) => t.state.active && test(t) ? t.copyWith(state: DownloadState.canceled, speed: 0) : t);
+
+  /// Requeues the matching failed or canceled tasks, keeping their place and partial progress.
+  DownloadQueue _retryWhere(bool Function(DownloadTask task) test) => _map(
+    (t) => (t.state == DownloadState.failed || t.state == DownloadState.canceled) && test(t)
+        ? t.copyWith(state: DownloadState.queued, speed: 0, clearFailure: true)
+        : t,
+  );
+
+  /// Removes the matching finished (not active) tasks from the list.
+  DownloadQueue _dismissWhere(bool Function(DownloadTask task) test) => _copy(
+    tasks: [
+      for (final t in tasks)
+        if (t.state.active || !test(t)) t,
+    ],
+  );
 
   DownloadQueue _map(DownloadTask Function(DownloadTask task) change) =>
       _copy(tasks: [for (final t in tasks) change(t)]);

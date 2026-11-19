@@ -853,6 +853,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadsEmpty => 'Downloaded movies, series and manga will appear here';
 
   @override
+  String get downloadsQueueEmpty => 'The download queue is empty';
+
+  @override
   String get downloadsCancel => 'Cancel download';
 
   @override
@@ -872,6 +875,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadsStateCanceled => 'Canceled';
+
+  @override
+  String downloadsFailedCount(int count) {
+    return '$count failed';
+  }
+
+  @override
+  String downloadsGroupItems(int done, int total) {
+    return '$done/$total';
+  }
+
+  @override
+  String get downloadsExpand => 'Expand';
+
+  @override
+  String get downloadsCollapse => 'Collapse';
 
   @override
   String downloadsProgress(int percent, String speed) {

@@ -856,6 +856,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get downloadsEmpty => 'Тут з’являтимуться завантажені фільми, серіали та манга';
 
   @override
+  String get downloadsQueueEmpty => 'Черга завантажень порожня';
+
+  @override
   String get downloadsCancel => 'Скасувати завантаження';
 
   @override
@@ -875,6 +878,22 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get downloadsStateCanceled => 'Скасовано';
+
+  @override
+  String downloadsFailedCount(int count) {
+    return '$count з помилкою';
+  }
+
+  @override
+  String downloadsGroupItems(int done, int total) {
+    return '$done/$total';
+  }
+
+  @override
+  String get downloadsExpand => 'Розгорнути';
+
+  @override
+  String get downloadsCollapse => 'Згорнути';
 
   @override
   String downloadsProgress(int percent, String speed) {

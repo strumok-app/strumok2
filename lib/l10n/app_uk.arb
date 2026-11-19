@@ -1177,6 +1177,10 @@
   "@downloadsEmpty": {
     "description": "Downloads page: nothing downloaded"
   },
+  "downloadsQueueEmpty": "Черга завантажень порожня",
+  "@downloadsQueueEmpty": {
+    "description": "Downloads page: the queue tab has no tasks"
+  },
   "downloadsCancel": "Скасувати завантаження",
   "@downloadsCancel": {
     "description": "Cancel one task"
@@ -1204,6 +1208,35 @@
   "downloadsStateCanceled": "Скасовано",
   "@downloadsStateCanceled": {
     "description": "Task state"
+  },
+  "downloadsFailedCount": "{count} з помилкою",
+  "@downloadsFailedCount": {
+    "description": "Number of failed items in a content download group",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsGroupItems": "{done}/{total}",
+  "@downloadsGroupItems": {
+    "description": "Downloaded vs total items in a content download group",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloadsExpand": "Розгорнути",
+  "@downloadsExpand": {
+    "description": "Expand a content download group to show its items"
+  },
+  "downloadsCollapse": "Згорнути",
+  "@downloadsCollapse": {
+    "description": "Collapse a content download group"
   },
   "downloadsProgress": "{percent}% · {speed}",
   "@downloadsProgress": {
