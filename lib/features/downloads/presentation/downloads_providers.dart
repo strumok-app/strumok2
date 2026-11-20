@@ -10,6 +10,7 @@ import '../../../core/localization.dart';
 import '../../../core/network/http_client.dart';
 import '../../../core/platform/app_paths.dart';
 import '../../../core/platform/app_platform.dart';
+import '../../../core/riverpod/cache_for.dart';
 import '../../../core/storage/app_preferences.dart';
 import '../../suppliers/data/supplier_registry.dart';
 import '../data/android_download_service.dart';
@@ -116,12 +117,13 @@ class DownloadTasks extends _$DownloadTasks {
     };
     final subscription = service.changes.listen((queue) {
       state = AsyncData(queue);
-      // Finished files change what is available offline.
-      var added = false;
+      // Finished files change what is available offline, only for their content.
+      final refreshed = <String>{};
       for (final t in queue.tasks) {
-        if (t.state == DownloadState.completed) added |= completed.add(t.id);
+        if (t.state == DownloadState.completed && completed.add(t.id) && refreshed.add(t.contentKey)) {
+          refreshOfflineContent(ref, t.request.supplier, t.request.contentId);
+        }
       }
-      if (added) ref.read(offlineRevisionProvider.notifier).bump();
     });
     ref.onDispose(subscription.cancel);
     return service.queue;
@@ -142,7 +144,8 @@ DownloadTask? itemDownloadTask(Ref ref, String supplier, String id, int itemInde
   return ref.watch(downloadTasksProvider.select((q) => q.value?[taskId]));
 }
 
-/// Changes whenever downloaded files appear or are deleted.
+/// Bumped to scan everything again (e.g. files changed outside the app); single contents are refreshed with
+/// [refreshOfflineContent].
 @Riverpod(keepAlive: true)
 class OfflineRevision extends _$OfflineRevision {
   @override
@@ -155,16 +158,53 @@ class OfflineRevision extends _$OfflineRevision {
 OfflineStorage offlineStorage(Ref ref) =>
     OfflineStorage(ref.watch(downloadsFolderProvider), suppliers: () => ref.read(suppliersProvider).map((s) => s.name));
 
+// The offline providers are kept for a while so coming back to a page does not scan the folder again.
+const _offlineCache = Duration(minutes: 5);
+
+/// Downloaded contents, newest first (folders only).
 @riverpod
-Future<List<DownloadedContent>> offlineContents(Ref ref) {
+Future<List<OfflineContentId>> offlineContentIds(Ref ref) {
+  ref.cacheFor(_offlineCache);
   ref.watch(offlineRevisionProvider);
-  return ref.watch(offlineStorageProvider).list();
+  return ref.watch(offlineStorageProvider).contentIds();
 }
 
+/// Details and finished items of one downloaded content.
 @riverpod
 Future<DownloadedContent?> offlineContent(Ref ref, String supplier, String id) {
+  ref.cacheFor(_offlineCache);
   ref.watch(offlineRevisionProvider);
   return ref.watch(offlineStorageProvider).content(supplier, id);
+}
+
+/// Disk usage of one downloaded content; loaded apart from its items (it stats every file).
+@riverpod
+Future<int> offlineContentSize(Ref ref, String supplier, String id) {
+  ref.cacheFor(_offlineCache);
+  ref.watch(offlineRevisionProvider);
+  return ref.watch(offlineStorageProvider).size(supplier, id);
+}
+
+/// Every downloaded content; one content refreshed with [refreshOfflineContent] is scanned again, the others come
+/// from their cached [offlineContentProvider].
+@riverpod
+Future<List<DownloadedContent>> offlineContents(Ref ref) async {
+  ref.cacheFor(_offlineCache);
+  final ids = await ref.watch(offlineContentIdsProvider.future);
+  final contents = await Future.wait([
+    for (final (:supplier, :id) in ids) ref.watch(offlineContentProvider(supplier, id).future),
+  ]);
+  return contents.nonNulls.toList();
+}
+
+/// Scans one content again after its files changed; the list of contents only when [listChanged] or when it is new.
+void refreshOfflineContent(Ref ref, String supplier, String id, {bool listChanged = false}) {
+  ref
+    ..invalidate(offlineContentProvider(supplier, id))
+    ..invalidate(offlineContentSizeProvider(supplier, id));
+  if (!ref.read(offlineContentIdsProvider.exists)) return;
+  final known = ref.read(offlineContentIdsProvider).value?.contains((supplier: supplier, id: id)) ?? false;
+  if (listChanged || !known) ref.invalidate(offlineContentIdsProvider);
 }
 
 /// Title of an offline item ("Episode N" / "Chapter N"; spec-08 §8.4).
@@ -195,7 +235,7 @@ class OfflineFiles extends _$OfflineFiles {
       if (t.contentKey == downloadContentKey(supplier, id)) await tasks.send(DismissDownload(t.id));
     }
     await ref.read(offlineStorageProvider).deleteContent(supplier, id);
-    ref.read(offlineRevisionProvider.notifier).bump();
+    refreshOfflineContent(ref, supplier, id, listChanged: true);
   }
 
   Future<void> deleteItem(String supplier, String id, int number) async {
@@ -204,7 +244,8 @@ class OfflineFiles extends _$OfflineFiles {
     await tasks.send(CancelDownload(taskId));
     await tasks.send(DismissDownload(taskId));
     await ref.read(offlineStorageProvider).deleteItem(supplier, id, number);
-    ref.read(offlineRevisionProvider.notifier).bump();
+    // The content folder goes with its last item.
+    refreshOfflineContent(ref, supplier, id, listChanged: true);
   }
 }
 

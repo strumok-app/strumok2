@@ -162,7 +162,7 @@ final class MediaItemsProvider
   }
 }
 
-String _$mediaItemsHash() => r'2ebcd8fec4304beb917a563d3f89d4d413ee6f4c';
+String _$mediaItemsHash() => r'9edf7dd219e60c5f81a82a7633aad196a44bc5e0';
 
 /// Lazily loaded items (spec-02 §2.3) with their downloaded sources listed first (spec-08 §8.4).
 /// Offline details list only downloaded items, so collection progress is keyed by [ContentMediaItem.number].

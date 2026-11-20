@@ -245,7 +245,7 @@ class _DownloadedTab extends StatelessWidget {
   }
 }
 
-/// Poster, title, items and size; opens the details, delete asks first.
+/// Poster, title, items and size (counted separately); opens the details, delete asks first.
 class _ContentTile extends ConsumerWidget {
   final DownloadedContent content;
   final bool autofocus;
@@ -258,6 +258,8 @@ class _ContentTile extends ConsumerWidget {
     final details = content.details;
     final count = content.items.length;
     final items = details.mediaType == MediaType.manga ? l10n.downloadsChapters(count) : l10n.downloadsEpisodes(count);
+    // Shown once counted; the previous size stays while a finished download recounts it.
+    final size = ref.watch(offlineContentSizeProvider(content.supplier, content.id)).value;
     return ListTile(
       key: ValueKey('downloadedContent-${content.key}'),
       autofocus: autofocus,
@@ -266,7 +268,7 @@ class _ContentTile extends ConsumerWidget {
         child: SizedBox(width: 40, height: 40 / posterAspectRatio, child: AppNetworkImage(details.image)),
       ),
       title: Text(details.title, maxLines: 2, overflow: TextOverflow.ellipsis),
-      subtitle: Text('$items · ${formatBytes(l10n, content.sizeBytes)} · ${content.supplier}'),
+      subtitle: Text([items, if (size != null) formatBytes(l10n, size), content.supplier].join(' · ')),
       onTap: () => context.push(AppRoutes.details(content.supplier, content.id)),
       trailing: IconButton(
         key: ValueKey('deleteContent-${content.key}'),

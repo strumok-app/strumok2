@@ -65,7 +65,7 @@ class DownloadedMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Tooltip(
     message: context.l10n.downloadsStateCompleted,
-    child: Icon(Icons.download_done, size: 20, color: Theme.of(context).colorScheme.primary),
+    child: Icon(Icons.save, size: 20, color: Theme.of(context).colorScheme.primary),
   );
 }
 

@@ -201,7 +201,7 @@ final class DownloadTasksProvider
   DownloadTasks create() => DownloadTasks();
 }
 
-String _$downloadTasksHash() => r'eab709503c217a9df39d74f5a5afb29cb2d49255';
+String _$downloadTasksHash() => r'cd73b28a89557cfca02622d7437079b4929a9777';
 
 /// Current queue; updates with throttled progress, so watch it with `select` outside the downloads page.
 
@@ -359,15 +359,18 @@ final class ItemDownloadTaskFamily extends $Family
   String toString() => r'itemDownloadTaskProvider';
 }
 
-/// Changes whenever downloaded files appear or are deleted.
+/// Bumped to scan everything again (e.g. files changed outside the app); single contents are refreshed with
+/// [refreshOfflineContent].
 
 @ProviderFor(OfflineRevision)
 final offlineRevisionProvider = OfflineRevisionProvider._();
 
-/// Changes whenever downloaded files appear or are deleted.
+/// Bumped to scan everything again (e.g. files changed outside the app); single contents are refreshed with
+/// [refreshOfflineContent].
 final class OfflineRevisionProvider
     extends $NotifierProvider<OfflineRevision, int> {
-  /// Changes whenever downloaded files appear or are deleted.
+  /// Bumped to scan everything again (e.g. files changed outside the app); single contents are refreshed with
+  /// [refreshOfflineContent].
   OfflineRevisionProvider._()
     : super(
         from: null,
@@ -397,7 +400,8 @@ final class OfflineRevisionProvider
 
 String _$offlineRevisionHash() => r'199690f3eee3ae3ed280eb136f8bb166d8933f17';
 
-/// Changes whenever downloaded files appear or are deleted.
+/// Bumped to scan everything again (e.g. files changed outside the app); single contents are refreshed with
+/// [refreshOfflineContent].
 
 abstract class _$OfflineRevision extends $Notifier<int> {
   int build();
@@ -458,49 +462,58 @@ final class OfflineStorageProvider
 
 String _$offlineStorageHash() => r'10e8344f9ed94e02891185231d8c7da2ecbbf798';
 
-@ProviderFor(offlineContents)
-final offlineContentsProvider = OfflineContentsProvider._();
+/// Downloaded contents, newest first (folders only).
 
-final class OfflineContentsProvider
+@ProviderFor(offlineContentIds)
+final offlineContentIdsProvider = OfflineContentIdsProvider._();
+
+/// Downloaded contents, newest first (folders only).
+
+final class OfflineContentIdsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<DownloadedContent>>,
-          List<DownloadedContent>,
-          FutureOr<List<DownloadedContent>>
+          AsyncValue<List<OfflineContentId>>,
+          List<OfflineContentId>,
+          FutureOr<List<OfflineContentId>>
         >
     with
-        $FutureModifier<List<DownloadedContent>>,
-        $FutureProvider<List<DownloadedContent>> {
-  OfflineContentsProvider._()
+        $FutureModifier<List<OfflineContentId>>,
+        $FutureProvider<List<OfflineContentId>> {
+  /// Downloaded contents, newest first (folders only).
+  OfflineContentIdsProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'offlineContentsProvider',
+        name: r'offlineContentIdsProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$offlineContentsHash();
+  String debugGetCreateSourceHash() => _$offlineContentIdsHash();
 
   @$internal
   @override
-  $FutureProviderElement<List<DownloadedContent>> $createElement(
+  $FutureProviderElement<List<OfflineContentId>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<DownloadedContent>> create(Ref ref) {
-    return offlineContents(ref);
+  FutureOr<List<OfflineContentId>> create(Ref ref) {
+    return offlineContentIds(ref);
   }
 }
 
-String _$offlineContentsHash() => r'9402be932fb0bb567d53ac867c67c69488d8699c';
+String _$offlineContentIdsHash() => r'172f64b7fc3ddb1c9c8a0a58e98da5d3e9676a17';
+
+/// Details and finished items of one downloaded content.
 
 @ProviderFor(offlineContent)
 final offlineContentProvider = OfflineContentFamily._();
+
+/// Details and finished items of one downloaded content.
 
 final class OfflineContentProvider
     extends
@@ -512,6 +525,7 @@ final class OfflineContentProvider
     with
         $FutureModifier<DownloadedContent?>,
         $FutureProvider<DownloadedContent?> {
+  /// Details and finished items of one downloaded content.
   OfflineContentProvider._({
     required OfflineContentFamily super.from,
     required (String, String) super.argument,
@@ -556,7 +570,9 @@ final class OfflineContentProvider
   }
 }
 
-String _$offlineContentHash() => r'25b02cd8c111ad8ff2cacbde164d5aa265ff432f';
+String _$offlineContentHash() => r'02d59a49a4288901f56bdf733144e74e1f10e5ca';
+
+/// Details and finished items of one downloaded content.
 
 final class OfflineContentFamily extends $Family
     with
@@ -573,12 +589,142 @@ final class OfflineContentFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// Details and finished items of one downloaded content.
+
   OfflineContentProvider call(String supplier, String id) =>
       OfflineContentProvider._(argument: (supplier, id), from: this);
 
   @override
   String toString() => r'offlineContentProvider';
 }
+
+/// Disk usage of one downloaded content; loaded apart from its items (it stats every file).
+
+@ProviderFor(offlineContentSize)
+final offlineContentSizeProvider = OfflineContentSizeFamily._();
+
+/// Disk usage of one downloaded content; loaded apart from its items (it stats every file).
+
+final class OfflineContentSizeProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Disk usage of one downloaded content; loaded apart from its items (it stats every file).
+  OfflineContentSizeProvider._({
+    required OfflineContentSizeFamily super.from,
+    required (String, String) super.argument,
+  }) : super(
+         retry: null,
+         name: r'offlineContentSizeProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$offlineContentSizeHash();
+
+  @override
+  String toString() {
+    return r'offlineContentSizeProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    final argument = this.argument as (String, String);
+    return offlineContentSize(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OfflineContentSizeProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$offlineContentSizeHash() =>
+    r'459c97f450ca4407a98e3a38f388564f79e52c68';
+
+/// Disk usage of one downloaded content; loaded apart from its items (it stats every file).
+
+final class OfflineContentSizeFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<int>, (String, String)> {
+  OfflineContentSizeFamily._()
+    : super(
+        retry: null,
+        name: r'offlineContentSizeProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Disk usage of one downloaded content; loaded apart from its items (it stats every file).
+
+  OfflineContentSizeProvider call(String supplier, String id) =>
+      OfflineContentSizeProvider._(argument: (supplier, id), from: this);
+
+  @override
+  String toString() => r'offlineContentSizeProvider';
+}
+
+/// Every downloaded content; one content refreshed with [refreshOfflineContent] is scanned again, the others come
+/// from their cached [offlineContentProvider].
+
+@ProviderFor(offlineContents)
+final offlineContentsProvider = OfflineContentsProvider._();
+
+/// Every downloaded content; one content refreshed with [refreshOfflineContent] is scanned again, the others come
+/// from their cached [offlineContentProvider].
+
+final class OfflineContentsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<DownloadedContent>>,
+          List<DownloadedContent>,
+          FutureOr<List<DownloadedContent>>
+        >
+    with
+        $FutureModifier<List<DownloadedContent>>,
+        $FutureProvider<List<DownloadedContent>> {
+  /// Every downloaded content; one content refreshed with [refreshOfflineContent] is scanned again, the others come
+  /// from their cached [offlineContentProvider].
+  OfflineContentsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'offlineContentsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$offlineContentsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<DownloadedContent>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<DownloadedContent>> create(Ref ref) {
+    return offlineContents(ref);
+  }
+}
+
+String _$offlineContentsHash() => r'5b9dfa0369a5494f306c951682dbafd7436b5914';
 
 /// Deletes downloaded files after canceling their tasks, then refreshes what is available offline. Kept alive:
 /// buttons call it with `ref.read` and the work continues after awaits.
@@ -618,7 +764,7 @@ final class OfflineFilesProvider extends $NotifierProvider<OfflineFiles, void> {
   }
 }
 
-String _$offlineFilesHash() => r'501bc86f28598726599f50a3647106816fa7c3e5';
+String _$offlineFilesHash() => r'e13c95ac0c9893fc8fc35fce54e30082d14c1d0f';
 
 /// Deletes downloaded files after canceling their tasks, then refreshes what is available offline. Kept alive:
 /// buttons call it with `ref.read` and the work continues after awaits.

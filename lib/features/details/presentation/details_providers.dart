@@ -47,10 +47,12 @@ Future<ContentDetails> contentDetails(Ref ref, String supplier, String id) async
 @riverpod
 Future<List<ContentMediaItem>> mediaItems(Ref ref, String supplier, String id) async {
   ref.cacheFor(const Duration(minutes: 5));
+  // The folder scan runs while the supplier loads the details and items.
+  final local = ref.watch(offlineContentProvider(supplier, id).future)..ignore();
   final details = await ref.watch(contentDetailsProvider(supplier, id).future);
   final items = await details.mediaItems;
   if (details is OfflineContentDetails) return items;
-  final content = await ref.watch(offlineContentProvider(supplier, id).future);
+  final content = await local;
   if (content == null) return items;
   return [
     for (final item in items)
