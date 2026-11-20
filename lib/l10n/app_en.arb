@@ -305,5 +305,7 @@
   "homeOfflineEmpty": "Nothing is downloaded yet. Turn off offline mode to browse.",
   "searchOffline": "Search is not available in offline mode",
   "downloadsPickSeason": "Download a season",
-  "downloadsPickVolume": "Download a volume"
+  "downloadsPickVolume": "Download a volume",
+  "downloadsSourcesHint": "Pick one or more sources in order of priority. Where they are missing, the most similar one is used.",
+  "downloadsSourcePriority": "Priority {priority}"
 }

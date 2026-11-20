@@ -56,8 +56,9 @@ final class DownloadRequest {
   /// `video` or `manga`; subtitles are only downloaded alongside a video.
   final FileKind kind;
 
-  /// Source `description`; the same name is looked up again when the task starts (links expire).
-  final String sourceName;
+  /// Preferred source `description`s, highest priority first (never empty). Looked up again when the task starts
+  /// (links expire); an item without any of them gets a similar source (see `chooseDownloadSource`).
+  final List<String> sourceNames;
   final String? subtitleName;
 
   /// Downloads folder at enqueue time; files of this task go there even if the setting changes later.
@@ -70,7 +71,7 @@ final class DownloadRequest {
     required this.title,
     required this.itemTitle,
     required this.kind,
-    required this.sourceName,
+    required this.sourceNames,
     required this.root,
     this.image = '',
     this.subtitleName,
@@ -88,7 +89,8 @@ final class DownloadRequest {
     itemTitle: json['itemTitle'] as String? ?? '',
     image: json['image'] as String? ?? '',
     kind: FileKind.values.asNameMap()[json['kind']] ?? FileKind.video,
-    sourceName: json['sourceName'] as String,
+    // Queues saved before several sources could be picked have a single `sourceName`.
+    sourceNames: [...?(json['sourceNames'] as List?)?.cast<String>(), ?json['sourceName'] as String?],
     subtitleName: json['subtitleName'] as String?,
     root: json['root'] as String,
   );
@@ -101,16 +103,38 @@ final class DownloadRequest {
     'itemTitle': itemTitle,
     'image': image,
     'kind': kind.name,
-    'sourceName': sourceName,
+    'sourceNames': sourceNames,
     'subtitleName': subtitleName,
     'root': root,
   };
 
   @override
-  bool operator ==(Object other) => other is DownloadRequest && mapEquals(other.toJson(), toJson());
+  bool operator ==(Object other) =>
+      other is DownloadRequest &&
+      other.supplier == supplier &&
+      other.contentId == contentId &&
+      other.itemIndex == itemIndex &&
+      other.title == title &&
+      other.itemTitle == itemTitle &&
+      other.image == image &&
+      other.kind == kind &&
+      listEquals(other.sourceNames, sourceNames) &&
+      other.subtitleName == subtitleName &&
+      other.root == root;
 
   @override
-  int get hashCode => Object.hashAll(toJson().values);
+  int get hashCode => Object.hash(
+    supplier,
+    contentId,
+    itemIndex,
+    title,
+    itemTitle,
+    image,
+    kind,
+    Object.hashAll(sourceNames),
+    subtitleName,
+    root,
+  );
 }
 
 /// A queued, running or finished download (spec-08 §8.1).

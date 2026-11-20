@@ -79,18 +79,22 @@ void main() {
     root.deleteSync(recursive: true);
   });
 
-  DownloadRequest request({FileKind kind = FileKind.video, String source = 'Server 1', String? subtitle}) =>
-      DownloadRequest(
-        supplier: 'alpha',
-        contentId: 'show/1',
-        itemIndex: 2,
-        title: 'Show',
-        itemTitle: 'Episode 3',
-        kind: kind,
-        sourceName: source,
-        subtitleName: subtitle,
-        root: root.path,
-      );
+  DownloadRequest request({
+    FileKind kind = FileKind.video,
+    String source = 'Server 1',
+    List<String>? sources,
+    String? subtitle,
+  }) => DownloadRequest(
+    supplier: 'alpha',
+    contentId: 'show/1',
+    itemIndex: 2,
+    title: 'Show',
+    itemTitle: 'Episode 3',
+    kind: kind,
+    sourceNames: sources ?? [source],
+    subtitleName: subtitle,
+    root: root.path,
+  );
 
   String itemDir() => p.join(root.path, 'alpha_show%2F1', '2');
 
@@ -268,13 +272,53 @@ void main() {
       expect(resolved.subtitle!.description, 'UA subs');
     });
 
-    test('a renamed source falls back to the first of the same kind', () async {
-      final items = [
-        FakeMediaItem(2, 'E3', sourceList: [FakeSubtitleSource('subs'), FakeVideoSource('Other')]),
-      ];
-      final resolved = await SupplierDownloadResolver((_) => supplier(items)).resolve(request()) as ResolvedVideo;
-      expect(resolved.video.description, 'Other');
-      expect(resolved.subtitle, isNull);
+    test('the first preferred source the item has, else the most similar one, else not found', () async {
+      Future<String> resolve(List<String> names, List<String> preferred) async {
+        final items = [
+          FakeMediaItem(2, 'E3', sourceList: [FakeSubtitleSource('subs'), for (final n in names) FakeVideoSource(n)]),
+        ];
+        final resolved = await SupplierDownloadResolver(
+          (_) => supplier(items),
+        ).resolve(request(sources: preferred)) as ResolvedVideo;
+        return resolved.video.description;
+      }
+
+      expect(await resolve(['A', 'B', 'C'], ['X', 'C', 'B']), 'C');
+      // The provider tag outweighs shared words.
+      expect(await resolve(['[VidUp] Server 1', '[VidFast] Server 2'], ['[VidFast] Server 1']), '[VidFast] Server 2');
+      await expectLater(
+        resolve(['Other'], ['Server 1']),
+        throwsA(isA<DownloadTaskException>().having((e) => e.failure, 'failure', DownloadFailure.sourceNotFound)),
+      );
+    });
+
+    test('manga keeps the source of the nearest earlier downloaded chapter and never changes language', () async {
+      Directory(p.join(root.path, 'alpha_show%2F1', '0', 'pages_%5Ben%5D%20Beta')).createSync(recursive: true);
+      Directory(p.join(root.path, 'alpha_show%2F1', '1', 'pages_%5Ben%5D%20Gamma')).createSync(recursive: true);
+      // Unfinished and later chapters do not count.
+      Directory(p.join(root.path, 'alpha_show%2F1', '1', 'pages_%5Ben%5D%20Beta.part')).createSync(recursive: true);
+      Directory(p.join(root.path, 'alpha_show%2F1', '3', 'pages_%5Ben%5D%20Delta')).createSync(recursive: true);
+
+      Future<String> resolve(List<String> names) async {
+        final items = [
+          FakeMediaItem(
+            2,
+            'Ch3',
+            sourceList: [
+              for (final n in names) FakeMangaSource(n, pages: const ['a']),
+            ],
+          ),
+        ];
+        final resolved = await SupplierDownloadResolver(
+          (_) => supplier(items),
+        ).resolve(request(kind: FileKind.manga, sources: ['[en] Alpha', '[uk] Alpha'])) as ResolvedManga;
+        return resolved.description;
+      }
+
+      expect(await resolve(['[en] Beta', '[en] Gamma', '[en] Delta', '[uk] Alpha']), '[uk] Alpha');
+      expect(await resolve(['[en] Beta', '[en] Delta', '[en] Gamma']), '[en] Gamma');
+      expect(await resolve(['[es] Alpha', '[en] Omega']), '[en] Omega');
+      await expectLater(resolve(['[es] Alpha', '[ja] Alpha']), throwsA(isA<DownloadTaskException>()));
     });
 
     test('manga pages are loaded', () async {

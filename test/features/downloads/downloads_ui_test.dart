@@ -140,17 +140,22 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('download-all')));
     await settle(tester);
     expect(find.text('UA subs'), findsNothing, reason: 'only video sources are offered');
+    // Several items: sources are picked in priority order, then downloaded with the button.
     await tester.tap(find.byKey(const ValueKey('download-source-1')));
+    await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await tester.pump();
+    expect(find.text('Пріоритет 2'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
     // Asked once before the first download.
     expect(find.text('Завантаження у фоні'), findsOneWidget);
     await tester.tap(find.text('Дозволити'));
     await settle(tester);
 
-    expect(queue().tasks.map((t) => (t.id, t.request.sourceName, t.request.itemTitle)), [
-      ('alpha_m1_0', 'B', 'Episode 1'),
-      ('alpha_m1_1', 'B', 'Episode 2'),
-      ('alpha_m1_2', 'B', 'Episode 3'),
+    expect(queue().tasks.map((t) => (t.id, t.request.sourceNames.join(', '), t.request.itemTitle)), [
+      ('alpha_m1_0', 'B, A', 'Episode 1'),
+      ('alpha_m1_1', 'B, A', 'Episode 2'),
+      ('alpha_m1_2', 'B, A', 'Episode 3'),
     ]);
     expect(queue().tasks.first.request.root, folder().path);
     expect(runner.started, ['alpha_m1_0'], reason: 'a show downloads in order, one episode at a time');
@@ -204,7 +209,10 @@ void main() {
     await settle(tester);
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
     await settle(tester);
-    expect(queue().tasks.map((t) => (t.id, t.request.sourceName)), [('alpha_m1_2', 'A'), ('alpha_m1_1', 'A')]);
+    expect(queue().tasks.map((t) => (t.id, t.request.sourceNames.join(', '))), [
+      ('alpha_m1_2', 'A'),
+      ('alpha_m1_1', 'A'),
+    ], reason: 'a single item downloads on tap');
   });
 
   testAppWidgets('details: downloaded episodes can be deleted from the episode list', (tester) async {
@@ -432,6 +440,27 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.select);
     await tester.pumpAndSettle();
     expect(queue()['alpha_a_0']!.state, DownloadState.canceled);
+  });
+
+  testAppWidgets('TV: several sources are picked and downloaded with the D-pad only', (tester) async {
+    await start(tester, deviceClass: DeviceClass.tv);
+    await go(tester, AppRoutes.details('alpha', 'm1'));
+    await tester.tap(find.byKey(const Key('downloadButton')));
+    await tester.pumpAndSettle();
+
+    // "Download all" → first source → second source → Download.
+    for (final key in [
+      LogicalKeyboardKey.select,
+      LogicalKeyboardKey.select,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.select,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.select,
+    ]) {
+      await tester.sendKeyEvent(key);
+      await settle(tester);
+    }
+    expect(queue().tasks.map((t) => t.request.sourceNames.join(', ')), ['A, B', 'A, B', 'A, B']);
   });
 
   testAppWidgets('offline mode: downloaded manga pages are read from disk', (tester) async {

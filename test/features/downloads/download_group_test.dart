@@ -11,7 +11,7 @@ DownloadRequest request(String content, int item, {FileKind kind = FileKind.vide
   title: content,
   itemTitle: 'Item ${item + 1}',
   kind: kind,
-  sourceName: 'A',
+  sourceNames: const ['A'],
   root: '/downloads',
 );
 

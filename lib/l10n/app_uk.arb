@@ -1425,5 +1425,18 @@
   "downloadsPickVolume": "Завантажити том",
   "@downloadsPickVolume": {
     "description": "Download sheet: open the list of manga volumes"
+  },
+  "downloadsSourcesHint": "Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято найсхожіше.",
+  "@downloadsSourcesHint": {
+    "description": "Download sheet: several items share the chosen sources; similar ones replace missing ones"
+  },
+  "downloadsSourcePriority": "Пріоритет {priority}",
+  "@downloadsSourcePriority": {
+    "description": "Download sheet: priority of a selected source (1 = highest)",
+    "placeholders": {
+      "priority": {
+        "type": "int"
+      }
+    }
   }
 }

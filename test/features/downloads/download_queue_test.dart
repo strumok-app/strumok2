@@ -10,7 +10,7 @@ DownloadRequest request(String content, int item, {String supplier = 'alpha'}) =
   title: content,
   itemTitle: 'Episode ${item + 1}',
   kind: FileKind.video,
-  sourceName: 'A',
+  sourceNames: const ['A'],
   root: '/downloads',
 );
 
@@ -201,5 +201,12 @@ void main() {
     ]);
     expect(resumed['alpha_c_0']!.failure, DownloadFailure.unavailable);
     expect(resumed.nextSequence, q.nextSequence);
+  });
+
+  test('persistence: a request saved with a single source name still loads', () {
+    final json = request('a', 0).toJson()
+      ..remove('sourceNames')
+      ..['sourceName'] = 'Server 1';
+    expect(DownloadRequest.fromJson(json).sourceNames, ['Server 1']);
   });
 }

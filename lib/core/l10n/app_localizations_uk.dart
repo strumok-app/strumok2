@@ -1038,4 +1038,13 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get downloadsPickVolume => 'Завантажити том';
+
+  @override
+  String get downloadsSourcesHint =>
+      'Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято найсхожіше.';
+
+  @override
+  String downloadsSourcePriority(int priority) {
+    return 'Пріоритет $priority';
+  }
 }

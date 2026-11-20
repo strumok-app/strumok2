@@ -107,6 +107,28 @@ class OfflineStorage {
     if (!hasItems) await dir.delete(recursive: true);
   }
 
+  /// The nearest item before [number] with downloaded files matching [has]: the source a batch switched to is kept
+  /// for the next items.
+  Future<DownloadedItem?> itemBefore(
+    String supplier,
+    String id,
+    int number, {
+    required bool Function(DownloadedItem item) has,
+  }) async {
+    final dir = contentDir(supplier, id);
+    if (!dir.existsSync()) return null;
+    final numbers = <int, Directory>{};
+    await for (final entity in dir.list()) {
+      final n = int.tryParse(p.basename(entity.path));
+      if (entity is Directory && n != null && n < number) numbers[n] = entity;
+    }
+    for (final n in numbers.keys.toList()..sort((a, b) => b.compareTo(a))) {
+      final item = _readItem(n, numbers[n]!);
+      if (has(item)) return item;
+    }
+    return null;
+  }
+
   Future<DownloadedContent?> _read(String supplier, String id, Directory dir) async {
     final detailsFile = File(p.join(dir.path, OfflineLayout.detailsFile));
     if (!detailsFile.existsSync()) return null;

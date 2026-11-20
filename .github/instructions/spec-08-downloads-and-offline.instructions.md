@@ -34,8 +34,21 @@ applyTo: 'lib/features/downloads/**'
 | Subtitle | Plain GET | `<desc>.vtt` |
 | Manga | Download all pages (bounded parallelism ~4) | folder `pages_<desc>/` with ordered files |
 
-The user picks the source in a dialog (sources list, icon per kind); the selected subtitle of the collection
-item is downloaded alongside the video when available.
+The user picks the source in a dialog (sources list of the first selected item, icon per kind); the selected
+subtitle of the collection item is downloaded alongside the video when available.
+
+Sources differ from item to item (another scanlation group from some chapter on, servers flickering between
+episodes), so for several items the user picks **one or more preferred sources in priority order**. When a task
+starts, its item's source is chosen as follows:
+
+1. the first preferred source the item has (exact `description`);
+2. else the source the nearest earlier downloaded item of the content was downloaded with (read from the offline
+   layout, so a switch sticks for the following items and survives restarts);
+3. else the most similar description to those: shared `[tag]`s (`[en] Group`, `[VidFast] Server 1`) weigh most,
+   then shared words. For manga a tagged reference requires the same tag, so the translation language never changes;
+4. else the task fails with `sourceNotFound` (no blind fallback to an unrelated source).
+
+The file is named after the source actually used.
 
 ## 8.3 Offline storage layout (keep legacy layout for continuity)
 

@@ -42,7 +42,7 @@ DownloadRequest downloadRequest(String content, int item, {String root = '/downl
   title: content,
   itemTitle: '$item',
   kind: FileKind.video,
-  sourceName: 'A',
+  sourceNames: const ['A'],
   root: root,
 );
 

@@ -1019,4 +1019,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadsPickVolume => 'Download a volume';
+
+  @override
+  String get downloadsSourcesHint =>
+      'Pick one or more sources in order of priority. Where they are missing, the most similar one is used.';
+
+  @override
+  String downloadsSourcePriority(int priority) {
+    return 'Priority $priority';
+  }
 }

@@ -1927,6 +1927,18 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Завантажити том'**
   String get downloadsPickVolume;
+
+  /// Download sheet: several items share the chosen sources; similar ones replace missing ones
+  ///
+  /// In uk, this message translates to:
+  /// **'Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято найсхожіше.'**
+  String get downloadsSourcesHint;
+
+  /// Download sheet: priority of a selected source (1 = highest)
+  ///
+  /// In uk, this message translates to:
+  /// **'Пріоритет {priority}'**
+  String downloadsSourcePriority(int priority);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

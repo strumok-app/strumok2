@@ -23,8 +23,8 @@ Future<void> showDownloadSheet(BuildContext context, ContentDetails details) => 
   builder: (_) => DownloadSheet(details: details),
 );
 
-/// What to download (spec-08 §8.1–8.2): everything, a season/volume or one item; then the source. A group of items
-/// downloads one at a time in order; the chosen source name is used for each of them.
+/// What to download (spec-08 §8.1–8.2): everything, a season/volume or one item; then the source(s). A group of items
+/// downloads one at a time in order; each item gets the first preferred source it has, or the most similar one.
 class DownloadSheet extends ConsumerStatefulWidget {
   final ContentDetails details;
 
@@ -177,7 +177,9 @@ class _DownloadSheetState extends ConsumerState<DownloadSheet> {
 
 enum _Step { root, sections, items }
 
-/// Downloadable sources of the first selected item (videos or manga translations, not local copies).
+/// Downloadable sources of the first selected item (videos or manga translations, not local copies). One item
+/// downloads on tap; for several items the user picks one or more sources in priority order, and each item gets the
+/// first of them it has, or a similar one (spec-08 §8.2).
 class _SourceList extends ConsumerStatefulWidget {
   final ContentDetails details;
   final List<ContentMediaItem> items;
@@ -192,12 +194,21 @@ class _SourceListState extends ConsumerState<_SourceList> {
   late Future<List<ContentMediaItemSource>> _sources = _load();
   var _busy = false;
 
+  /// Picked source descriptions, highest priority first.
+  final _picked = <String>[];
+
+  bool get _multiple => widget.items.length > 1;
+
   Future<List<ContentMediaItemSource>> _load() async => [
     for (final source in await widget.items.first.sources)
       if ((source is VideoMediaItemSource || source is MangaMediaItemSource) && !isLocalSource(source)) source,
   ];
 
-  Future<void> _download(ContentMediaItemSource source) async {
+  void _toggle(String name) => setState(() {
+    if (!_picked.remove(name)) _picked.add(name);
+  });
+
+  Future<void> _download(FileKind kind, List<String> sourceNames) async {
     if (_busy) return;
     setState(() => _busy = true);
     final details = widget.details;
@@ -209,7 +220,6 @@ class _SourceListState extends ConsumerState<_SourceList> {
       final folder = ref.read(downloadsFolderProvider).path;
       await ref.read(offlineStorageProvider).writeDetails(details.supplier, details.id, OfflineDetails.of(details));
       final subtitle = ref.read(collectionItemProvider(details.supplier, details.id))?.currentSubtitleName;
-      final kind = source is MangaMediaItemSource ? FileKind.manga : FileKind.video;
       final requests = [
         for (final item in widget.items)
           DownloadRequest(
@@ -221,7 +231,7 @@ class _SourceListState extends ConsumerState<_SourceList> {
             itemTitle: item.title == details.title ? '' : item.title,
             image: details.image,
             kind: kind,
-            sourceName: source.description,
+            sourceNames: sourceNames,
             subtitleName: kind == FileKind.video ? subtitle : null,
             root: folder,
           ),
@@ -249,22 +259,73 @@ class _SourceListState extends ConsumerState<_SourceList> {
           icon: Icons.download_outlined,
           message: l10n.downloadsNoSources,
         ),
-        AsyncSnapshot(:final data?) => ListView(
+        AsyncSnapshot(:final data?) when !_multiple => ListView(
           children: [
             for (final (index, source) in data.indexed)
               ListTile(
                 key: ValueKey('download-source-$index'),
                 autofocus: index == 0,
                 enabled: !_busy,
-                leading: Icon(source is MangaMediaItemSource ? Icons.menu_book_outlined : Icons.movie_outlined),
+                leading: _icon(source),
                 title: Text(source.description),
                 trailing: const Icon(Icons.download_outlined),
-                onTap: () => unawaited(_download(source)),
+                onTap: () => unawaited(_download(_kind(source), [source.description])),
               ),
+          ],
+        ),
+        AsyncSnapshot(:final data?) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  for (final (index, source) in data.indexed)
+                    _pickTile(index, source, _picked.indexOf(source.description)),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: FilledButton.icon(
+                key: const ValueKey('download-start'),
+                icon: const Icon(Icons.download_outlined),
+                label: Text(l10n.detailsDownload),
+                onPressed: _busy || _picked.isEmpty
+                    ? null
+                    : () => unawaited(
+                        _download(_kind(data.firstWhere((s) => s.description == _picked.first)), [..._picked]),
+                      ),
+              ),
+            ),
           ],
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
     );
   }
+
+  Widget _pickTile(int index, ContentMediaItemSource source, int priority) {
+    final picked = priority >= 0;
+    return ListTile(
+      key: ValueKey('download-source-$index'),
+      autofocus: index == 0,
+      enabled: !_busy,
+      selected: picked,
+      leading: _icon(source),
+      title: Text(source.description),
+      subtitle: picked ? Text(context.l10n.downloadsSourcePriority(priority + 1)) : null,
+      trailing: Icon(picked ? Icons.check_box : Icons.check_box_outline_blank),
+      onTap: () => _toggle(source.description),
+    );
+  }
+
+  static FileKind _kind(ContentMediaItemSource source) =>
+      source is MangaMediaItemSource ? FileKind.manga : FileKind.video;
+
+  static Widget _icon(ContentMediaItemSource source) =>
+      Icon(source is MangaMediaItemSource ? Icons.menu_book_outlined : Icons.movie_outlined);
 }
