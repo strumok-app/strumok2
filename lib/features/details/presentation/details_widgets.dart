@@ -115,7 +115,7 @@ class DetailsTitle extends StatelessWidget {
 /// True once the media items are loaded and there is at least one.
 bool _hasMediaItems(WidgetRef ref, ContentDetails details) =>
     switch (ref.watch(mediaItemsProvider(details.supplier, details.id))) {
-      AsyncData(:final value) => value.isNotEmpty,
+      AsyncValue(:final value?) => value.isNotEmpty,
       _ => false,
     };
 
@@ -129,9 +129,11 @@ class WatchAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = mediaItemsProvider(details.supplier, details.id);
+    // Value-first: keep the Watch button while the provider reloads (e.g. a download finished) instead of flashing
+    // the loader; the loader is only shown on the first load, when there is no value yet.
     return switch (ref.watch(provider)) {
-      AsyncData(:final value) when value.isEmpty => const SizedBox.shrink(),
-      AsyncData() => WatchButton(details: details),
+      AsyncValue(:final value?) when value.isEmpty => const SizedBox.shrink(),
+      AsyncValue(value: _?) => WatchButton(details: details),
       AsyncError(isLoading: false) => MediaItemsLoadError(details: details, onRetry: () => ref.invalidate(provider)),
       _ => Stack(
         key: const Key('mediaItemsLoading'),
@@ -310,7 +312,7 @@ class MediaItemsButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final visible = switch (ref.watch(mediaItemsProvider(details.supplier, details.id))) {
-      AsyncData(:final value) => value.length > 1,
+      AsyncValue(:final value?) => value.length > 1,
       _ => false,
     };
     if (!visible) return const SizedBox.shrink();

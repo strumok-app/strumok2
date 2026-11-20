@@ -31,9 +31,11 @@ class MediaItemsSheet extends ConsumerWidget {
     final provider = mediaItemsProvider(details.supplier, details.id);
     final collectionItem = ref.watch(collectionItemProvider(details.supplier, details.id));
 
+    // Value-first: keep the list on screen while the provider reloads (e.g. a download just finished) instead of
+    // flashing a spinner; only show the loader on the very first load.
     return switch (ref.watch(provider)) {
-      AsyncData(:final value) when value.isEmpty => EmptyStateView(icon: Icons.list, message: l10n.rowEmpty),
-      AsyncData(:final value) => MediaItemsList(
+      AsyncValue(:final value?) when value.isEmpty => EmptyStateView(icon: Icons.list, message: l10n.rowEmpty),
+      AsyncValue(:final value?) => MediaItemsList(
         items: value,
         mediaType: details.mediaType,
         positions: collectionItem?.positions ?? const {},

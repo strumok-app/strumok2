@@ -224,12 +224,14 @@ class _DownloadedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    // Value-first: keep showing the downloaded contents while the list reloads (a download just finished) instead of
+    // replacing them with a spinner; the loader only shows on the first load.
     return switch (contents) {
-      AsyncData(:final value) when value.isEmpty => EmptyStateView(
+      AsyncValue(:final value?) when value.isEmpty => EmptyStateView(
         icon: Icons.download_outlined,
         message: l10n.downloadsEmpty,
       ),
-      AsyncData(:final value) => ListView.builder(
+      AsyncValue(:final value?) => ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 4),
         itemCount: value.length,
         itemBuilder: (context, index) => _ContentTile(content: value[index], autofocus: index == 0),

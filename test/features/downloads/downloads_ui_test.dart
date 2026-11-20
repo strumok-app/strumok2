@@ -311,6 +311,24 @@ void main() {
     expect(find.byKey(const ValueKey('deleteContent-alpha_m1')), findsOneWidget);
   });
 
+  testAppWidgets('downloads page: the list stays visible while it reloads after a download finishes', (tester) async {
+    await start(tester);
+    putDetails('alpha', 'm1', {'title': 'Show', 'mediaType': 'video'});
+    put('alpha_m1/0/B.mp4');
+    container.read(offlineRevisionProvider.notifier).bump();
+    await go(tester, AppRoutes.downloads);
+    expect(find.text('Show'), findsOneWidget);
+
+    // A finished download re-lists the offline contents; the existing list must not be replaced by a spinner.
+    container.read(offlineRevisionProvider.notifier).bump();
+    await tester.pump();
+    expect(find.text('Show'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing, reason: 'no loader flash over the existing list');
+
+    await settle(tester);
+    expect(find.text('Show'), findsOneWidget);
+  });
+
   testAppWidgets('settings: parallel downloads and folder; offline mode is in the account menu', (tester) async {
     final picked = Directory.systemTemp.createTempSync('picked');
     addTearDown(() => picked.deleteSync(recursive: true));

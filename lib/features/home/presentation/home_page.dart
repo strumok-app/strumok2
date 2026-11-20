@@ -136,13 +136,15 @@ class _OfflineHome extends ConsumerWidget {
       onPressed: () => unawaited(ref.read(offlineModeProvider.notifier).set(false)),
       child: Text(l10n.offlineModeTurnOff),
     );
+    // Value-first: keep the downloaded rows on screen while the list reloads (a download finished) instead of
+    // flashing a spinner; the loader only shows on the first load.
     return switch (ref.watch(offlineContentsProvider)) {
-      AsyncData(:final value) when value.isEmpty => EmptyStateView(
+      AsyncValue(:final value?) when value.isEmpty => EmptyStateView(
         icon: Icons.cloud_off_outlined,
         message: l10n.homeOfflineEmpty,
         action: turnOff,
       ),
-      AsyncData(:final value) => _rows(context, ref, value, isTv),
+      AsyncValue(:final value?) => _rows(context, ref, value, isTv),
       AsyncError(isLoading: false) => LoadErrorView(
         autofocus: true,
         onRetry: () => ref.invalidate(offlineContentsProvider),
