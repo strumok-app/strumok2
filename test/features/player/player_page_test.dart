@@ -93,8 +93,12 @@ void main() {
 
     final height = tester.getSize(bar).height;
     expect(theme().thumbShape, SliderComponentShape.noThumb);
-    expect(theme().overlayShape, SliderComponentShape.noOverlay);
     expect(theme().trackHeight, PlayerSeekBar.hoverTrackHeight);
+    expect(
+      height,
+      PlayerSeekBar.hoverTouchHeight,
+      reason: 'the whole bar height is a click target, not just the thin track',
+    );
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: tester.getCenter(bar));
@@ -119,6 +123,17 @@ void main() {
     await mouse.moveTo(tester.getRect(bar).topCenter - const Offset(0, 100));
     await tester.pumpAndSettle();
     expect(label, findsNothing);
+  });
+
+  testAppWidgets('desktop: clicking the bar away from the thin track still seeks', (tester) async {
+    await openPlayer(tester);
+    backend.emit(duration: const Duration(seconds: 1000));
+    await tester.pumpAndSettle();
+    final rect = tester.getRect(find.byKey(const Key('seekBar')));
+    // Near the top edge of the bar, off the thin central track line, at the horizontal midpoint.
+    await tester.tapAt(Offset(rect.center.dx, rect.top + 2));
+    await tester.pumpAndSettle();
+    expect(backend.calls, contains('seek:500'), reason: 'the whole bar height is clickable');
   });
 
   testAppWidgets('desktop: keyboard map (spec-06 §6.6)', (tester) async {

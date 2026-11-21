@@ -294,7 +294,7 @@ class _SourceListState extends ConsumerState<_SourceList> {
               child: ListView(
                 children: [
                   for (final (index, source) in data.indexed) _sourceTile(index, source),
-                  if (data.first is VideoMediaItemSource) ...[
+                  if (data.first is VideoMediaItemSource && _subtitles.isNotEmpty) ...[
                     const Divider(),
                     ListTile(title: Text(l10n.downloadsSubtitles), subtitle: Text(l10n.downloadsSubtitleHint)),
                     ListTile(

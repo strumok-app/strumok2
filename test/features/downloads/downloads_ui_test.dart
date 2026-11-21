@@ -258,6 +258,22 @@ void main() {
     );
   });
 
+  testAppWidgets('download sheet hides the subtitle panel when a video source has no subtitles', (tester) async {
+    await start(
+      tester,
+      items: [
+        FakeMediaItem(0, 'Episode 1', sourceList: [FakeVideoSource('A')]),
+      ],
+    );
+    await go(tester, AppRoutes.details('alpha', 'm1'));
+    await tester.tap(find.byKey(const Key('downloadButton')));
+    await settle(tester);
+
+    expect(find.byKey(const ValueKey('download-source-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('download-subtitle-none')), findsNothing);
+    expect(find.text('Субтитри для завантаження'), findsNothing);
+  });
+
   testAppWidgets('download sheet queues subtitle alternatives in their chosen priority order', (tester) async {
     FakeMediaItem withSubtitles(int n) => FakeMediaItem(
       n,

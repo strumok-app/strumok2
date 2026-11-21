@@ -79,6 +79,9 @@ class PlayerSeekBar extends StatefulWidget {
   static const hoverActiveTrackHeight = 6.0;
   static const edgeTrackHeight = 12.0;
 
+  /// Hover style: whole touchable height, so a click anywhere on the bar seeks, not only on the thin track.
+  static const hoverTouchHeight = 24.0;
+
   /// Edge style: whole touchable height, the track included.
   static const edgeTouchHeight = 26.0;
 
@@ -157,10 +160,11 @@ class _PlayerSeekBarState extends State<PlayerSeekBar> {
               : SliderComponentShape.noThumb,
           overlayShape: edge
               ? const _TouchAreaShape(Size(0, PlayerSeekBar.edgeTouchHeight))
-              : SliderComponentShape.noOverlay,
+              : _TouchAreaShape(Size(side * 2, PlayerSeekBar.hoverTouchHeight)),
           trackShape: edge ? const _BottomTrackShape() : null,
-          // Edge: sizing comes from the overlay shape, since Slider theme padding is not touchable.
-          padding: edge ? null : EdgeInsets.symmetric(horizontal: side, vertical: 12),
+          // The overlay shape gives the whole bar a touchable height; its width also insets the track by `side`.
+          // Slider theme padding only adds a non-touchable gap, so none is used.
+          padding: null,
         ),
         child: slider,
       );
