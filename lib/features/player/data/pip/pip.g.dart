@@ -15,8 +15,7 @@ final pipProvider = PipProvider._();
 
 /// Overridden in `bootstrap()` with [createPip].
 
-final class PipProvider extends $FunctionalProvider<Pip, Pip, Pip>
-    with $Provider<Pip> {
+final class PipProvider extends $FunctionalProvider<Pip, Pip, Pip> with $Provider<Pip> {
   /// Overridden in `bootstrap()` with [createPip].
   PipProvider._()
     : super(
@@ -34,8 +33,7 @@ final class PipProvider extends $FunctionalProvider<Pip, Pip, Pip>
 
   @$internal
   @override
-  $ProviderElement<Pip> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<Pip> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   Pip create(Ref ref) {
@@ -44,10 +42,7 @@ final class PipProvider extends $FunctionalProvider<Pip, Pip, Pip>
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Pip value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<Pip>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<Pip>(value));
   }
 }
 

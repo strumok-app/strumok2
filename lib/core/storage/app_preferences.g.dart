@@ -12,8 +12,7 @@ part of 'app_preferences.dart';
 @ProviderFor(appPreferences)
 final appPreferencesProvider = AppPreferencesProvider._();
 
-final class AppPreferencesProvider
-    extends $FunctionalProvider<AppPreferences, AppPreferences, AppPreferences>
+final class AppPreferencesProvider extends $FunctionalProvider<AppPreferences, AppPreferences, AppPreferences>
     with $Provider<AppPreferences> {
   AppPreferencesProvider._()
     : super(
@@ -31,8 +30,7 @@ final class AppPreferencesProvider
 
   @$internal
   @override
-  $ProviderElement<AppPreferences> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AppPreferences> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   AppPreferences create(Ref ref) {
@@ -41,10 +39,7 @@ final class AppPreferencesProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AppPreferences value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AppPreferences>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<AppPreferences>(value));
   }
 }
 
@@ -57,13 +52,7 @@ final clockProvider = ClockProvider._();
 
 /// Overridable clock for update-check throttling.
 
-final class ClockProvider
-    extends
-        $FunctionalProvider<
-          DateTime Function(),
-          DateTime Function(),
-          DateTime Function()
-        >
+final class ClockProvider extends $FunctionalProvider<DateTime Function(), DateTime Function(), DateTime Function()>
     with $Provider<DateTime Function()> {
   /// Overridable clock for update-check throttling.
   ClockProvider._()
@@ -82,9 +71,7 @@ final class ClockProvider
 
   @$internal
   @override
-  $ProviderElement<DateTime Function()> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  $ProviderElement<DateTime Function()> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   DateTime Function() create(Ref ref) {
@@ -93,10 +80,7 @@ final class ClockProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(DateTime Function() value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<DateTime Function()>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<DateTime Function()>(value));
   }
 }
 

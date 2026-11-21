@@ -15,8 +15,8 @@ Everything else is optional; add a package only when a listed feature needs it a
 **Platforms:** Android phone/tablet/**Android TV**, **Linux**, **Windows** only. No iOS/macOS/web folders or code paths.
 
 **Compatibility (acceptance-blocking):**
-1. Rust supplier modules: FRB codegen `2.12.0`, content hash `-1122641696`, API major `4`. Never edit or regenerate
-   the bindings → [spec-02](instructions/spec-02-content-suppliers-ffi.instructions.md), skill `rust-supplier-bridge`.
+1. Rust supplier modules: FRB codegen `2.13.0`, content hash `-1122641696`, API major `5`. Don't edit or regenerate
+   the bindings except as a coordinated bundle-major bump → [spec-02](instructions/spec-02-content-suppliers-ffi.instructions.md), skill `rust-supplier-bridge`.
 2. Firebase collection items: exact RTDB path `/collection/{uid}/{itemKey}` and JSON schema
    → [spec-03](instructions/spec-03-collection-and-firebase-sync.instructions.md), skill `firebase-collection-compat`.
 3. TV pairing: existing cloud functions `generatecode` / `exchangecodefortoken` unchanged

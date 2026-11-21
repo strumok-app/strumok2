@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +22,7 @@ FakeMediaItem episode(int n) => FakeMediaItem(
   n,
   'Episode ${n + 1}',
   sourceList: [
-    FakeVideoSource('A', url: 'https://a.example/$n.m3u8'),
+    FakeVideoSource('A', url: 'https://a.example/$n.m3u8', language: ContentLanguage.uk),
     FakeVideoSource('B'),
   ],
 );
@@ -205,6 +206,8 @@ void main() {
     await openPlayer(tester);
     await tester.tap(find.byTooltip('Джерело'));
     await tester.pumpAndSettle();
+    expect(find.text('A (Українська)'), findsOneWidget);
+    expect(find.text('B'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('source-1')));
     await tester.pumpAndSettle();
     expect(backend.opened.last.link.toString(), 'https://cdn.example.com/B.m3u8');

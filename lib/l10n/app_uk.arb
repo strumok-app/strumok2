@@ -1152,6 +1152,14 @@
   "@downloadsChooseSource": {
     "description": "Download sheet: source list header"
   },
+  "downloadsSubtitles": "Субтитри для завантаження",
+  "@downloadsSubtitles": {
+    "description": "Download sheet: subtitle selection section title"
+  },
+  "downloadsSubtitleHint": "Виберіть доріжки субтитрів у порядку пріоритету або вимкніть їх. Для кожного елемента буде взято першу доступну доріжку або доріжку тією ж відомою мовою. Якщо відповідників немає, субтитри не завантажуються.",
+  "@downloadsSubtitleHint": {
+    "description": "Download sheet: subtitle selection behavior for multiple items"
+  },
   "downloadsNoSources": "Немає джерел для завантаження",
   "@downloadsNoSources": {
     "description": "Download sheet: no downloadable sources"
@@ -1426,7 +1434,15 @@
   "@downloadsPickVolume": {
     "description": "Download sheet: open the list of manga volumes"
   },
-  "downloadsSourcesHint": "Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято найсхожіше.",
+  "sourceWithLanguage": "{source} ({language})",
+  "@sourceWithLanguage": {
+    "description": "Назва джерела відео, субтитрів або манґи з мовою",
+    "placeholders": {
+      "source": { "type": "String" },
+      "language": { "type": "String" }
+    }
+  },
+  "downloadsSourcesHint": "Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято джерело тією ж мовою, а якщо мову не вказано — перше доступне.",
   "@downloadsSourcesHint": {
     "description": "Download sheet: several items share the chosen sources; similar ones replace missing ones"
   },

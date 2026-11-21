@@ -34,19 +34,27 @@ applyTo: 'lib/features/downloads/**'
 | Subtitle | Plain GET | `<desc>.vtt` |
 | Manga | Download all pages (bounded parallelism ~4) | folder `pages_<desc>/` with ordered files |
 
-The user picks the source in a dialog (sources list of the first selected item, icon per kind); the selected
-subtitle of the collection item is downloaded alongside the video when available.
+The user picks the source in a dialog (sources list of the first selected item, icon per kind) and explicitly
+chooses `None` or one or more subtitle tracks in priority order. At most one subtitle is downloaded alongside
+each video. The collection's remembered subtitle is preselected only when it is available; changing the download
+choice does not modify the collection preference. For each item, try the preferred descriptions in priority order,
+then the known languages in priority order. If a language is unknown, do not substitute another subtitle for that
+preference; if no match exists, download the video without subtitles. Source lists show the supplied language
+alongside the description when known; the description alone remains the identity and file name.
 
 Sources differ from item to item (another scanlation group from some chapter on, servers flickering between
 episodes), so for several items the user picks **one or more preferred sources in priority order**. When a task
 starts, its item's source is chosen as follows:
 
 1. the first preferred source the item has (exact `description`);
-2. else the source the nearest earlier downloaded item of the content was downloaded with (read from the offline
-   layout, so a switch sticks for the following items and survives restarts);
-3. else the most similar description to those: shared `[tag]`s (`[en] Group`, `[VidFast] Server 1`) weigh most,
-   then shared words. For manga a tagged reference requires the same tag, so the translation language never changes;
-4. else the task fails with `sourceNotFound` (no blind fallback to an unrelated source).
+2. else, in preferred-source priority order, the first available source with that preferred source's `language`;
+   if that preferred language is null, use the first available source of the required kind instead;
+3. else the task fails with `sourceNotFound` (a known language never falls back to another or unknown language).
+
+Capture each preferred source's and subtitle's language from the first selected item in the persistent queue so
+retries and restarts keep the selection policy. Older queue entries with a single subtitle remain supported;
+entries without language metadata behave as null-language selections. Do not infer language from description
+tags or use previously downloaded source names.
 
 The file is named after the source actually used.
 

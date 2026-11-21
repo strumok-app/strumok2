@@ -15,8 +15,7 @@ final httpClientProvider = HttpClientProvider._();
 
 /// The single HTTP client for app code (suppliers do their own networking in Rust); created in main().
 
-final class HttpClientProvider
-    extends $FunctionalProvider<http.Client, http.Client, http.Client>
+final class HttpClientProvider extends $FunctionalProvider<http.Client, http.Client, http.Client>
     with $Provider<http.Client> {
   /// The single HTTP client for app code (suppliers do their own networking in Rust); created in main().
   HttpClientProvider._()
@@ -35,8 +34,7 @@ final class HttpClientProvider
 
   @$internal
   @override
-  $ProviderElement<http.Client> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<http.Client> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   http.Client create(Ref ref) {
@@ -45,10 +43,7 @@ final class HttpClientProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(http.Client value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<http.Client>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<http.Client>(value));
   }
 }
 

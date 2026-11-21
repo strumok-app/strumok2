@@ -14,8 +14,7 @@ part of 'manga_reader_settings.dart';
 final mangaReaderSettingsProvider = MangaReaderSettingsProvider._();
 
 /// Persisted reader settings (spec-09 keys, enums stored by `.name`).
-final class MangaReaderSettingsProvider
-    extends $NotifierProvider<MangaReaderSettings, MangaReaderPreferences> {
+final class MangaReaderSettingsProvider extends $NotifierProvider<MangaReaderSettings, MangaReaderPreferences> {
   /// Persisted reader settings (spec-09 keys, enums stored by `.name`).
   MangaReaderSettingsProvider._()
     : super(
@@ -37,15 +36,11 @@ final class MangaReaderSettingsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(MangaReaderPreferences value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<MangaReaderPreferences>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<MangaReaderPreferences>(value));
   }
 }
 
-String _$mangaReaderSettingsHash() =>
-    r'314cfd68520dcae4463925f16b46b0f5be912b06';
+String _$mangaReaderSettingsHash() => r'314cfd68520dcae4463925f16b46b0f5be912b06';
 
 /// Persisted reader settings (spec-09 keys, enums stored by `.name`).
 
@@ -54,8 +49,7 @@ abstract class _$MangaReaderSettings extends $Notifier<MangaReaderPreferences> {
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<MangaReaderPreferences, MangaReaderPreferences>;
+    final ref = this.ref as $Ref<MangaReaderPreferences, MangaReaderPreferences>;
     final element =
         ref.element
             as $ClassProviderElement<

@@ -63,6 +63,8 @@ to media_kit together with the source headers, stop the proxy when the backend i
 
 - Play/pause, seek bar with buffered range, time labels, next/prev item, playlist panel (episodes grouped by section).
 - Source (server) selector; subtitle selector (supplier subtitle sources); "subtitles off".
+- Source and subtitle lists display the source's language alongside its description when provided; selection
+  identity remains the unmodified description.
 - Subtitles never go through media_kit/mpv: mpv runs with `sid=no` and the media_kit subtitle view is hidden; embedded
   subtitle tracks are not offered.
 - Supplier subtitles: fetch with headers over the shared HTTP client, then decode (BOM-aware UTF-8/UTF-16, fallback

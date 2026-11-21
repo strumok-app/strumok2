@@ -7,11 +7,18 @@ class FakeMangaSource extends MangaMediaItemSource {
   final String description;
   @override
   final Map<String, String>? headers;
+  @override
+  final ContentLanguage? language;
   final Future<List<String>> Function() loadPages;
   var loads = 0;
 
-  FakeMangaSource(this.description, {List<String>? pages, Future<List<String>> Function()? load, this.headers})
-    : loadPages = load ?? (() async => pages ?? const []);
+  FakeMangaSource(
+    this.description, {
+    List<String>? pages,
+    Future<List<String>> Function()? load,
+    this.headers,
+    this.language,
+  }) : loadPages = load ?? (() async => pages ?? const []);
 
   @override
   Future<List<String>> get allPages {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -456,10 +457,23 @@ void main() {
   });
 
   testAppWidgets('translation selector switches the source', (tester) async {
-    await openReader(tester);
+    await openReader(
+      tester,
+      chapters: [
+        chapter(
+          0,
+          sources: [
+            FakeMangaSource('UA', pages: pageUrls('UA', 0, 5), language: ContentLanguage.uk),
+            FakeMangaSource('EN', pages: pageUrls('EN', 0, 4), language: ContentLanguage.en),
+          ],
+        ),
+      ],
+    );
     await press(tester, LogicalKeyboardKey.enter);
     await tester.tap(find.byKey(const Key('readerTranslationButton')));
     await tester.pumpAndSettle();
+    expect(find.text('UA (Українська)'), findsOneWidget);
+    expect(find.text('EN (English)'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('readerSource-1')));
     await tester.pumpAndSettle();
     expect(reader().source!.description, 'EN');

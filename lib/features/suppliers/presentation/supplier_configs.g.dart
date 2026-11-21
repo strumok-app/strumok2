@@ -14,8 +14,7 @@ part of 'supplier_configs.dart';
 final supplierConfigsProvider = SupplierConfigsProvider._();
 
 /// Ordered per-supplier configuration (spec-02 §2.5).
-final class SupplierConfigsProvider
-    extends $NotifierProvider<SupplierConfigs, List<SupplierConfig>> {
+final class SupplierConfigsProvider extends $NotifierProvider<SupplierConfigs, List<SupplierConfig>> {
   /// Ordered per-supplier configuration (spec-02 §2.5).
   SupplierConfigsProvider._()
     : super(
@@ -37,10 +36,7 @@ final class SupplierConfigsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<SupplierConfig> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<SupplierConfig>>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<SupplierConfig>>(value));
   }
 }
 

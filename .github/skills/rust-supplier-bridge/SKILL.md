@@ -5,24 +5,24 @@ description: 'Wire, verify or upgrade the flutter_rust_bridge supplier bundle (e
 
 # Rust supplier bridge
 
-Contract: [spec-02-content-suppliers-ffi.instructions.md](../../instructions/spec-02-content-suppliers-ffi.instructions.md). FRB codegen `2.12.0`,
-content hash `-1122641696`, API major `4`. Reference Rust crate + checksums:
+Contract: [spec-02-content-suppliers-ffi.instructions.md](../../instructions/spec-02-content-suppliers-ffi.instructions.md). FRB codegen `2.13.0`,
+content hash `-1122641696`, API major `5`. Reference Rust crate + checksums:
 [contract.md](references/contract.md).
 
-## Setting up in a fresh repo
-1. Copy `.github/skills/rust-supplier-bridge/assets/content_suppliers_rust/` (Rust crate + `flutter_rust_bridge.yaml`) to
-   `packages/content_suppliers_rust/`. Copy the Dart side (`lib/`, `pubspec.yaml`) of `content_suppliers_rust`
-   and the whole `content_suppliers_api/` package from the legacy repo into `packages/` **unchanged**.
-   Verify the sha256 values listed in [contract.md](./references/contract.md).
-2. Reference them as path dependencies from the app `pubspec.yaml`.
+## Package layout
+The FFI packages live in the app repo and are the source of truth for the contract:
+1. `packages/content_suppliers_rust/` — the FRB contract crate (`rust/`, `flutter_rust_bridge.yaml`) plus the
+   generated Dart bindings (`lib/rust/`) and the `RustContentSuppliersBundle` adapter (`lib/bundle.dart`).
+   Checksums and rules: [contract.md](./references/contract.md).
+2. `packages/content_suppliers_api/` — the Dart interfaces. Both are path dependencies of the app `pubspec.yaml`.
 3. Expose a `SupplierRegistry` via a keepAlive provider that owns the active `RustContentSuppliersBundle`.
 4. Never call `RustLib.init()` (that loads the bundled dummy lib); always use `RustContentSuppliersBundle(directory, libName).load()`.
 
 ## Verifying compatibility (run after any change near FFI)
 ```bash
 grep -n "rustContentHash => -1122641696" packages/content_suppliers_rust/lib/rust/frb_generated.dart
-grep -n "codegenVersion => '2.12.0'"     packages/content_suppliers_rust/lib/rust/frb_generated.dart
-grep -n "compatibleApiVersion = 4"       packages/content_suppliers_rust/lib/bundle.dart
+grep -n "codegenVersion => '2.13.0'"     packages/content_suppliers_rust/lib/rust/frb_generated.dart
+grep -n "compatibleApiVersion = 5"       packages/content_suppliers_rust/lib/bundle.dart
 ```
 All three must match. Then run the FFI smoke test against the dummy lib:
 ```bash
@@ -36,9 +36,13 @@ search, load_channel, details incl. `eager_sources` id, load_media_items, load_m
 Note: the dummy crate's hash differs from the real bundle only if its API differs — it must not.
 
 ## If regeneration is ever unavoidable
-- Install exactly `flutter_rust_bridge_codegen 2.12.0`, regenerate, and confirm the hash is still `-1122641696`.
-  If the hash changes, **revert** — the published modules will refuse to load.
-- Any real API change requires a new major (`5`) coordinated with the suppliers repo; out of scope for the rewrite.
+- Install exactly `flutter_rust_bridge_codegen 2.13.0`, regenerate (`flutter_rust_bridge_codegen generate` from
+  `packages/content_suppliers_rust/`), and confirm the hash is still `-1122641696` (it is derived from the codegen
+  config, so an unchanged `flutter_rust_bridge.yaml` keeps it stable even across model edits). If it changes, the
+  config drifted — restore it.
+- A real `api`/`models` change (e.g. the API-5 `language` field on `ContentMediaItemSource`) requires bumping the
+  bundle major and `compatibleApiVersion` together, regenerating the Dart bindings, and coordinating with the
+  `strumok_suppliers` repo so published modules advertise the new major.
 
 ## Common failures
 | Symptom | Cause | Fix |

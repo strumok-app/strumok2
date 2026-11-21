@@ -12,9 +12,7 @@ part of 'app_paths.dart';
 @ProviderFor(appPaths)
 final appPathsProvider = AppPathsProvider._();
 
-final class AppPathsProvider
-    extends $FunctionalProvider<AppPaths, AppPaths, AppPaths>
-    with $Provider<AppPaths> {
+final class AppPathsProvider extends $FunctionalProvider<AppPaths, AppPaths, AppPaths> with $Provider<AppPaths> {
   AppPathsProvider._()
     : super(
         from: null,
@@ -31,8 +29,7 @@ final class AppPathsProvider
 
   @$internal
   @override
-  $ProviderElement<AppPaths> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AppPaths> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   AppPaths create(Ref ref) {
@@ -41,10 +38,7 @@ final class AppPathsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AppPaths value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AppPaths>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<AppPaths>(value));
   }
 }
 

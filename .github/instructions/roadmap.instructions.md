@@ -8,8 +8,8 @@ Each milestone ends with: analyzer clean, tests green, Linux + Android debug bui
 
 ## M0 — Skeleton
 - Flutter project for **android, linux, windows only** (`flutter create --platforms=android,linux,windows`).
-- Copy `.github/skills/rust-supplier-bridge/assets/content_suppliers_rust/` → `packages/content_suppliers_rust/` (+ Dart side and
-  `content_suppliers_api` from the legacy repo, spec-02), verify checksums; copy ARB files; set up `l10n.yaml`,
+- Ensure the FFI packages are in place: `packages/content_suppliers_rust/` (contract crate + Dart bindings) and
+  `packages/content_suppliers_api/` (spec-02), verify checksums; copy ARB files; set up `l10n.yaml`,
   lints, build_runner, CI (analyze + test).
 - `DeviceClass` provider, theme, router with empty pages, shell layouts (bottom nav / side rail), account menu stub.
 - Android manifest: leanback launcher, TV banner, PiP support, permissions; `applicationId app.strumok`

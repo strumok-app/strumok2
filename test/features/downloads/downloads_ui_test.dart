@@ -13,6 +13,8 @@ import 'package:strumok/core/platform/background_permissions.dart';
 import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/core/storage/app_preferences.dart';
 import 'package:strumok/core/storage/offline_mode.dart';
+import 'package:strumok/features/collection/domain/collection_item.dart';
+import 'package:strumok/features/collection/presentation/collection_providers.dart';
 import 'package:strumok/features/downloads/data/download_engine.dart';
 import 'package:strumok/features/downloads/data/download_service.dart';
 import 'package:strumok/features/downloads/domain/download_queue.dart';
@@ -47,9 +49,9 @@ FakeMediaItem episode(int n, {String? section}) => FakeMediaItem(
   'Episode ${n + 1}',
   section: section,
   sourceList: [
-    FakeVideoSource('A', url: 'https://a.example/$n.m3u8'),
+    FakeVideoSource('A', url: 'https://a.example/$n.m3u8', language: ContentLanguage.uk),
     FakeVideoSource('B'),
-    FakeSubtitleSource('UA subs'),
+    FakeSubtitleSource('UA subs', language: ContentLanguage.uk),
   ],
 );
 
@@ -90,6 +92,7 @@ void main() {
     FakeSupplier? supplier,
     DeviceClass deviceClass = DeviceClass.desktop,
     DirectoryPicker? picker,
+    String? subtitleName,
   }) async {
     runner = FakeRunner();
     store = MemoryQueueStore();
@@ -113,6 +116,16 @@ void main() {
       ),
       videoBackend: () => backend = FakeVideoBackend(),
       extraOverrides: [
+        if (subtitleName != null)
+          collectionItemProvider('alpha', 'm1').overrideWith(
+            (ref) => CollectionItem(
+              id: 'm1',
+              supplier: 'alpha',
+              title: 'Show',
+              image: '',
+              currentSubtitleName: subtitleName,
+            ),
+          ),
         downloadServiceProvider.overrideWith(
           (ref) => InProcessDownloadService.start(
             DownloadEngine(store: store, runner: runner, progressInterval: Duration.zero),
@@ -131,7 +144,7 @@ void main() {
   }
 
   testAppWidgets('details: "download all" queues every episode with the chosen source, one at a time', (tester) async {
-    await start(tester, prefs: const {});
+    await start(tester, prefs: const {}, subtitleName: 'UA subs');
     await go(tester, AppRoutes.details('alpha', 'm1'));
 
     await tester.tap(find.byKey(const Key('downloadButton')));
@@ -139,12 +152,18 @@ void main() {
     expect(find.byKey(const ValueKey('download-sections')), findsNothing, reason: 'a single season');
     await tester.tap(find.byKey(const ValueKey('download-all')));
     await settle(tester);
-    expect(find.text('UA subs'), findsNothing, reason: 'only video sources are offered');
+    expect(find.text('A (Українська)'), findsOneWidget);
+    expect(find.text('B'), findsOneWidget, reason: 'unknown language leaves the label unchanged');
     // Several items: sources are picked in priority order, then downloaded with the button.
     await tester.tap(find.byKey(const ValueKey('download-source-1')));
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
     await tester.pump();
     expect(find.text('Пріоритет 2'), findsOneWidget);
+    final selectedSubtitle = find.byKey(const ValueKey('download-subtitle-0'));
+    await tester.scrollUntilVisible(selectedSubtitle, 100, scrollable: find.byType(Scrollable).last);
+    await tester.pumpAndSettle();
+    expect(find.text('UA subs (Українська)'), findsOneWidget);
+    expect(tester.widget<ListTile>(selectedSubtitle).selected, isTrue);
     await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
     // Asked once before the first download.
@@ -158,6 +177,9 @@ void main() {
       ('alpha_m1_2', 'B, A', 'Episode 3'),
     ]);
     expect(queue().tasks.first.request.root, folder().path);
+    expect(queue().tasks.first.request.sourceLanguages, {'B': null, 'A': ContentLanguage.uk});
+    expect(queue().tasks.first.request.subtitleNames, ['UA subs']);
+    expect(queue().tasks.first.request.subtitleLanguages, {'UA subs': ContentLanguage.uk});
     expect(runner.started, ['alpha_m1_0'], reason: 'a show downloads in order, one episode at a time');
     expect(permissions.calls, ['notifications', 'battery']);
     expect(find.text('Додано до завантажень: 3'), findsOneWidget);
@@ -198,6 +220,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('download-section-1')));
     await settle(tester);
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
     expect(queue().tasks.map((t) => t.id), ['alpha_m1_2']);
 
@@ -208,11 +231,71 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('mediaItem-1')));
     await settle(tester);
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
     expect(queue().tasks.map((t) => (t.id, t.request.sourceNames.join(', '))), [
       ('alpha_m1_2', 'A'),
       ('alpha_m1_1', 'A'),
-    ], reason: 'a single item downloads on tap');
+    ], reason: 'a single item downloads after explicit confirmation');
+  });
+
+  testAppWidgets('download sheet lets the user turn off the remembered subtitle', (tester) async {
+    await start(tester, items: [episode(0)], subtitleName: 'UA subs');
+    await go(tester, AppRoutes.details('alpha', 'm1'));
+    await tester.tap(find.byKey(const Key('downloadButton')));
+    await settle(tester);
+
+    expect(tester.widget<ListTile>(find.byKey(const ValueKey('download-subtitle-0'))).selected, isTrue);
+    await tester.tap(find.byKey(const ValueKey('download-subtitle-none')));
+    await tester.tap(find.byKey(const ValueKey('download-start')));
+    await settle(tester);
+
+    expect(queue().tasks.single.request.subtitleNames, isEmpty);
+    expect(
+      container.read(collectionItemProvider('alpha', 'm1'))?.currentSubtitleName,
+      'UA subs',
+      reason: 'download selection does not modify the collection preference',
+    );
+  });
+
+  testAppWidgets('download sheet queues subtitle alternatives in their chosen priority order', (tester) async {
+    FakeMediaItem withSubtitles(int n) => FakeMediaItem(
+      n,
+      'Episode ${n + 1}',
+      sourceList: [
+        FakeVideoSource('A'),
+        FakeSubtitleSource('UA subs', language: ContentLanguage.uk),
+        FakeSubtitleSource('EN subs', language: ContentLanguage.en),
+      ],
+    );
+    await start(tester, items: [withSubtitles(0), withSubtitles(1)]);
+    await go(tester, AppRoutes.details('alpha', 'm1'));
+    await tester.tap(find.byKey(const Key('downloadButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('download-all')));
+    await settle(tester);
+    await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await tester.pump();
+
+    final ua = find.byKey(const ValueKey('download-subtitle-0'));
+    final en = find.byKey(const ValueKey('download-subtitle-1'));
+    await tester.scrollUntilVisible(en, 100, scrollable: find.byType(Scrollable).last);
+    await tester.pumpAndSettle();
+    await tester.tap(en);
+    await tester.tap(ua);
+    await tester.tap(en);
+    await tester.tap(en);
+    await tester.pumpAndSettle();
+    expect(find.descendant(of: ua, matching: find.text('Пріоритет 1')), findsOneWidget);
+    expect(find.descendant(of: en, matching: find.text('Пріоритет 2')), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('download-start')));
+    await settle(tester);
+    for (final task in queue().tasks) {
+      expect(task.request.subtitleNames, ['UA subs', 'EN subs']);
+      expect(task.request.subtitleLanguages, {'UA subs': ContentLanguage.uk, 'EN subs': ContentLanguage.en});
+    }
+    expect(queue().tasks, hasLength(2));
   });
 
   testAppWidgets('details: downloaded episodes can be deleted from the episode list', (tester) async {
@@ -442,17 +525,31 @@ void main() {
     expect(queue()['alpha_a_0']!.state, DownloadState.canceled);
   });
 
-  testAppWidgets('TV: several sources are picked and downloaded with the D-pad only', (tester) async {
-    await start(tester, deviceClass: DeviceClass.tv);
+  testAppWidgets('TV: sources and subtitle alternatives are picked with the D-pad only', (tester) async {
+    await start(
+      tester,
+      deviceClass: DeviceClass.tv,
+      items: [
+        for (var n = 0; n < 3; n++)
+          FakeMediaItem(
+            n,
+            'Episode ${n + 1}',
+            sourceList: [
+              FakeVideoSource('A'),
+              FakeVideoSource('B'),
+              FakeSubtitleSource('UA subs', language: ContentLanguage.uk),
+              FakeSubtitleSource('EN subs', language: ContentLanguage.en),
+            ],
+          ),
+      ],
+    );
     await go(tester, AppRoutes.details('alpha', 'm1'));
     await tester.tap(find.byKey(const Key('downloadButton')));
     await tester.pumpAndSettle();
 
-    // "Download all" → first source → second source → Download.
+    // "Download all" → first source → second source → subtitles → Download.
     for (final key in [
       LogicalKeyboardKey.select,
-      LogicalKeyboardKey.select,
-      LogicalKeyboardKey.arrowDown,
       LogicalKeyboardKey.select,
       LogicalKeyboardKey.arrowDown,
       LogicalKeyboardKey.select,
@@ -460,7 +557,44 @@ void main() {
       await tester.sendKeyEvent(key);
       await settle(tester);
     }
+    for (var i = 0; i < 10; i++) {
+      if (FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<ListTile>()?.key ==
+          const ValueKey('download-subtitle-0')) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await settle(tester);
+    }
+    expect(
+      FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<ListTile>()?.key,
+      const ValueKey('download-subtitle-0'),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await settle(tester);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await settle(tester);
+    expect(
+      FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<ListTile>()?.key,
+      const ValueKey('download-subtitle-1'),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await settle(tester);
+    for (var i = 0; i < 10; i++) {
+      if (FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<FilledButton>()?.key ==
+          const ValueKey('download-start')) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+      await settle(tester);
+    }
+    expect(
+      FocusManager.instance.primaryFocus?.context?.findAncestorWidgetOfExactType<FilledButton>()?.key,
+      const ValueKey('download-start'),
+    );
+    await tester.sendKeyEvent(LogicalKeyboardKey.select);
+    await settle(tester);
     expect(queue().tasks.map((t) => t.request.sourceNames.join(', ')), ['A, B', 'A, B', 'A, B']);
+    expect(queue().tasks.first.request.subtitleNames, ['UA subs', 'EN subs']);
   });
 
   testAppWidgets('offline mode: downloaded manga pages are read from disk', (tester) async {

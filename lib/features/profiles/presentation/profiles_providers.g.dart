@@ -14,8 +14,7 @@ part of 'profiles_providers.dart';
 final profilesProvider = ProfilesProvider._();
 
 /// Device-wide list of profiles (spec-05 §5.1). The first launch creates a default profile.
-final class ProfilesProvider
-    extends $NotifierProvider<Profiles, List<Profile>> {
+final class ProfilesProvider extends $NotifierProvider<Profiles, List<Profile>> {
   /// Device-wide list of profiles (spec-05 §5.1). The first launch creates a default profile.
   ProfilesProvider._()
     : super(
@@ -37,10 +36,7 @@ final class ProfilesProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<Profile> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<Profile>>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<Profile>>(value));
   }
 }
 
@@ -56,12 +52,7 @@ abstract class _$Profiles extends $Notifier<List<Profile>> {
     final ref = this.ref as $Ref<List<Profile>, List<Profile>>;
     final element =
         ref.element
-            as $ClassProviderElement<
-              AnyNotifier<List<Profile>, List<Profile>>,
-              List<Profile>,
-              Object?,
-              Object?
-            >;
+            as $ClassProviderElement<AnyNotifier<List<Profile>, List<Profile>>, List<Profile>, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }
@@ -69,8 +60,7 @@ abstract class _$Profiles extends $Notifier<List<Profile>> {
 @ProviderFor(ActiveProfile)
 final activeProfileProvider = ActiveProfileProvider._();
 
-final class ActiveProfileProvider
-    extends $NotifierProvider<ActiveProfile, Profile> {
+final class ActiveProfileProvider extends $NotifierProvider<ActiveProfile, Profile> {
   ActiveProfileProvider._()
     : super(
         from: null,
@@ -91,10 +81,7 @@ final class ActiveProfileProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(Profile value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<Profile>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<Profile>(value));
   }
 }
 
@@ -106,14 +93,7 @@ abstract class _$ActiveProfile extends $Notifier<Profile> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<Profile, Profile>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<Profile, Profile>,
-              Profile,
-              Object?,
-              Object?
-            >;
+    final element = ref.element as $ClassProviderElement<AnyNotifier<Profile, Profile>, Profile, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }
@@ -125,9 +105,7 @@ final activeProfileIdProvider = ActiveProfileIdProvider._();
 
 /// Only the id: consumers that hold per-profile resources must not rebuild on rename.
 
-final class ActiveProfileIdProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
+final class ActiveProfileIdProvider extends $FunctionalProvider<String, String, String> with $Provider<String> {
   /// Only the id: consumers that hold per-profile resources must not rebuild on rename.
   ActiveProfileIdProvider._()
     : super(
@@ -145,8 +123,7 @@ final class ActiveProfileIdProvider
 
   @$internal
   @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<String> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   String create(Ref ref) {
@@ -155,10 +132,7 @@ final class ActiveProfileIdProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<String>(value));
   }
 }
 
@@ -167,8 +141,7 @@ String _$activeProfileIdHash() => r'7c600d24b9dd4e181c90cdfe76bae9efdb80ff24';
 @ProviderFor(ProfileAskOnStartup)
 final profileAskOnStartupProvider = ProfileAskOnStartupProvider._();
 
-final class ProfileAskOnStartupProvider
-    extends $NotifierProvider<ProfileAskOnStartup, bool> {
+final class ProfileAskOnStartupProvider extends $NotifierProvider<ProfileAskOnStartup, bool> {
   ProfileAskOnStartupProvider._()
     : super(
         from: null,
@@ -189,15 +162,11 @@ final class ProfileAskOnStartupProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
   }
 }
 
-String _$profileAskOnStartupHash() =>
-    r'c64954ad014faf1e72758a469f2f99b53e9b2c1d';
+String _$profileAskOnStartupHash() => r'c64954ad014faf1e72758a469f2f99b53e9b2c1d';
 
 abstract class _$ProfileAskOnStartup extends $Notifier<bool> {
   bool build();
@@ -205,14 +174,7 @@ abstract class _$ProfileAskOnStartup extends $Notifier<bool> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
-              Object?,
-              Object?
-            >;
+    final element = ref.element as $ClassProviderElement<AnyNotifier<bool, bool>, bool, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }
@@ -223,8 +185,7 @@ abstract class _$ProfileAskOnStartup extends $Notifier<bool> {
 final profilePickPendingProvider = ProfilePickPendingProvider._();
 
 /// True until a profile is picked in this app run, when the picker applies (≥ 2 profiles, spec-05 §5.4).
-final class ProfilePickPendingProvider
-    extends $NotifierProvider<ProfilePickPending, bool> {
+final class ProfilePickPendingProvider extends $NotifierProvider<ProfilePickPending, bool> {
   /// True until a profile is picked in this app run, when the picker applies (≥ 2 profiles, spec-05 §5.4).
   ProfilePickPendingProvider._()
     : super(
@@ -246,15 +207,11 @@ final class ProfilePickPendingProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
   }
 }
 
-String _$profilePickPendingHash() =>
-    r'15ec6421ac3e625c586dd51d2e72023b7c523d1c';
+String _$profilePickPendingHash() => r'15ec6421ac3e625c586dd51d2e72023b7c523d1c';
 
 /// True until a profile is picked in this app run, when the picker applies (≥ 2 profiles, spec-05 §5.4).
 
@@ -264,14 +221,7 @@ abstract class _$ProfilePickPending extends $Notifier<bool> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
-              Object?,
-              Object?
-            >;
+    final element = ref.element as $ClassProviderElement<AnyNotifier<bool, bool>, bool, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }

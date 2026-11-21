@@ -58,7 +58,8 @@ Downloads go to `<Downloads>/strumok` on desktop (changeable in Settings) and to
 ## Supplier bridge (FFI)
 
 `packages/content_suppliers_rust` holds the FRB contract crate and generated Dart bindings
-(codegen `2.12.0`, content hash `-1122641696`, API major `4`). Do not edit them.
+(codegen `2.13.0`, content hash `-1122641696`, API major `5`). Do not edit them outside a coordinated
+bundle-major bump.
 Smoke test against the dummy supplier:
 
 ```bash

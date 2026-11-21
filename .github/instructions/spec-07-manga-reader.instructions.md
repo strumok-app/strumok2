@@ -6,7 +6,8 @@ applyTo: 'lib/features/manga/**'
 # Spec 07 — Manga reader
 
 - Sources: `MangaMediaItemSource` (pages lazily loaded via `load_manga_pages`). Source identity = `description`
-  (stored in `currentSourceName`). Translation selector when several sources exist.
+  (stored in `currentSourceName`). Translation selector when several sources exist; display the source's language
+  alongside its description when provided, without changing its identity.
 - Progress: `positions[currentItem] = {position: pageIndex, length: pageCount}`; persist on page change (spec-03).
 - Modes (persisted, default `longStrip`): `longStrip` (vertical continuous scroll), `vertical` (paged, vertical),
   `leftToRight` (paged, horizontal), `rightToLeft` (paged, horizontal reversed; new, string already in ARB).

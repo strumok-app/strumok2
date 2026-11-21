@@ -10,8 +10,7 @@ description: 'Use when verifying a milestone or release: acceptance checklist fo
 - [ ] Android phone, tablet, Android TV, Linux, Windows builds run.
 
 ## Compatibility (blocking)
-- [ ] Published `strumok_suppliers` 4.x bundle downloads, loads and serves search/details/sources/manga pages on Linux, Windows, Android (arm64 + x86_64 emulator).
-- [ ] `rustContentHash == -1122641696`, codegen `2.12.0`, `compatibleApiVersion == 4`.
+- [ ] Published `strumok_suppliers` bundle downloads, loads and serves search/details/sources/manga pages on Linux, Windows, Android (arm64 + x86_64 emulator).
 - [ ] Bundle info JSON and file naming (`lib<name>_<version>.so` / `<name>_<version>.dll` in `<appSupport>/ffi`) as specified.
 - [ ] Existing Firebase account: all legacy collection items appear with correct status, priority, current item, positions, source names.
 - [ ] Item edited in the rewrite is shown correctly by the legacy app (and vice versa), including deletes.

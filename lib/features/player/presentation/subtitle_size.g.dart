@@ -14,8 +14,7 @@ part of 'subtitle_size.dart';
 final subtitleSizeProvider = SubtitleSizeProvider._();
 
 /// Subtitle font size in logical pixels (spec-09 key `video_player_subtitles_size`).
-final class SubtitleSizeProvider
-    extends $NotifierProvider<SubtitleSize, double> {
+final class SubtitleSizeProvider extends $NotifierProvider<SubtitleSize, double> {
   /// Subtitle font size in logical pixels (spec-09 key `video_player_subtitles_size`).
   SubtitleSizeProvider._()
     : super(
@@ -37,10 +36,7 @@ final class SubtitleSizeProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(double value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<double>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<double>(value));
   }
 }
 
@@ -54,14 +50,7 @@ abstract class _$SubtitleSize extends $Notifier<double> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<double, double>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<double, double>,
-              double,
-              Object?,
-              Object?
-            >;
+    final element = ref.element as $ClassProviderElement<AnyNotifier<double, double>, double, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }

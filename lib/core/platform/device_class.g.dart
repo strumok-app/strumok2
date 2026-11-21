@@ -15,8 +15,7 @@ final deviceClassProvider = DeviceClassProvider._();
 
 /// Computed once at startup; overridden on the root `ProviderScope`.
 
-final class DeviceClassProvider
-    extends $FunctionalProvider<DeviceClass, DeviceClass, DeviceClass>
+final class DeviceClassProvider extends $FunctionalProvider<DeviceClass, DeviceClass, DeviceClass>
     with $Provider<DeviceClass> {
   /// Computed once at startup; overridden on the root `ProviderScope`.
   DeviceClassProvider._()
@@ -35,8 +34,7 @@ final class DeviceClassProvider
 
   @$internal
   @override
-  $ProviderElement<DeviceClass> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<DeviceClass> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   DeviceClass create(Ref ref) {
@@ -45,10 +43,7 @@ final class DeviceClassProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(DeviceClass value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<DeviceClass>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<DeviceClass>(value));
   }
 }
 

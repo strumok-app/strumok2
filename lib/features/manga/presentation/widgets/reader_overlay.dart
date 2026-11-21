@@ -248,7 +248,7 @@ Future<void> showReaderSources(BuildContext context, MangaReaderState state, Val
         for (final (index, source) in state.sources.indexed)
           _Choice(
             key: ValueKey('readerSource-$index'),
-            label: source.description,
+            label: context.sourceLabel(source),
             leading: isLocalSource(source) ? const DownloadedMark() : null,
             selected: index == state.sourceIndex,
             onTap: () => Navigator.of(context).pop(index),

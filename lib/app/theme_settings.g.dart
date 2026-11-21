@@ -14,8 +14,7 @@ part of 'theme_settings.dart';
 final themeBrightnessProvider = ThemeBrightnessProvider._();
 
 /// Light / system / dark (spec-09 key `theme_brightness`, stored by `ThemeMode.name`).
-final class ThemeBrightnessProvider
-    extends $NotifierProvider<ThemeBrightness, ThemeMode> {
+final class ThemeBrightnessProvider extends $NotifierProvider<ThemeBrightness, ThemeMode> {
   /// Light / system / dark (spec-09 key `theme_brightness`, stored by `ThemeMode.name`).
   ThemeBrightnessProvider._()
     : super(
@@ -37,10 +36,7 @@ final class ThemeBrightnessProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ThemeMode value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ThemeMode>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<ThemeMode>(value));
   }
 }
 
@@ -55,13 +51,7 @@ abstract class _$ThemeBrightness extends $Notifier<ThemeMode> {
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
     final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<ThemeMode, ThemeMode>,
-              ThemeMode,
-              Object?,
-              Object?
-            >;
+        ref.element as $ClassProviderElement<AnyNotifier<ThemeMode, ThemeMode>, ThemeMode, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }
@@ -72,8 +62,7 @@ abstract class _$ThemeBrightness extends $Notifier<ThemeMode> {
 final themeColorSchemeProvider = ThemeColorSchemeProvider._();
 
 /// Spec-09 key `theme_color_scheme`, stored by `AppColorScheme.name`.
-final class ThemeColorSchemeProvider
-    extends $NotifierProvider<ThemeColorScheme, AppColorScheme> {
+final class ThemeColorSchemeProvider extends $NotifierProvider<ThemeColorScheme, AppColorScheme> {
   /// Spec-09 key `theme_color_scheme`, stored by `AppColorScheme.name`.
   ThemeColorSchemeProvider._()
     : super(
@@ -95,10 +84,7 @@ final class ThemeColorSchemeProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AppColorScheme value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AppColorScheme>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<AppColorScheme>(value));
   }
 }
 
@@ -114,12 +100,7 @@ abstract class _$ThemeColorScheme extends $Notifier<AppColorScheme> {
     final ref = this.ref as $Ref<AppColorScheme, AppColorScheme>;
     final element =
         ref.element
-            as $ClassProviderElement<
-              AnyNotifier<AppColorScheme, AppColorScheme>,
-              AppColorScheme,
-              Object?,
-              Object?
-            >;
+            as $ClassProviderElement<AnyNotifier<AppColorScheme, AppColorScheme>, AppColorScheme, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }

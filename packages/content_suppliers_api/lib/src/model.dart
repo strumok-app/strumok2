@@ -45,6 +45,10 @@ sealed class ContentMediaItemSource {
   FileKind get kind;
   String get description;
   Map<String, String>? get headers;
+
+  /// Language the supplier reports for this source (audio for video, subtitle/manga language).
+  /// Codes not in [ContentLanguage] are reported as null (spec-02 §2.3).
+  ContentLanguage? get language;
 }
 
 abstract class FileMediaItemSource extends ContentMediaItemSource {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,7 +81,7 @@ void main() {
         'Episode 1',
         sourceList: [
           FakeVideoSource('A'),
-          if (subtitles) ...[FakeSubtitleSource('UA'), FakeSubtitleSource('EN')],
+          if (subtitles) ...[FakeSubtitleSource('UA', language: ContentLanguage.uk), FakeSubtitleSource('EN')],
           for (var i = 0; i < extraSubtitles; i++) FakeSubtitleSource('Extra $i'),
         ],
       ),
@@ -190,6 +191,8 @@ void main() {
     expect(focusedKey(), const ValueKey('settings-subtitles'), reason: 'first row');
 
     await press(tester, LogicalKeyboardKey.enter);
+    expect(find.text('UA (Українська)'), findsOneWidget);
+    expect(find.text('EN'), findsOneWidget);
     expect(focusedKey(), const ValueKey('subtitle-off'));
     await press(tester, LogicalKeyboardKey.arrowDown);
     await press(tester, LogicalKeyboardKey.enter);
@@ -197,7 +200,7 @@ void main() {
     expect(find.byKey(const ValueKey('subtitleSize')), findsOneWidget, reason: 'still on the page');
 
     await press(tester, LogicalKeyboardKey.escape);
-    expect(find.descendant(of: row, matching: find.text('UA')), findsOneWidget);
+    expect(find.descendant(of: row, matching: find.text('UA (Українська)')), findsOneWidget);
   });
 
   testAppWidgets('a placeholder shows while the selected subtitles load', (tester) async {

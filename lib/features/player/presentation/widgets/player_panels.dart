@@ -97,7 +97,7 @@ class _SubtitlesPage extends ConsumerWidget {
                 for (final (index, subtitle) in session.subtitles.indexed)
                   _Choice(
                     key: ValueKey('subtitle-$index'),
-                    label: subtitle.description,
+                    label: context.sourceLabel(subtitle),
                     selected: session.subtitleIndex == index,
                     error: session.subtitleIndex == index && session.subtitleFailed ? l10n.playerSubtitlesFailed : null,
                     loading: session.subtitleIndex == index && session.subtitleLoading,
@@ -207,7 +207,10 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
         : startFromLabel(l10n, settings.startFrom);
     final rows = [
       if (session.subtitles.isNotEmpty)
-        (page: _SettingsPage.subtitles, value: session.subtitle?.description ?? l10n.playerSubtitlesOff),
+        (
+          page: _SettingsPage.subtitles,
+          value: session.subtitle == null ? l10n.playerSubtitlesOff : context.sourceLabel(session.subtitle!),
+        ),
       if (tracks.audio.length > 1) (page: _SettingsPage.audio, value: _currentAudio(tracks)),
       if (tracks.video.length > 1) (page: _SettingsPage.quality, value: _currentQuality(tracks)),
       (page: _SettingsPage.speed, value: speedLabel(l10n, session.speed)),

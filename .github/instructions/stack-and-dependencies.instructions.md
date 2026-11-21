@@ -12,7 +12,7 @@ applyTo: '**/pubspec.yaml'
 | UI framework | Flutter (stable channel), Dart ≥ 3.8 | Material 3 only. |
 | State management | `flutter_riverpod`, `riverpod_annotation`, dev: `riverpod_generator`, `build_runner` | Riverpod 3.x, code-gen style (`@riverpod`). No `provider`, `bloc`, `get_it`, `mobx`, `ChangeNotifierProvider`-style globals. |
 | Video | `media_kit`, `media_kit_video`, `media_kit_libs_video` | The only playback engine. mpv properties are tuned via `NativePlayer.setProperty` (see spec-06). |
-| Rust bridge | `flutter_rust_bridge` | Runtime must stay compatible with codegen `2.12.0` (see spec-02). |
+| Rust bridge | `flutter_rust_bridge` | Runtime must stay compatible with codegen `2.13.0` (see spec-02). |
 
 ## Optional dependencies policy
 
@@ -62,6 +62,6 @@ Use these only if you need the capability; they are proven on all target platfor
 
 - Commit `pubspec.lock`.
 - Pin `flutter_rust_bridge` Dart runtime to a version whose `kFlutterRustBridgeRuntimeVersion`
-  works with codegen `2.12.0` modules (the legacy app ran runtime `2.13.0` with
-  `forceSameCodegenVersion: false`). Do not bump the Rust-side codegen version.
+  works with codegen `2.13.0` modules (`forceSameCodegenVersion: false`). Bump the Rust-side codegen version
+  only as part of a coordinated bundle-major change (as done for API 5).
 - If you need a `media_kit` fork/override (e.g. for Android fMP4 seeking), document why in `pubspec.yaml`.

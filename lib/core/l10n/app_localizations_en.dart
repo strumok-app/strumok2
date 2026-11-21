@@ -830,6 +830,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadsChooseSource => 'Source to download';
 
   @override
+  String get downloadsSubtitles => 'Subtitles to download';
+
+  @override
+  String get downloadsSubtitleHint =>
+      'Pick subtitle tracks in priority order, or choose Off. Each item gets the first available track, or one in the same known language. If none matches, subtitles are skipped.';
+
+  @override
   String get downloadsNoSources => 'Nothing to download from this source';
 
   @override
@@ -1021,8 +1028,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadsPickVolume => 'Download a volume';
 
   @override
+  String sourceWithLanguage(String source, String language) {
+    return '$source ($language)';
+  }
+
+  @override
   String get downloadsSourcesHint =>
-      'Pick one or more sources in order of priority. Where they are missing, the most similar one is used.';
+      'Pick one or more sources in order of priority. Where they are missing, a source in the same language is used, or the first available source if the language is unknown.';
 
   @override
   String downloadsSourcePriority(int priority) {

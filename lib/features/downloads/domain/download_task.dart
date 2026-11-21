@@ -57,9 +57,15 @@ final class DownloadRequest {
   final FileKind kind;
 
   /// Preferred source `description`s, highest priority first (never empty). Looked up again when the task starts
-  /// (links expire); an item without any of them gets a similar source (see `chooseDownloadSource`).
+  /// (links expire); an item without any of them falls back by language.
   final List<String> sourceNames;
-  final String? subtitleName;
+
+  /// Languages captured with the preferred names, including null for unknown languages and older queues.
+  final Map<String, ContentLanguage?> sourceLanguages;
+
+  /// Preferred subtitle descriptions, highest priority first; empty means no subtitles.
+  final List<String> subtitleNames;
+  final Map<String, ContentLanguage?> subtitleLanguages;
 
   /// Downloads folder at enqueue time; files of this task go there even if the setting changes later.
   final String root;
@@ -74,26 +80,43 @@ final class DownloadRequest {
     required this.sourceNames,
     required this.root,
     this.image = '',
-    this.subtitleName,
+    this.sourceLanguages = const {},
+    this.subtitleNames = const [],
+    this.subtitleLanguages = const {},
   });
 
   String get id => downloadTaskId(supplier, contentId, itemIndex);
 
   String get contentKey => downloadContentKey(supplier, contentId);
 
-  factory DownloadRequest.fromJson(Map<String, Object?> json) => DownloadRequest(
-    supplier: json['supplier'] as String,
-    contentId: json['contentId'] as String,
-    itemIndex: (json['itemIndex'] as num).toInt(),
-    title: json['title'] as String? ?? '',
-    itemTitle: json['itemTitle'] as String? ?? '',
-    image: json['image'] as String? ?? '',
-    kind: FileKind.values.asNameMap()[json['kind']] ?? FileKind.video,
-    // Queues saved before several sources could be picked have a single `sourceName`.
-    sourceNames: [...?(json['sourceNames'] as List?)?.cast<String>(), ?json['sourceName'] as String?],
-    subtitleName: json['subtitleName'] as String?,
-    root: json['root'] as String,
-  );
+  factory DownloadRequest.fromJson(Map<String, Object?> json) {
+    final oldSubtitle = json['subtitleName'] as String?;
+    return DownloadRequest(
+      supplier: json['supplier'] as String,
+      contentId: json['contentId'] as String,
+      itemIndex: (json['itemIndex'] as num).toInt(),
+      title: json['title'] as String? ?? '',
+      itemTitle: json['itemTitle'] as String? ?? '',
+      image: json['image'] as String? ?? '',
+      kind: FileKind.values.asNameMap()[json['kind']] ?? FileKind.video,
+      // Queues saved before several sources could be picked have a single `sourceName`.
+      sourceNames: [...?(json['sourceNames'] as List?)?.cast<String>(), ?json['sourceName'] as String?],
+      sourceLanguages: {
+        for (final entry in (json['sourceLanguages'] as Map<String, Object?>? ?? const {}).entries)
+          entry.key: ContentLanguage.values.asNameMap()[entry.value],
+      },
+      subtitleNames: json.containsKey('subtitleNames')
+          ? (json['subtitleNames'] as List).cast<String>()
+          : [?oldSubtitle],
+      subtitleLanguages: json.containsKey('subtitleNames')
+          ? {
+              for (final entry in (json['subtitleLanguages'] as Map<String, Object?>? ?? const {}).entries)
+                entry.key: ContentLanguage.values.asNameMap()[entry.value],
+            }
+          : {?oldSubtitle: ContentLanguage.values.asNameMap()[json['subtitleLanguage']]},
+      root: json['root'] as String,
+    );
+  }
 
   Map<String, Object?> toJson() => {
     'supplier': supplier,
@@ -104,7 +127,9 @@ final class DownloadRequest {
     'image': image,
     'kind': kind.name,
     'sourceNames': sourceNames,
-    'subtitleName': subtitleName,
+    'sourceLanguages': sourceLanguages.map((name, language) => MapEntry(name, language?.name)),
+    'subtitleNames': subtitleNames,
+    'subtitleLanguages': subtitleLanguages.map((name, language) => MapEntry(name, language?.name)),
     'root': root,
   };
 
@@ -119,7 +144,9 @@ final class DownloadRequest {
       other.image == image &&
       other.kind == kind &&
       listEquals(other.sourceNames, sourceNames) &&
-      other.subtitleName == subtitleName &&
+      mapEquals(other.sourceLanguages, sourceLanguages) &&
+      listEquals(other.subtitleNames, subtitleNames) &&
+      mapEquals(other.subtitleLanguages, subtitleLanguages) &&
       other.root == root;
 
   @override
@@ -132,7 +159,9 @@ final class DownloadRequest {
     image,
     kind,
     Object.hashAll(sourceNames),
-    subtitleName,
+    Object.hashAllUnordered(sourceLanguages.entries.map((entry) => Object.hash(entry.key, entry.value))),
+    Object.hashAll(subtitleNames),
+    Object.hashAllUnordered(subtitleLanguages.entries.map((entry) => Object.hash(entry.key, entry.value))),
     root,
   );
 }

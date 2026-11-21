@@ -1,3 +1,4 @@
+import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -10,6 +11,15 @@ part 'localization.g.dart';
 
 extension LocalizationContext on BuildContext {
   AppLocalizations get l10n => AppLocalizations.of(this);
+
+  String sourceLabel(ContentMediaItemSource source) {
+    final language = switch (source.language) {
+      ContentLanguage.en => l10n.languageEn,
+      ContentLanguage.uk => l10n.languageUk,
+      null => null,
+    };
+    return language == null ? source.description : l10n.sourceWithLanguage(source.description, language);
+  }
 }
 
 /// UI language (spec-09 key `user_language`, language code); `uk` by default.

@@ -14,8 +14,7 @@ part of 'player_settings.dart';
 final playerSettingsProvider = PlayerSettingsProvider._();
 
 /// Persisted player settings (spec-09 keys, enums stored by `.name`).
-final class PlayerSettingsProvider
-    extends $NotifierProvider<PlayerSettings, PlayerPreferences> {
+final class PlayerSettingsProvider extends $NotifierProvider<PlayerSettings, PlayerPreferences> {
   /// Persisted player settings (spec-09 keys, enums stored by `.name`).
   PlayerSettingsProvider._()
     : super(
@@ -37,10 +36,7 @@ final class PlayerSettingsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(PlayerPreferences value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<PlayerPreferences>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<PlayerPreferences>(value));
   }
 }
 

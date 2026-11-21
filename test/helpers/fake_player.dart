@@ -14,9 +14,11 @@ class FakeVideoSource extends VideoMediaItemSource {
   final Map<String, String>? headers;
   @override
   final bool hlsProxy;
+  @override
+  final ContentLanguage? language;
   final String url;
 
-  FakeVideoSource(this.description, {String? url, this.headers, this.hlsProxy = false})
+  FakeVideoSource(this.description, {String? url, this.headers, this.hlsProxy = false, this.language})
     : url = url ?? 'https://cdn.example.com/$description.m3u8';
 
   @override
@@ -28,9 +30,11 @@ class FakeSubtitleSource extends SubtitleMediaItemSource {
   final String description;
   @override
   final Map<String, String>? headers;
+  @override
+  final ContentLanguage? language;
   final String url;
 
-  FakeSubtitleSource(this.description, {String? url, this.headers})
+  FakeSubtitleSource(this.description, {String? url, this.headers, this.language})
     : url = url ?? 'https://subs.example.com/$description.vtt';
 
   @override

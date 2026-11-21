@@ -15,9 +15,7 @@ final currentAppVersionProvider = CurrentAppVersionProvider._();
 
 /// App package version (pubspec `version`); overridden in main().
 
-final class CurrentAppVersionProvider
-    extends $FunctionalProvider<String, String, String>
-    with $Provider<String> {
+final class CurrentAppVersionProvider extends $FunctionalProvider<String, String, String> with $Provider<String> {
   /// App package version (pubspec `version`); overridden in main().
   CurrentAppVersionProvider._()
     : super(
@@ -35,8 +33,7 @@ final class CurrentAppVersionProvider
 
   @$internal
   @override
-  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<String> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   String create(Ref ref) {
@@ -45,10 +42,7 @@ final class CurrentAppVersionProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(String value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<String>(value));
   }
 }
 
@@ -58,11 +52,7 @@ String _$currentAppVersionHash() => r'b33f5e8f204dc9df23919d23577d6ffe99aa365b';
 final latestSupplierBundleProvider = LatestSupplierBundleProvider._();
 
 final class LatestSupplierBundleProvider
-    extends
-        $NotifierProvider<
-          LatestSupplierBundle,
-          UpdateCheckState<FfiBundleInfo>
-        > {
+    extends $NotifierProvider<LatestSupplierBundle, UpdateCheckState<FfiBundleInfo>> {
   LatestSupplierBundleProvider._()
     : super(
         from: null,
@@ -85,35 +75,23 @@ final class LatestSupplierBundleProvider
   Override overrideWithValue(UpdateCheckState<FfiBundleInfo> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<UpdateCheckState<FfiBundleInfo>>(
-        value,
-      ),
+      providerOverride: $SyncValueProvider<UpdateCheckState<FfiBundleInfo>>(value),
     );
   }
 }
 
-String _$latestSupplierBundleHash() =>
-    r'8ba0a57892767da9e0996c1dd0c732645296678c';
+String _$latestSupplierBundleHash() => r'8ba0a57892767da9e0996c1dd0c732645296678c';
 
-abstract class _$LatestSupplierBundle
-    extends $Notifier<UpdateCheckState<FfiBundleInfo>> {
+abstract class _$LatestSupplierBundle extends $Notifier<UpdateCheckState<FfiBundleInfo>> {
   UpdateCheckState<FfiBundleInfo> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref
-            as $Ref<
-              UpdateCheckState<FfiBundleInfo>,
-              UpdateCheckState<FfiBundleInfo>
-            >;
+    final ref = this.ref as $Ref<UpdateCheckState<FfiBundleInfo>, UpdateCheckState<FfiBundleInfo>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<
-                UpdateCheckState<FfiBundleInfo>,
-                UpdateCheckState<FfiBundleInfo>
-              >,
+              AnyNotifier<UpdateCheckState<FfiBundleInfo>, UpdateCheckState<FfiBundleInfo>>,
               UpdateCheckState<FfiBundleInfo>,
               Object?,
               Object?
@@ -125,8 +103,7 @@ abstract class _$LatestSupplierBundle
 @ProviderFor(LatestAppRelease)
 final latestAppReleaseProvider = LatestAppReleaseProvider._();
 
-final class LatestAppReleaseProvider
-    extends $NotifierProvider<LatestAppRelease, UpdateCheckState<AppRelease>> {
+final class LatestAppReleaseProvider extends $NotifierProvider<LatestAppRelease, UpdateCheckState<AppRelease>> {
   LatestAppReleaseProvider._()
     : super(
         from: null,
@@ -147,31 +124,22 @@ final class LatestAppReleaseProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(UpdateCheckState<AppRelease> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<UpdateCheckState<AppRelease>>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<UpdateCheckState<AppRelease>>(value));
   }
 }
 
 String _$latestAppReleaseHash() => r'5a810dc934a81401a15b5609030efdea8e4f267e';
 
-abstract class _$LatestAppRelease
-    extends $Notifier<UpdateCheckState<AppRelease>> {
+abstract class _$LatestAppRelease extends $Notifier<UpdateCheckState<AppRelease>> {
   UpdateCheckState<AppRelease> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref
-            as $Ref<UpdateCheckState<AppRelease>, UpdateCheckState<AppRelease>>;
+    final ref = this.ref as $Ref<UpdateCheckState<AppRelease>, UpdateCheckState<AppRelease>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<
-                UpdateCheckState<AppRelease>,
-                UpdateCheckState<AppRelease>
-              >,
+              AnyNotifier<UpdateCheckState<AppRelease>, UpdateCheckState<AppRelease>>,
               UpdateCheckState<AppRelease>,
               Object?,
               Object?
@@ -181,16 +149,10 @@ abstract class _$LatestAppRelease
 }
 
 @ProviderFor(supplierBundleUpdateStatus)
-final supplierBundleUpdateStatusProvider =
-    SupplierBundleUpdateStatusProvider._();
+final supplierBundleUpdateStatusProvider = SupplierBundleUpdateStatusProvider._();
 
 final class SupplierBundleUpdateStatusProvider
-    extends
-        $FunctionalProvider<
-          BundleUpdateStatus,
-          BundleUpdateStatus,
-          BundleUpdateStatus
-        >
+    extends $FunctionalProvider<BundleUpdateStatus, BundleUpdateStatus, BundleUpdateStatus>
     with $Provider<BundleUpdateStatus> {
   SupplierBundleUpdateStatusProvider._()
     : super(
@@ -208,9 +170,7 @@ final class SupplierBundleUpdateStatusProvider
 
   @$internal
   @override
-  $ProviderElement<BundleUpdateStatus> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  $ProviderElement<BundleUpdateStatus> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   BundleUpdateStatus create(Ref ref) {
@@ -219,15 +179,11 @@ final class SupplierBundleUpdateStatusProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(BundleUpdateStatus value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BundleUpdateStatus>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<BundleUpdateStatus>(value));
   }
 }
 
-String _$supplierBundleUpdateStatusHash() =>
-    r'07ca41145283d26775400d95125bd5d4ab800956';
+String _$supplierBundleUpdateStatusHash() => r'07ca41145283d26775400d95125bd5d4ab800956';
 
 /// Newer release, or null.
 
@@ -236,8 +192,7 @@ final availableAppUpdateProvider = AvailableAppUpdateProvider._();
 
 /// Newer release, or null.
 
-final class AvailableAppUpdateProvider
-    extends $FunctionalProvider<AppRelease?, AppRelease?, AppRelease?>
+final class AvailableAppUpdateProvider extends $FunctionalProvider<AppRelease?, AppRelease?, AppRelease?>
     with $Provider<AppRelease?> {
   /// Newer release, or null.
   AvailableAppUpdateProvider._()
@@ -256,8 +211,7 @@ final class AvailableAppUpdateProvider
 
   @$internal
   @override
-  $ProviderElement<AppRelease?> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AppRelease?> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   AppRelease? create(Ref ref) {
@@ -266,15 +220,11 @@ final class AvailableAppUpdateProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AppRelease? value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AppRelease?>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<AppRelease?>(value));
   }
 }
 
-String _$availableAppUpdateHash() =>
-    r'58ffd89f3dee77c59fce40e5b928afd7efef59dd';
+String _$availableAppUpdateHash() => r'58ffd89f3dee77c59fce40e5b928afd7efef59dd';
 
 /// Drives the badge on the account/settings entry (spec-01).
 
@@ -283,9 +233,7 @@ final hasUpdateNoticeProvider = HasUpdateNoticeProvider._();
 
 /// Drives the badge on the account/settings entry (spec-01).
 
-final class HasUpdateNoticeProvider
-    extends $FunctionalProvider<bool, bool, bool>
-    with $Provider<bool> {
+final class HasUpdateNoticeProvider extends $FunctionalProvider<bool, bool, bool> with $Provider<bool> {
   /// Drives the badge on the account/settings entry (spec-01).
   HasUpdateNoticeProvider._()
     : super(
@@ -303,8 +251,7 @@ final class HasUpdateNoticeProvider
 
   @$internal
   @override
-  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   bool create(Ref ref) {
@@ -313,18 +260,14 @@ final class HasUpdateNoticeProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<bool>(value));
   }
 }
 
 String _$hasUpdateNoticeHash() => r'86d7896f2415d8a95dd712fd1c13cb0ea0f3f162';
 
 @ProviderFor(SupplierBundleInstallController)
-final supplierBundleInstallControllerProvider =
-    SupplierBundleInstallControllerProvider._();
+final supplierBundleInstallControllerProvider = SupplierBundleInstallControllerProvider._();
 
 final class SupplierBundleInstallControllerProvider
     extends $NotifierProvider<SupplierBundleInstallController, InstallState> {
@@ -348,41 +291,28 @@ final class SupplierBundleInstallControllerProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(InstallState value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<InstallState>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<InstallState>(value));
   }
 }
 
-String _$supplierBundleInstallControllerHash() =>
-    r'4eba2e2323a08dace8166ce29c6d23f9f66d3504';
+String _$supplierBundleInstallControllerHash() => r'4eba2e2323a08dace8166ce29c6d23f9f66d3504';
 
-abstract class _$SupplierBundleInstallController
-    extends $Notifier<InstallState> {
+abstract class _$SupplierBundleInstallController extends $Notifier<InstallState> {
   InstallState build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<InstallState, InstallState>;
     final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<InstallState, InstallState>,
-              InstallState,
-              Object?,
-              Object?
-            >;
+        ref.element as $ClassProviderElement<AnyNotifier<InstallState, InstallState>, InstallState, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }
 
 @ProviderFor(AppUpdateInstallController)
-final appUpdateInstallControllerProvider =
-    AppUpdateInstallControllerProvider._();
+final appUpdateInstallControllerProvider = AppUpdateInstallControllerProvider._();
 
-final class AppUpdateInstallControllerProvider
-    extends $NotifierProvider<AppUpdateInstallController, InstallState> {
+final class AppUpdateInstallControllerProvider extends $NotifierProvider<AppUpdateInstallController, InstallState> {
   AppUpdateInstallControllerProvider._()
     : super(
         from: null,
@@ -403,15 +333,11 @@ final class AppUpdateInstallControllerProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(InstallState value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<InstallState>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<InstallState>(value));
   }
 }
 
-String _$appUpdateInstallControllerHash() =>
-    r'9ee39acaec57a33260d0e08b20c7c12fe70c9152';
+String _$appUpdateInstallControllerHash() => r'9ee39acaec57a33260d0e08b20c7c12fe70c9152';
 
 abstract class _$AppUpdateInstallController extends $Notifier<InstallState> {
   InstallState build();
@@ -420,13 +346,7 @@ abstract class _$AppUpdateInstallController extends $Notifier<InstallState> {
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<InstallState, InstallState>;
     final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<InstallState, InstallState>,
-              InstallState,
-              Object?,
-              Object?
-            >;
+        ref.element as $ClassProviderElement<AnyNotifier<InstallState, InstallState>, InstallState, Object?, Object?>;
     return element.handleCreate(ref, build);
   }
 }

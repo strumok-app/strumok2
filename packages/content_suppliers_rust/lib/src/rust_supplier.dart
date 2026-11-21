@@ -172,16 +172,22 @@ class _RustContentMediaItem implements ContentMediaItem {
   }
 
   ContentMediaItemSource _mapSource(rust.ContentMediaItemSource source) => switch (source) {
-    rust.ContentMediaItemSource_Video(:final link, :final description, :final headers, :final hlsProxy) =>
-      _RustVideoSource(link, description, headers, hlsProxy),
-    rust.ContentMediaItemSource_Subtitle(:final link, :final description, :final headers) => _RustSubtitleSource(
-      link,
-      description,
-      headers,
-    ),
+    rust.ContentMediaItemSource_Video(
+      :final link,
+      :final description,
+      :final headers,
+      :final hlsProxy,
+      :final language,
+    ) =>
+      _RustVideoSource(link, description, headers, hlsProxy, _mapLanguage(language)),
+    rust.ContentMediaItemSource_Subtitle(:final link, :final description, :final headers, :final language) =>
+      _RustSubtitleSource(link, description, headers, _mapLanguage(language)),
     rust.ContentMediaItemSource_Manga() => _RustMangaSource(_supplier, _contentId, source),
   };
 }
+
+ContentLanguage? _mapLanguage(String? language) =>
+    language == null ? null : ContentLanguage.values.asNameMap()[language];
 
 class _RustVideoSource extends VideoMediaItemSource {
   final String _link;
@@ -191,8 +197,10 @@ class _RustVideoSource extends VideoMediaItemSource {
   final Map<String, String>? headers;
   @override
   final bool hlsProxy;
+  @override
+  final ContentLanguage? language;
 
-  _RustVideoSource(this._link, this.description, this.headers, this.hlsProxy);
+  _RustVideoSource(this._link, this.description, this.headers, this.hlsProxy, this.language);
 
   @override
   Future<Uri> get link async => Uri.parse(_link);
@@ -204,8 +212,10 @@ class _RustSubtitleSource extends SubtitleMediaItemSource {
   final String description;
   @override
   final Map<String, String>? headers;
+  @override
+  final ContentLanguage? language;
 
-  _RustSubtitleSource(this._link, this.description, this.headers);
+  _RustSubtitleSource(this._link, this.description, this.headers, this.language);
 
   @override
   Future<Uri> get link async => Uri.parse(_link);
@@ -222,6 +232,8 @@ class _RustMangaSource extends MangaMediaItemSource {
   String get description => _source.description;
   @override
   Map<String, String>? get headers => _source.headers;
+  @override
+  ContentLanguage? get language => _mapLanguage(_source.language);
 
   @override
   Future<List<String>> get allPages => _pages.get(_loadPages);

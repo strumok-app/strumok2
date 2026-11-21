@@ -68,6 +68,7 @@ impl ContentSupplier for DummyContentSupplier {
                         description: format!("dummy_description {id}"),
                         headers: None,
                         hls_proxy: false,
+                        language: None,
                     }]),
                     params: vec![],
                 }]),
@@ -127,6 +128,7 @@ impl ContentSupplier for DummyContentSupplier {
                 )])),
                 pages: None,
                 params: vec![id.to_string()],
+                language: None,
             }]);
         }
 
@@ -139,6 +141,7 @@ impl ContentSupplier for DummyContentSupplier {
                     "dummy".to_owned(),
                 )])),
                 hls_proxy: false,
+                language: Some("en".to_owned()),
             },
             ContentMediaItemSource::Subtitle {
                 link: "http://dummy_link".to_owned(),
@@ -147,6 +150,7 @@ impl ContentSupplier for DummyContentSupplier {
                     "User-Agent".to_owned(),
                     "dummy".to_owned(),
                 )])),
+                language: Some("uk".to_owned()),
             },
             ContentMediaItemSource::Manga {
                 description: format!("{} {}", id, params.join(",")),
@@ -156,6 +160,7 @@ impl ContentSupplier for DummyContentSupplier {
                 )])),
                 pages: Some(vec!["http://page1".to_owned(), "http://page2".to_owned()]),
                 params: vec![],
+                language: None,
             },
         ])
     }

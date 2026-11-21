@@ -12,7 +12,7 @@ import 'src/rust_supplier.dart';
 /// Loads an external supplier bundle by path. `RustLib.init()` is never used: it would load the dummy lib
 /// and is a singleton, which prevents hot swapping bundles (spec-02 §2.4).
 class RustContentSuppliersBundle implements ContentSupplierBundle {
-  static const compatibleApiVersion = 4;
+  static const compatibleApiVersion = 5;
 
   final String directory;
   final String libName;

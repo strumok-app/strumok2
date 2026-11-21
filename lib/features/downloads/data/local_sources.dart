@@ -25,6 +25,9 @@ final class LocalVideoSource extends VideoMediaItemSource implements LocalMediaS
   Map<String, String>? get headers => null;
 
   @override
+  ContentLanguage? get language => null;
+
+  @override
   bool get hlsProxy => false;
 
   @override
@@ -45,6 +48,9 @@ final class LocalSubtitleSource extends SubtitleMediaItemSource implements Local
   Map<String, String>? get headers => null;
 
   @override
+  ContentLanguage? get language => null;
+
+  @override
   Future<Uri> get link async => Uri.file(file.path);
 }
 
@@ -60,6 +66,9 @@ final class LocalMangaSource extends MangaMediaItemSource implements LocalMediaS
 
   @override
   Map<String, String>? get headers => null;
+
+  @override
+  ContentLanguage? get language => null;
 
   /// Page files in name order (the downloader numbers them).
   @override

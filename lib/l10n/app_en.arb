@@ -256,6 +256,8 @@
   "downloadsPickEpisode": "Choose an episode",
   "downloadsPickChapter": "Choose a chapter",
   "downloadsChooseSource": "Source to download",
+  "downloadsSubtitles": "Subtitles to download",
+  "downloadsSubtitleHint": "Pick subtitle tracks in priority order, or choose Off. Each item gets the first available track, or one in the same known language. If none matches, subtitles are skipped.",
   "downloadsNoSources": "Nothing to download from this source",
   "downloadsAdded": "{count, plural, one{Added {count} download} other{Added {count} downloads}}",
   "downloadsQueue": "Queue",
@@ -306,6 +308,7 @@
   "searchOffline": "Search is not available in offline mode",
   "downloadsPickSeason": "Download a season",
   "downloadsPickVolume": "Download a volume",
-  "downloadsSourcesHint": "Pick one or more sources in order of priority. Where they are missing, the most similar one is used.",
+  "sourceWithLanguage": "{source} ({language})",
+  "downloadsSourcesHint": "Pick one or more sources in order of priority. Where they are missing, a source in the same language is used, or the first available source if the language is unknown.",
   "downloadsSourcePriority": "Priority {priority}"
 }

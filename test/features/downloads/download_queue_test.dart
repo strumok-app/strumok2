@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:strumok/features/downloads/domain/download_queue.dart';
@@ -11,6 +13,9 @@ DownloadRequest request(String content, int item, {String supplier = 'alpha'}) =
   itemTitle: 'Episode ${item + 1}',
   kind: FileKind.video,
   sourceNames: const ['A'],
+  sourceLanguages: const {'A': ContentLanguage.uk, 'Unknown': null},
+  subtitleNames: const ['Subtitles', 'Alternative'],
+  subtitleLanguages: const {'Subtitles': ContentLanguage.en, 'Alternative': ContentLanguage.uk},
   root: '/downloads',
 );
 
@@ -179,7 +184,10 @@ void main() {
       ];
       final queue = enqueue(const DownloadQueue(), [request('a', 0)]);
       for (final command in commands) {
-        expect(queue.apply(DownloadCommand.fromJson(command.toJson())), queue.apply(command));
+        expect(
+          queue.apply(DownloadCommand.fromJson(jsonDecode(jsonEncode(command.toJson())) as Map<String, Object?>)),
+          queue.apply(command),
+        );
       }
     });
   });
@@ -206,7 +214,40 @@ void main() {
   test('persistence: a request saved with a single source name still loads', () {
     final json = request('a', 0).toJson()
       ..remove('sourceNames')
+      ..remove('sourceLanguages')
+      ..remove('subtitleNames')
+      ..remove('subtitleLanguages')
+      ..['subtitleName'] = 'Subtitles'
       ..['sourceName'] = 'Server 1';
-    expect(DownloadRequest.fromJson(json).sourceNames, ['Server 1']);
+    final restored = DownloadRequest.fromJson(json);
+    expect(restored.sourceNames, ['Server 1']);
+    expect(restored.sourceLanguages, isEmpty);
+    expect(restored.subtitleNames, ['Subtitles']);
+    expect(restored.subtitleLanguages, {'Subtitles': null});
+  });
+
+  test('persistence: subtitle priorities round-trip and legacy single-subtitle queues migrate', () {
+    final original = request('a', 0);
+    final json = jsonDecode(jsonEncode(original.toJson())) as Map<String, Object?>;
+    final restored = DownloadRequest.fromJson(json);
+    expect(restored, original);
+    expect(restored.subtitleNames, ['Subtitles', 'Alternative']);
+    expect(restored.subtitleLanguages, {'Subtitles': ContentLanguage.en, 'Alternative': ContentLanguage.uk});
+
+    json
+      ..remove('subtitleNames')
+      ..remove('subtitleLanguages')
+      ..['subtitleName'] = 'Old subtitles'
+      ..['subtitleLanguage'] = 'uk';
+    final legacy = DownloadRequest.fromJson(json);
+    expect(legacy.subtitleNames, ['Old subtitles']);
+    expect(legacy.subtitleLanguages, {'Old subtitles': ContentLanguage.uk});
+
+    json['subtitleNames'] = <String>[];
+    expect(
+      DownloadRequest.fromJson(json).subtitleNames,
+      isEmpty,
+      reason: 'an explicit new choice wins over legacy data',
+    );
   });
 }

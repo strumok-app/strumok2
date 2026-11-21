@@ -83,7 +83,11 @@ void main() {
     FileKind kind = FileKind.video,
     String source = 'Server 1',
     List<String>? sources,
+    Map<String, ContentLanguage?> languages = const {},
     String? subtitle,
+    ContentLanguage? subtitleLanguage,
+    List<String>? subtitles,
+    Map<String, ContentLanguage?> subtitleLanguages = const {},
   }) => DownloadRequest(
     supplier: 'alpha',
     contentId: 'show/1',
@@ -92,7 +96,9 @@ void main() {
     itemTitle: 'Episode 3',
     kind: kind,
     sourceNames: sources ?? [source],
-    subtitleName: subtitle,
+    sourceLanguages: languages,
+    subtitleNames: subtitles ?? [?subtitle],
+    subtitleLanguages: subtitles == null ? {?subtitle: subtitleLanguage} : subtitleLanguages,
     root: root.path,
   );
 
@@ -272,53 +278,154 @@ void main() {
       expect(resolved.subtitle!.description, 'UA subs');
     });
 
-    test('the first preferred source the item has, else the most similar one, else not found', () async {
-      Future<String> resolve(List<String> names, List<String> preferred) async {
-        final items = [
-          FakeMediaItem(2, 'E3', sourceList: [FakeSubtitleSource('subs'), for (final n in names) FakeVideoSource(n)]),
-        ];
-        final resolved = await SupplierDownloadResolver(
-          (_) => supplier(items),
-        ).resolve(request(sources: preferred)) as ResolvedVideo;
-        return resolved.video.description;
-      }
-
-      expect(await resolve(['A', 'B', 'C'], ['X', 'C', 'B']), 'C');
-      // The provider tag outweighs shared words.
-      expect(await resolve(['[VidUp] Server 1', '[VidFast] Server 2'], ['[VidFast] Server 1']), '[VidFast] Server 2');
-      await expectLater(
-        resolve(['Other'], ['Server 1']),
-        throwsA(isA<DownloadTaskException>().having((e) => e.failure, 'failure', DownloadFailure.sourceNotFound)),
-      );
-    });
-
-    test('manga keeps the source of the nearest earlier downloaded chapter and never changes language', () async {
-      Directory(p.join(root.path, 'alpha_show%2F1', '0', 'pages_%5Ben%5D%20Beta')).createSync(recursive: true);
-      Directory(p.join(root.path, 'alpha_show%2F1', '1', 'pages_%5Ben%5D%20Gamma')).createSync(recursive: true);
-      // Unfinished and later chapters do not count.
-      Directory(p.join(root.path, 'alpha_show%2F1', '1', 'pages_%5Ben%5D%20Beta.part')).createSync(recursive: true);
-      Directory(p.join(root.path, 'alpha_show%2F1', '3', 'pages_%5Ben%5D%20Delta')).createSync(recursive: true);
-
-      Future<String> resolve(List<String> names) async {
+    test('exact preferred names win, then language in priority order, never name similarity', () async {
+      Future<String> resolve(List<String> preferred, Map<String, ContentLanguage?> languages) async {
         final items = [
           FakeMediaItem(
             2,
-            'Ch3',
+            'E3',
             sourceList: [
-              for (final n in names) FakeMangaSource(n, pages: const ['a']),
+              FakeSubtitleSource('subs', language: ContentLanguage.uk),
+              FakeVideoSource('[en] Original'),
+              FakeVideoSource('Different', language: ContentLanguage.uk),
+              FakeVideoSource('Other', language: ContentLanguage.en),
             ],
           ),
         ];
         final resolved = await SupplierDownloadResolver(
           (_) => supplier(items),
-        ).resolve(request(kind: FileKind.manga, sources: ['[en] Alpha', '[uk] Alpha'])) as ResolvedManga;
+        ).resolve(request(sources: preferred, languages: languages)) as ResolvedVideo;
+        return resolved.video.description;
+      }
+
+      expect(await resolve(['Missing', 'Other', 'Different'], {'Missing': ContentLanguage.uk}), 'Other');
+      expect(await resolve(['Original'], {'Original': ContentLanguage.en}), 'Other');
+      expect(
+        await resolve(['Original', 'Gone'], {'Original': ContentLanguage.uk, 'Gone': ContentLanguage.en}),
+        'Different',
+      );
+      expect(await resolve(['Original'], {'Original': null}), '[en] Original');
+      expect(await resolve(['Original'], {}), '[en] Original', reason: 'older queue without language metadata');
+    });
+
+    test('manga falls back by language, not tags or earlier downloaded source names', () async {
+      Directory(p.join(root.path, 'alpha_show%2F1', '1', 'pages_Previous')).createSync(recursive: true);
+      Future<String> resolve(ContentLanguage? language) async {
+        final items = [
+          FakeMediaItem(
+            2,
+            'Ch3',
+            sourceList: [
+              FakeMangaSource('Previous', pages: const ['a'], language: ContentLanguage.en),
+              FakeMangaSource('[en] Alpha', pages: const ['b'], language: ContentLanguage.uk),
+              FakeMangaSource('New group', pages: const ['c'], language: ContentLanguage.uk),
+            ],
+          ),
+        ];
+        final resolved = await SupplierDownloadResolver((_) => supplier(items)).resolve(
+          request(kind: FileKind.manga, source: '[uk] Alpha', languages: {'[uk] Alpha': language}),
+        ) as ResolvedManga;
         return resolved.description;
       }
 
-      expect(await resolve(['[en] Beta', '[en] Gamma', '[en] Delta', '[uk] Alpha']), '[uk] Alpha');
-      expect(await resolve(['[en] Beta', '[en] Delta', '[en] Gamma']), '[en] Gamma');
-      expect(await resolve(['[es] Alpha', '[en] Omega']), '[en] Omega');
-      await expectLater(resolve(['[es] Alpha', '[ja] Alpha']), throwsA(isA<DownloadTaskException>()));
+      expect(await resolve(ContentLanguage.uk), '[en] Alpha', reason: 'language field, not the description tag');
+      expect(await resolve(null), 'Previous');
+    });
+
+    test('known languages without a match fail for video and manga', () async {
+      for (final kind in [FileKind.video, FileKind.manga]) {
+        final items = [
+          FakeMediaItem(
+            2,
+            'Item',
+            sourceList: [
+              FakeVideoSource('Server 1', language: ContentLanguage.en),
+              FakeMangaSource('Other', pages: const ['a']),
+            ],
+          ),
+        ];
+        await expectLater(
+          SupplierDownloadResolver((_) => supplier(items))
+              .resolve(request(kind: kind, source: 'Missing', languages: const {'Missing': ContentLanguage.uk})),
+          throwsA(isA<DownloadTaskException>().having((e) => e.failure, 'failure', DownloadFailure.sourceNotFound)),
+          reason: kind.name,
+        );
+      }
+    });
+
+    test('subtitles without a language match are skipped, the video still downloads', () async {
+      final items = [
+        FakeMediaItem(
+          2,
+          'E3',
+          sourceList: [
+            FakeVideoSource('Server 1'),
+            FakeSubtitleSource('Other', language: ContentLanguage.en),
+          ],
+        ),
+      ];
+      final resolved = await SupplierDownloadResolver(
+        (_) => supplier(items),
+      ).resolve(request(subtitle: 'Missing subs', subtitleLanguage: ContentLanguage.uk)) as ResolvedVideo;
+      expect(resolved.video.description, 'Server 1');
+      expect(resolved.subtitle, isNull);
+    });
+
+    test('subtitles fall back by known language but not to an arbitrary unknown-language track', () async {
+      final items = [
+        FakeMediaItem(
+          2,
+          'E3',
+          sourceList: [
+            FakeVideoSource('Server 1'),
+            FakeSubtitleSource('First', language: ContentLanguage.en),
+            FakeSubtitleSource('Second', language: ContentLanguage.uk),
+          ],
+        ),
+      ];
+      Future<String?> resolve(String name, ContentLanguage? language) async {
+        final resolved = await SupplierDownloadResolver(
+          (_) => supplier(items),
+        ).resolve(request(subtitle: name, subtitleLanguage: language)) as ResolvedVideo;
+        return resolved.subtitle?.description;
+      }
+
+      expect(await resolve('Missing', ContentLanguage.uk), 'Second');
+      expect(await resolve('Missing', null), isNull);
+      expect(await resolve('First', ContentLanguage.uk), 'First', reason: 'exact name takes precedence');
+    });
+
+    test('subtitle alternatives use exact names before languages, both in priority order', () async {
+      final items = [
+        FakeMediaItem(
+          2,
+          'E3',
+          sourceList: [
+            FakeVideoSource('Server 1'),
+            FakeSubtitleSource('English', language: ContentLanguage.en),
+            FakeSubtitleSource('Ukrainian', language: ContentLanguage.uk),
+          ],
+        ),
+      ];
+      Future<String?> resolve(List<String> names, Map<String, ContentLanguage?> languages) async {
+        final resolved = await SupplierDownloadResolver(
+          (_) => supplier(items),
+        ).resolve(request(subtitles: names, subtitleLanguages: languages)) as ResolvedVideo;
+        return resolved.subtitle?.description;
+      }
+
+      expect(await resolve(['Ukrainian', 'English'], {}), 'Ukrainian');
+      expect(await resolve(['Missing', 'English'], {'Missing': ContentLanguage.uk}), 'English');
+      expect(
+        await resolve(
+          ['Missing UK', 'Missing EN'],
+          {'Missing UK': ContentLanguage.uk, 'Missing EN': ContentLanguage.en},
+        ),
+        'Ukrainian',
+      );
+      expect(await resolve(['Unknown', 'Missing EN'], {'Unknown': null, 'Missing EN': ContentLanguage.en}), 'English');
+      expect(await resolve(['Unknown'], {'Unknown': null}), isNull);
+      expect(await resolve([], {}), isNull);
     });
 
     test('manga pages are loaded', () async {

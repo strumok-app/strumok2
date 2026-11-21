@@ -47,6 +47,7 @@ void main() {
     expect(item.section, '1,2,3');
     final sources = await item.sources;
     expect(sources.map((s) => s.kind), [FileKind.video, FileKind.subtitle, FileKind.manga]);
+    expect(sources.map((s) => s.language), [ContentLanguage.en, ContentLanguage.uk, null]);
     expect(sources.first.headers, {'User-Agent': 'dummy'});
     expect(await (sources.last as MangaMediaItemSource).allPages, ['http://page1', 'http://page2']);
   });

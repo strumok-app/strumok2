@@ -552,7 +552,7 @@ Future<void> showSourceSelector(BuildContext context, PlayerSession session, Val
             autofocus: index == session.sourceIndex,
             selected: index == session.sourceIndex,
             leading: isLocalSource(source) ? const DownloadedMark() : null,
-            title: Text(source.description),
+            title: Text(context.sourceLabel(source)),
             trailing: index == session.sourceIndex ? const Icon(Icons.check) : null,
             onTap: () => Navigator.of(context).pop(index),
           ),

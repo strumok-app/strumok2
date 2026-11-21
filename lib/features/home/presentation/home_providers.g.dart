@@ -15,8 +15,7 @@ final homeRowsProvider = HomeRowsProvider._();
 
 /// Enabled suppliers in user order, each with its selected channels in supplier order (spec-01 Home).
 
-final class HomeRowsProvider
-    extends $FunctionalProvider<List<HomeRow>, List<HomeRow>, List<HomeRow>>
+final class HomeRowsProvider extends $FunctionalProvider<List<HomeRow>, List<HomeRow>, List<HomeRow>>
     with $Provider<List<HomeRow>> {
   /// Enabled suppliers in user order, each with its selected channels in supplier order (spec-01 Home).
   HomeRowsProvider._()
@@ -35,8 +34,7 @@ final class HomeRowsProvider
 
   @$internal
   @override
-  $ProviderElement<List<HomeRow>> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<List<HomeRow>> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   List<HomeRow> create(Ref ref) {
@@ -45,10 +43,7 @@ final class HomeRowsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(List<HomeRow> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<HomeRow>>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<List<HomeRow>>(value));
   }
 }
 
@@ -60,19 +55,16 @@ String _$homeRowsHash() => r'2fd4a01cfe5be894dddff1223ee2aea85250580d';
 final channelItemsProvider = ChannelItemsFamily._();
 
 /// One recommendation row; kept alive so Home keeps its rows when navigating away and back.
-final class ChannelItemsProvider
-    extends $NotifierProvider<ChannelItems, PagedItems<ContentInfo>> {
+final class ChannelItemsProvider extends $NotifierProvider<ChannelItems, PagedItems<ContentInfo>> {
   /// One recommendation row; kept alive so Home keeps its rows when navigating away and back.
-  ChannelItemsProvider._({
-    required ChannelItemsFamily super.from,
-    required (String, String) super.argument,
-  }) : super(
-         retry: null,
-         name: r'channelItemsProvider',
-         isAutoDispose: false,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  ChannelItemsProvider._({required ChannelItemsFamily super.from, required (String, String) super.argument})
+    : super(
+        retry: null,
+        name: r'channelItemsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$channelItemsHash();
@@ -90,10 +82,7 @@ final class ChannelItemsProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(PagedItems<ContentInfo> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<PagedItems<ContentInfo>>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<PagedItems<ContentInfo>>(value));
   }
 
   @override
@@ -149,8 +138,7 @@ abstract class _$ChannelItems extends $Notifier<PagedItems<ContentInfo>> {
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref =
-        this.ref as $Ref<PagedItems<ContentInfo>, PagedItems<ContentInfo>>;
+    final ref = this.ref as $Ref<PagedItems<ContentInfo>, PagedItems<ContentInfo>>;
     final element =
         ref.element
             as $ClassProviderElement<

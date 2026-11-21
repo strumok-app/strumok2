@@ -15,13 +15,7 @@ final imageCacheManagerProvider = ImageCacheManagerProvider._();
 
 /// Disk cache for posters and other UI images; downloads go through the shared (HTTP/2) client.
 
-final class ImageCacheManagerProvider
-    extends
-        $FunctionalProvider<
-          BaseCacheManager,
-          BaseCacheManager,
-          BaseCacheManager
-        >
+final class ImageCacheManagerProvider extends $FunctionalProvider<BaseCacheManager, BaseCacheManager, BaseCacheManager>
     with $Provider<BaseCacheManager> {
   /// Disk cache for posters and other UI images; downloads go through the shared (HTTP/2) client.
   ImageCacheManagerProvider._()
@@ -40,8 +34,7 @@ final class ImageCacheManagerProvider
 
   @$internal
   @override
-  $ProviderElement<BaseCacheManager> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<BaseCacheManager> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   BaseCacheManager create(Ref ref) {
@@ -50,10 +43,7 @@ final class ImageCacheManagerProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(BaseCacheManager value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BaseCacheManager>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<BaseCacheManager>(value));
   }
 }
 
@@ -67,12 +57,7 @@ final mangaPageCacheManagerProvider = MangaPageCacheManagerProvider._();
 /// Disk cache for manga pages; downloads go through the shared (HTTP/2) client.
 
 final class MangaPageCacheManagerProvider
-    extends
-        $FunctionalProvider<
-          BaseCacheManager,
-          BaseCacheManager,
-          BaseCacheManager
-        >
+    extends $FunctionalProvider<BaseCacheManager, BaseCacheManager, BaseCacheManager>
     with $Provider<BaseCacheManager> {
   /// Disk cache for manga pages; downloads go through the shared (HTTP/2) client.
   MangaPageCacheManagerProvider._()
@@ -91,8 +76,7 @@ final class MangaPageCacheManagerProvider
 
   @$internal
   @override
-  $ProviderElement<BaseCacheManager> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<BaseCacheManager> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   BaseCacheManager create(Ref ref) {
@@ -101,12 +85,8 @@ final class MangaPageCacheManagerProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(BaseCacheManager value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BaseCacheManager>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<BaseCacheManager>(value));
   }
 }
 
-String _$mangaPageCacheManagerHash() =>
-    r'c7ddd502baf2120936efae6e08f3e1f5f50a2504';
+String _$mangaPageCacheManagerHash() => r'c7ddd502baf2120936efae6e08f3e1f5f50a2504';

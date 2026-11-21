@@ -12,8 +12,7 @@ part of 'app_installer.dart';
 @ProviderFor(appInstaller)
 final appInstallerProvider = AppInstallerProvider._();
 
-final class AppInstallerProvider
-    extends $FunctionalProvider<AppInstaller, AppInstaller, AppInstaller>
+final class AppInstallerProvider extends $FunctionalProvider<AppInstaller, AppInstaller, AppInstaller>
     with $Provider<AppInstaller> {
   AppInstallerProvider._()
     : super(
@@ -31,8 +30,7 @@ final class AppInstallerProvider
 
   @$internal
   @override
-  $ProviderElement<AppInstaller> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<AppInstaller> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   AppInstaller create(Ref ref) {
@@ -41,10 +39,7 @@ final class AppInstallerProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(AppInstaller value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<AppInstaller>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<AppInstaller>(value));
   }
 }
 

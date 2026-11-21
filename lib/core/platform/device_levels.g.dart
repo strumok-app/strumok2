@@ -13,12 +13,7 @@ part of 'device_levels.dart';
 final brightnessControlProvider = BrightnessControlProvider._();
 
 final class BrightnessControlProvider
-    extends
-        $FunctionalProvider<
-          BrightnessControl,
-          BrightnessControl,
-          BrightnessControl
-        >
+    extends $FunctionalProvider<BrightnessControl, BrightnessControl, BrightnessControl>
     with $Provider<BrightnessControl> {
   BrightnessControlProvider._()
     : super(
@@ -36,9 +31,7 @@ final class BrightnessControlProvider
 
   @$internal
   @override
-  $ProviderElement<BrightnessControl> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  $ProviderElement<BrightnessControl> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   BrightnessControl create(Ref ref) {
@@ -47,10 +40,7 @@ final class BrightnessControlProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(BrightnessControl value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BrightnessControl>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<BrightnessControl>(value));
   }
 }
 
@@ -59,8 +49,7 @@ String _$brightnessControlHash() => r'e6f1d2e85c1f6732f020d2870069e2db1688c5b9';
 @ProviderFor(volumeControl)
 final volumeControlProvider = VolumeControlProvider._();
 
-final class VolumeControlProvider
-    extends $FunctionalProvider<VolumeControl, VolumeControl, VolumeControl>
+final class VolumeControlProvider extends $FunctionalProvider<VolumeControl, VolumeControl, VolumeControl>
     with $Provider<VolumeControl> {
   VolumeControlProvider._()
     : super(
@@ -78,8 +67,7 @@ final class VolumeControlProvider
 
   @$internal
   @override
-  $ProviderElement<VolumeControl> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<VolumeControl> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   VolumeControl create(Ref ref) {
@@ -88,10 +76,7 @@ final class VolumeControlProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(VolumeControl value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<VolumeControl>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<VolumeControl>(value));
   }
 }
 

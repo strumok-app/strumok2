@@ -1628,6 +1628,18 @@ abstract class AppLocalizations {
   /// **'Джерело для завантаження'**
   String get downloadsChooseSource;
 
+  /// Download sheet: subtitle selection section title
+  ///
+  /// In uk, this message translates to:
+  /// **'Субтитри для завантаження'**
+  String get downloadsSubtitles;
+
+  /// Download sheet: subtitle selection behavior for multiple items
+  ///
+  /// In uk, this message translates to:
+  /// **'Виберіть доріжки субтитрів у порядку пріоритету або вимкніть їх. Для кожного елемента буде взято першу доступну доріжку або доріжку тією ж відомою мовою. Якщо відповідників немає, субтитри не завантажуються.'**
+  String get downloadsSubtitleHint;
+
   /// Download sheet: no downloadable sources
   ///
   /// In uk, this message translates to:
@@ -1928,10 +1940,16 @@ abstract class AppLocalizations {
   /// **'Завантажити том'**
   String get downloadsPickVolume;
 
+  /// Назва джерела відео, субтитрів або манґи з мовою
+  ///
+  /// In uk, this message translates to:
+  /// **'{source} ({language})'**
+  String sourceWithLanguage(String source, String language);
+
   /// Download sheet: several items share the chosen sources; similar ones replace missing ones
   ///
   /// In uk, this message translates to:
-  /// **'Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято найсхожіше.'**
+  /// **'Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято джерело тією ж мовою, а якщо мову не вказано — перше доступне.'**
   String get downloadsSourcesHint;
 
   /// Download sheet: priority of a selected source (1 = highest)

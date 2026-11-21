@@ -831,6 +831,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get downloadsChooseSource => 'Джерело для завантаження';
 
   @override
+  String get downloadsSubtitles => 'Субтитри для завантаження';
+
+  @override
+  String get downloadsSubtitleHint =>
+      'Виберіть доріжки субтитрів у порядку пріоритету або вимкніть їх. Для кожного елемента буде взято першу доступну доріжку або доріжку тією ж відомою мовою. Якщо відповідників немає, субтитри не завантажуються.';
+
+  @override
   String get downloadsNoSources => 'Немає джерел для завантаження';
 
   @override
@@ -1040,8 +1047,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get downloadsPickVolume => 'Завантажити том';
 
   @override
+  String sourceWithLanguage(String source, String language) {
+    return '$source ($language)';
+  }
+
+  @override
   String get downloadsSourcesHint =>
-      'Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято найсхожіше.';
+      'Виберіть одне чи кілька джерел у порядку пріоритету. Де їх немає, буде взято джерело тією ж мовою, а якщо мову не вказано — перше доступне.';
 
   @override
   String downloadsSourcePriority(int priority) {

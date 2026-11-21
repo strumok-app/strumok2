@@ -24,7 +24,7 @@ Future<void> showDownloadSheet(BuildContext context, ContentDetails details) => 
 );
 
 /// What to download (spec-08 §8.1–8.2): everything, a season/volume or one item; then the source(s). A group of items
-/// downloads one at a time in order; each item gets the first preferred source it has, or the most similar one.
+/// downloads one at a time in order; each item gets a preferred source, falling back by language.
 class DownloadSheet extends ConsumerStatefulWidget {
   final ContentDetails details;
 
@@ -177,9 +177,7 @@ class _DownloadSheetState extends ConsumerState<DownloadSheet> {
 
 enum _Step { root, sections, items }
 
-/// Downloadable sources of the first selected item (videos or manga translations, not local copies). One item
-/// downloads on tap; for several items the user picks one or more sources in priority order, and each item gets the
-/// first of them it has, or a similar one (spec-08 §8.2).
+/// Downloadable sources and subtitle alternatives of the first selected item, in priority order (spec-08 §8.2).
 class _SourceList extends ConsumerStatefulWidget {
   final ContentDetails details;
   final List<ContentMediaItem> items;
@@ -196,30 +194,53 @@ class _SourceListState extends ConsumerState<_SourceList> {
 
   /// Picked source descriptions, highest priority first.
   final _picked = <String>[];
+  final _pickedSubtitles = <String>[];
+  List<SubtitleMediaItemSource> _subtitles = const [];
+  Map<String, ContentLanguage?> _subtitleLanguages = const {};
+  String? _singleSourceName;
+  var _subtitleInitialized = false;
 
   bool get _multiple => widget.items.length > 1;
 
-  Future<List<ContentMediaItemSource>> _load() async => [
-    for (final source in await widget.items.first.sources)
-      if ((source is VideoMediaItemSource || source is MangaMediaItemSource) && !isLocalSource(source)) source,
-  ];
+  Future<List<ContentMediaItemSource>> _load() async {
+    final sources = await widget.items.first.sources;
+    _subtitles = [
+      for (final source in sources.whereType<SubtitleMediaItemSource>())
+        if (!isLocalSource(source)) source,
+    ];
+    _subtitleLanguages = {for (final source in _subtitles) source.description: source.language};
+    if (!_subtitleInitialized) {
+      final preferred = ref
+          .read(collectionItemProvider(widget.details.supplier, widget.details.id))
+          ?.currentSubtitleName;
+      if (preferred != null && _subtitles.any((source) => source.description == preferred)) {
+        _pickedSubtitles.add(preferred);
+      }
+      _subtitleInitialized = true;
+    }
+    return [
+      for (final source in sources)
+        if ((source is VideoMediaItemSource || source is MangaMediaItemSource) && !isLocalSource(source)) source,
+    ];
+  }
 
-  void _toggle(String name) => setState(() {
-    if (!_picked.remove(name)) _picked.add(name);
+  void _toggle(List<String> picked, String name) => setState(() {
+    if (!picked.remove(name)) picked.add(name);
   });
 
-  Future<void> _download(FileKind kind, List<String> sourceNames) async {
+  Future<void> _download(List<ContentMediaItemSource> sources) async {
     if (_busy) return;
     setState(() => _busy = true);
     final details = widget.details;
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
     final l10n = context.l10n;
+    final kind = _kind(sources.first);
+    final subtitleNames = kind == FileKind.video ? List<String>.of(_pickedSubtitles) : <String>[];
     try {
       await ensureDownloadPermissions(context, ref);
       final folder = ref.read(downloadsFolderProvider).path;
       await ref.read(offlineStorageProvider).writeDetails(details.supplier, details.id, OfflineDetails.of(details));
-      final subtitle = ref.read(collectionItemProvider(details.supplier, details.id))?.currentSubtitleName;
       final requests = [
         for (final item in widget.items)
           DownloadRequest(
@@ -231,8 +252,10 @@ class _SourceListState extends ConsumerState<_SourceList> {
             itemTitle: item.title == details.title ? '' : item.title,
             image: details.image,
             kind: kind,
-            sourceNames: sourceNames,
-            subtitleName: kind == FileKind.video ? subtitle : null,
+            sourceNames: [for (final source in sources) source.description],
+            sourceLanguages: {for (final source in sources) source.description: source.language},
+            subtitleNames: subtitleNames,
+            subtitleLanguages: {for (final name in subtitleNames) name: _subtitleLanguages[name]},
             root: folder,
           ),
       ];
@@ -259,32 +282,37 @@ class _SourceListState extends ConsumerState<_SourceList> {
           icon: Icons.download_outlined,
           message: l10n.downloadsNoSources,
         ),
-        AsyncSnapshot(:final data?) when !_multiple => ListView(
-          children: [
-            for (final (index, source) in data.indexed)
-              ListTile(
-                key: ValueKey('download-source-$index'),
-                autofocus: index == 0,
-                enabled: !_busy,
-                leading: _icon(source),
-                title: Text(source.description),
-                trailing: const Icon(Icons.download_outlined),
-                onTap: () => unawaited(_download(_kind(source), [source.description])),
-              ),
-          ],
-        ),
         AsyncSnapshot(:final data?) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall),
-            ),
+            if (_multiple)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall),
+              ),
             Expanded(
               child: ListView(
                 children: [
-                  for (final (index, source) in data.indexed)
-                    _pickTile(index, source, _picked.indexOf(source.description)),
+                  for (final (index, source) in data.indexed) _sourceTile(index, source),
+                  if (data.first is VideoMediaItemSource) ...[
+                    const Divider(),
+                    ListTile(title: Text(l10n.downloadsSubtitles), subtitle: Text(l10n.downloadsSubtitleHint)),
+                    ListTile(
+                      key: const ValueKey('download-subtitle-none'),
+                      enabled: !_busy,
+                      selected: _pickedSubtitles.isEmpty,
+                      leading: const Icon(Icons.closed_caption_off_outlined),
+                      title: Text(l10n.playerSubtitlesOff),
+                      trailing: Icon(_pickedSubtitles.isEmpty ? Icons.check_box : Icons.check_box_outline_blank),
+                      onTap: () => setState(_pickedSubtitles.clear),
+                    ),
+                    for (final (index, subtitle) in _subtitles.indexed)
+                      _priorityTile(
+                        key: ValueKey('download-subtitle-$index'),
+                        source: subtitle,
+                        picked: _pickedSubtitles,
+                      ),
+                  ],
                 ],
               ),
             ),
@@ -294,10 +322,13 @@ class _SourceListState extends ConsumerState<_SourceList> {
                 key: const ValueKey('download-start'),
                 icon: const Icon(Icons.download_outlined),
                 label: Text(l10n.detailsDownload),
-                onPressed: _busy || _picked.isEmpty
+                onPressed: _busy || (_multiple && _picked.isEmpty)
                     ? null
                     : () => unawaited(
-                        _download(_kind(data.firstWhere((s) => s.description == _picked.first)), [..._picked]),
+                        _download([
+                          for (final name in _multiple ? _picked : [_singleSourceName ?? data.first.description])
+                            data.firstWhere((source) => source.description == name),
+                        ]),
                       ),
               ),
             ),
@@ -308,24 +339,55 @@ class _SourceListState extends ConsumerState<_SourceList> {
     );
   }
 
-  Widget _pickTile(int index, ContentMediaItemSource source, int priority) {
-    final picked = priority >= 0;
+  Widget _sourceTile(int index, ContentMediaItemSource source) {
+    if (_multiple) {
+      return _priorityTile(
+        key: ValueKey('download-source-$index'),
+        source: source,
+        picked: _picked,
+        autofocus: index == 0,
+      );
+    }
+    final selected = (_singleSourceName ?? (index == 0 ? source.description : null)) == source.description;
     return ListTile(
       key: ValueKey('download-source-$index'),
       autofocus: index == 0,
       enabled: !_busy,
-      selected: picked,
+      selected: selected,
       leading: _icon(source),
-      title: Text(source.description),
-      subtitle: picked ? Text(context.l10n.downloadsSourcePriority(priority + 1)) : null,
-      trailing: Icon(picked ? Icons.check_box : Icons.check_box_outline_blank),
-      onTap: () => _toggle(source.description),
+      title: Text(context.sourceLabel(source)),
+      trailing: Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked),
+      onTap: () => setState(() => _singleSourceName = source.description),
+    );
+  }
+
+  Widget _priorityTile({
+    required Key key,
+    required ContentMediaItemSource source,
+    required List<String> picked,
+    bool autofocus = false,
+  }) {
+    final priority = picked.indexOf(source.description);
+    final selected = priority >= 0;
+    return ListTile(
+      key: key,
+      autofocus: autofocus,
+      enabled: !_busy,
+      selected: selected,
+      leading: _icon(source),
+      title: Text(context.sourceLabel(source)),
+      subtitle: selected ? Text(context.l10n.downloadsSourcePriority(priority + 1)) : null,
+      trailing: Icon(selected ? Icons.check_box : Icons.check_box_outline_blank),
+      onTap: () => _toggle(picked, source.description),
     );
   }
 
   static FileKind _kind(ContentMediaItemSource source) =>
       source is MangaMediaItemSource ? FileKind.manga : FileKind.video;
 
-  static Widget _icon(ContentMediaItemSource source) =>
-      Icon(source is MangaMediaItemSource ? Icons.menu_book_outlined : Icons.movie_outlined);
+  static Widget _icon(ContentMediaItemSource source) => Icon(switch (source) {
+    MangaMediaItemSource() => Icons.menu_book_outlined,
+    SubtitleMediaItemSource() => Icons.closed_caption_outlined,
+    _ => Icons.movie_outlined,
+  });
 }

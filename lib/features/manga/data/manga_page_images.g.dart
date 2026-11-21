@@ -12,9 +12,7 @@ part of 'manga_page_images.dart';
 @ProviderFor(mangaPageImages)
 final mangaPageImagesProvider = MangaPageImagesProvider._();
 
-final class MangaPageImagesProvider
-    extends
-        $FunctionalProvider<MangaPageImages, MangaPageImages, MangaPageImages>
+final class MangaPageImagesProvider extends $FunctionalProvider<MangaPageImages, MangaPageImages, MangaPageImages>
     with $Provider<MangaPageImages> {
   MangaPageImagesProvider._()
     : super(
@@ -32,8 +30,7 @@ final class MangaPageImagesProvider
 
   @$internal
   @override
-  $ProviderElement<MangaPageImages> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<MangaPageImages> $createElement($ProviderPointer pointer) => $ProviderElement(pointer);
 
   @override
   MangaPageImages create(Ref ref) {
@@ -42,10 +39,7 @@ final class MangaPageImagesProvider
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(MangaPageImages value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<MangaPageImages>(value),
-    );
+    return $ProviderOverride(origin: this, providerOverride: $SyncValueProvider<MangaPageImages>(value));
   }
 }
 
