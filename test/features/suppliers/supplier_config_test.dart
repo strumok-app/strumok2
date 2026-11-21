@@ -51,7 +51,7 @@ void main() {
   test('notifier persists changes and rebuilds on bundle swap', () async {
     final c = ProviderContainer(
       overrides: [
-        ...await testOverrides(bundle: SupplierBundleReady(FakeBundle([uk, en]), bundleInfo('4.0.0'))),
+        ...await testOverrides(bundle: SupplierBundleReady(FakeBundle([uk, en]), bundleInfo('5.0.0'))),
       ],
     );
     addTearDown(c.dispose);
@@ -66,7 +66,7 @@ void main() {
     expect(prefs.getBool(AppPreferences.supplierEnabled('uk_sup')), isFalse);
     expect(prefs.getStringList(AppPreferences.supplierChannels('uk_sup')), unorderedEquals(['a', 'c']));
 
-    await c.read(supplierRegistryProvider.notifier).activate(FakeBundle([uk, en, fresh]), bundleInfo('4.1.0'));
+    await c.read(supplierRegistryProvider.notifier).activate(FakeBundle([uk, en, fresh]), bundleInfo('5.1.0'));
     expect(c.read(supplierConfigsProvider).map((c) => c.name), ['en_sup', 'uk_sup', 'fresh']);
   });
 }

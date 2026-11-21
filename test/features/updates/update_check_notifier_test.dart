@@ -19,7 +19,7 @@ void main() {
   setUp(() {
     now = DateTime(2026, 1, 1);
     requests = 0;
-    respond = () => http.Response(jsonEncode(bundleInfo('4.1.0').toJson()), 200);
+    respond = () => http.Response(jsonEncode(bundleInfo('5.1.0').toJson()), 200);
   });
 
   Future<ProviderContainer> container() async {
@@ -76,11 +76,11 @@ void main() {
     final c = await container();
     await c.read(latestSupplierBundleProvider.notifier).check(silent: true);
     final prefs = c.read(appPreferencesProvider);
-    expect(prefs.getJson(AppPreferences.ffiUpdateLatestInfo)?['version'], '4.1.0');
+    expect(prefs.getJson(AppPreferences.ffiUpdateLatestInfo)?['version'], '5.1.0');
 
     final restarted = ProviderContainer(overrides: [...await testOverrides(prefs: prefs)]);
     addTearDown(restarted.dispose);
-    expect(restarted.read(latestSupplierBundleProvider).latest?.versionString, '4.1.0');
+    expect(restarted.read(latestSupplierBundleProvider).latest?.versionString, '5.1.0');
   });
 
   test('app update is available only for a newer version', () async {

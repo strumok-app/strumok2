@@ -14,7 +14,7 @@ void main() {
   test('fixture parses and round-trips', () {
     final info = loadFixture();
     expect(info.name, 'strumok_suppliers');
-    expect(info.version, const SemVer(4, 3, 0));
+    expect(info.version, const SemVer(5, 3, 0));
     expect(info.isCompatible, isTrue);
     expect(info.downloadUrl, hasLength(5));
 
@@ -24,16 +24,16 @@ void main() {
 
   test('file naming per platform (spec-02 §2.4)', () {
     final info = loadFixture();
-    expect(info.libName, 'strumok_suppliers_4.3.0');
-    expect(info.fileName(AppPlatform.linux), 'libstrumok_suppliers_4.3.0.so');
-    expect(info.fileName(AppPlatform.android), 'libstrumok_suppliers_4.3.0.so');
-    expect(info.fileName(AppPlatform.windows), 'strumok_suppliers_4.3.0.dll');
+    expect(info.libName, 'strumok_suppliers_5.3.0');
+    expect(info.fileName(AppPlatform.linux), 'libstrumok_suppliers_5.3.0.so');
+    expect(info.fileName(AppPlatform.android), 'libstrumok_suppliers_5.3.0.so');
+    expect(info.fileName(AppPlatform.windows), 'strumok_suppliers_5.3.0.dll');
   });
 
   test('leading v is kept in the file name but ignored for the version', () {
-    final info = FfiBundleInfo.fromJson({'name': 'n', 'version': 'v5.0.1', 'downloadUrl': <String, Object?>{}});
-    expect(info.libName, 'n_v5.0.1');
-    expect(info.version, const SemVer(5, 0, 1));
+    final info = FfiBundleInfo.fromJson({'name': 'n', 'version': 'v4.0.1', 'downloadUrl': <String, Object?>{}});
+    expect(info.libName, 'n_v4.0.1');
+    expect(info.version, const SemVer(4, 0, 1));
     expect(info.isCompatible, isFalse);
   });
 

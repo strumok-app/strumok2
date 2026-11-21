@@ -1,12 +1,12 @@
 {
     "name": "strumok_suppliers",
-    "version": "4.3.0",
+    "version": "5.3.0",
     "metadataUrl": "https://example.com/strumok_suppliers/metadata.json",
     "downloadUrl": {
-        "linux": "https://example.com/libstrumok_suppliers_4.3.0.so",
-        "windows": "https://example.com/strumok_suppliers_4.3.0.dll",
-        "arm64-v8a": "https://example.com/arm64-v8a/libstrumok_suppliers_4.3.0.so",
-        "armeabi-v7a": "https://example.com/armeabi-v7a/libstrumok_suppliers_4.3.0.so",
-        "android-x86_64": "https://example.com/x86_64/libstrumok_suppliers_4.3.0.so"
+        "linux": "https://example.com/libstrumok_suppliers_5.3.0.so",
+        "windows": "https://example.com/strumok_suppliers_5.3.0.dll",
+        "arm64-v8a": "https://example.com/arm64-v8a/libstrumok_suppliers_5.3.0.so",
+        "armeabi-v7a": "https://example.com/armeabi-v7a/libstrumok_suppliers_5.3.0.so",
+        "android-x86_64": "https://example.com/x86_64/libstrumok_suppliers_5.3.0.so"
     }
 }

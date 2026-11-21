@@ -2,7 +2,7 @@ import '../../../core/platform/app_platform.dart';
 import '../../../core/utils/semver.dart';
 
 /// Only bundles with this major are loadable (spec-02 §2.1).
-const compatibleBundleMajor = 4;
+const compatibleBundleMajor = 5;
 
 /// Supplier bundle metadata (spec-02 §2.4). Persisted as JSON in `ffi_supplier_bundle_info`.
 final class FfiBundleInfo {

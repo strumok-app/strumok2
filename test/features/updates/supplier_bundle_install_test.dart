@@ -54,20 +54,20 @@ void main() {
   final okClient = MockClient((_) async => http.Response.bytes(List.filled(1000, 1), 200));
 
   test('success: downloads, loads, swaps, persists and removes older versions', () async {
-    File('${dir.path}/libstrumok_suppliers_4.0.0.so').writeAsStringSync('old');
+    File('${dir.path}/libstrumok_suppliers_5.0.0.so').writeAsStringSync('old');
     File('${dir.path}/libother_1.0.0.so').writeAsStringSync('keep');
     final c = await container(client: okClient);
     final states = <InstallState>[];
     c.listen(supplierBundleInstallControllerProvider, (_, s) => states.add(s));
 
-    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('4.1.0'));
+    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('5.1.0'));
 
     expect(ok, isTrue);
-    expect(loaded, ['strumok_suppliers_4.1.0']);
-    expect(c.read(suppliersProvider).single.name, 'new_strumok_suppliers_4.1.0');
-    expect(c.read(appPreferencesProvider).getJson(AppPreferences.ffiSupplierBundleInfo)?['version'], '4.1.0');
-    expect(File('${dir.path}/libstrumok_suppliers_4.1.0.so').existsSync(), isTrue);
-    expect(File('${dir.path}/libstrumok_suppliers_4.0.0.so').existsSync(), isFalse);
+    expect(loaded, ['strumok_suppliers_5.1.0']);
+    expect(c.read(suppliersProvider).single.name, 'new_strumok_suppliers_5.1.0');
+    expect(c.read(appPreferencesProvider).getJson(AppPreferences.ffiSupplierBundleInfo)?['version'], '5.1.0');
+    expect(File('${dir.path}/libstrumok_suppliers_5.1.0.so').existsSync(), isTrue);
+    expect(File('${dir.path}/libstrumok_suppliers_5.0.0.so').existsSync(), isFalse);
     expect(File('${dir.path}/libother_1.0.0.so').existsSync(), isTrue);
     expect(states.whereType<InstallInProgress>(), isNotEmpty);
     expect(states.last, isA<InstallIdle>());
@@ -76,7 +76,7 @@ void main() {
   test('download failure keeps the active bundle', () async {
     final c = await container(client: MockClient((_) async => http.Response('', 500)));
 
-    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('4.1.0'));
+    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('5.1.0'));
 
     expect(ok, isFalse);
     expect(c.read(supplierBundleInstallControllerProvider), isA<InstallFailed>());
@@ -90,12 +90,12 @@ void main() {
       loader: (_, _) async => throw const ContentSuppliersException('bad lib'),
     );
 
-    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('4.1.0'));
+    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('5.1.0'));
 
     expect(ok, isFalse);
     expect(c.read(supplierBundleInstallControllerProvider), isA<InstallFailed>());
     expect(c.read(supplierRegistryProvider), same(defaultTestBundle));
-    expect(File('${dir.path}/libstrumok_suppliers_4.1.0.so').existsSync(), isFalse);
+    expect(File('${dir.path}/libstrumok_suppliers_5.1.0.so').existsSync(), isFalse);
     expect(c.read(appPreferencesProvider).getJson(AppPreferences.ffiSupplierBundleInfo), isNull);
   });
 
@@ -108,7 +108,7 @@ void main() {
       }),
     );
 
-    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('5.0.0'));
+    final ok = await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('6.0.0'));
 
     expect(ok, isFalse);
     final state = c.read(supplierBundleInstallControllerProvider) as InstallFailed;
@@ -120,7 +120,7 @@ void main() {
     final c = await container(client: okClient, initial: const SupplierBundleMissing());
     expect(c.read(suppliersProvider), isEmpty);
 
-    await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('4.1.0'));
+    await c.read(supplierBundleInstallControllerProvider.notifier).install(bundleInfo('5.1.0'));
 
     expect(c.read(supplierRegistryProvider), isA<SupplierBundleReady>());
     expect(c.read(suppliersProvider), hasLength(1));

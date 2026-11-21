@@ -17,7 +17,7 @@ import '../helpers/test_overrides.dart';
 void main() {
   testAppWidgets('missing bundle shows install prompt; installing reveals the shell without restart', (tester) async {
     final client = MockClient((request) async {
-      if (request.url.path.endsWith('.json')) return http.Response(jsonEncode(bundleInfo('4.2.0').toJson()), 200);
+      if (request.url.path.endsWith('.json')) return http.Response(jsonEncode(bundleInfo('5.2.0').toJson()), 200);
       return http.Response.bytes(List.filled(100, 0), 200);
     });
     final dir = await tester.runAsync(() async => Directory.systemTemp.createTemp('strumok_guard'));
@@ -44,7 +44,7 @@ void main() {
 
     expect(router.state.uri.path, AppRoutes.install);
     expect(find.byType(NavigationRail), findsNothing);
-    expect(find.text('Остання версія: 4.2.0'), findsOneWidget);
+    expect(find.text('Остання версія: 5.2.0'), findsOneWidget);
 
     await tester.runAsync(() async {
       await tester.tap(find.text('Встановити'));

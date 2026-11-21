@@ -181,7 +181,7 @@ FfiBundleInfo bundleInfo(String version, {String url = 'https://example.com/lib.
   'downloadUrl': {'linux': url},
 });
 
-final defaultTestBundle = SupplierBundleReady(FakeBundle([FakeSupplier('dummy')]), bundleInfo('4.0.0'));
+final defaultTestBundle = SupplierBundleReady(FakeBundle([FakeSupplier('dummy')]), bundleInfo('5.0.0'));
 
 Future<AppPreferences> createTestPreferences([Map<String, Object> values = const {}]) async {
   SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.withData(values);
