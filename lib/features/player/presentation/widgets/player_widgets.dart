@@ -333,6 +333,10 @@ class PlayerTimeLabel extends StatelessWidget {
   );
 }
 
+/// Tooltip text with the keyboard shortcut, e.g. `Next (])`; the plain label when there is no shortcut.
+String tooltipWithShortcut(BuildContext context, String label, String? shortcut) =>
+    shortcut == null ? label : context.l10n.playerShortcutHint(label, shortcut);
+
 class PlayPauseButton extends StatelessWidget {
   final ValueListenable<PlaybackStatus> status;
   final VoidCallback onPressed;
@@ -343,6 +347,9 @@ class PlayPauseButton extends StatelessWidget {
   /// Off: the label is only announced by screen readers.
   final bool tooltip;
 
+  /// Keyboard shortcut appended to the tooltip (desktop).
+  final String? shortcut;
+
   const PlayPauseButton({
     super.key,
     required this.status,
@@ -351,6 +358,7 @@ class PlayPauseButton extends StatelessWidget {
     this.iconSize,
     this.style,
     this.tooltip = true,
+    this.shortcut,
   });
 
   @override
@@ -363,7 +371,7 @@ class PlayPauseButton extends StatelessWidget {
         focusNode: focusNode,
         iconSize: iconSize,
         style: style,
-        tooltip: tooltip ? label : null,
+        tooltip: tooltip ? tooltipWithShortcut(context, label, shortcut) : null,
         onPressed: onPressed,
         icon: Icon(status.playing ? Icons.pause : Icons.play_arrow, semanticLabel: tooltip ? null : label),
       );
@@ -532,12 +540,13 @@ class PlayerFailureView extends ConsumerWidget {
 class SourceButton extends StatelessWidget {
   final PlayerSession session;
   final ValueChanged<int> onSelected;
+  final String? shortcut;
 
-  const SourceButton({super.key, required this.session, required this.onSelected});
+  const SourceButton({super.key, required this.session, required this.onSelected, this.shortcut});
 
   @override
   Widget build(BuildContext context) => IconButton(
-    tooltip: context.l10n.playerSource,
+    tooltip: tooltipWithShortcut(context, context.l10n.playerSource, shortcut),
     onPressed: () => showSourceSelector(context, session, onSelected),
     icon: const Icon(Icons.dns_outlined),
   );
@@ -568,12 +577,13 @@ Future<void> showSourceSelector(BuildContext context, PlayerSession session, Val
 
 class PlaylistButton extends StatelessWidget {
   final PlayerSession session;
+  final String? shortcut;
 
-  const PlaylistButton({super.key, required this.session});
+  const PlaylistButton({super.key, required this.session, this.shortcut});
 
   @override
   Widget build(BuildContext context) => IconButton(
-    tooltip: context.l10n.detailsEpisodes,
+    tooltip: tooltipWithShortcut(context, context.l10n.detailsEpisodes, shortcut),
     onPressed: () => showPlaylistPanel(context, session),
     icon: const Icon(Icons.playlist_play),
   );

@@ -33,8 +33,9 @@ String formatSubtitleOffset(Duration offset) =>
 /// Shows or hides subtitles (spec-06 §6.5.1); absent when the item has no supplier subtitles.
 class SubtitlesToggleButton extends ConsumerWidget {
   final PlayerSession session;
+  final String? shortcut;
 
-  const SubtitlesToggleButton({super.key, required this.session});
+  const SubtitlesToggleButton({super.key, required this.session, this.shortcut});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,7 +43,11 @@ class SubtitlesToggleButton extends ConsumerWidget {
     final on = session.subtitleIndex != null;
     return IconButton(
       key: const Key('subtitlesButton'),
-      tooltip: on ? context.l10n.playerHideSubtitles : context.l10n.playerShowSubtitles,
+      tooltip: tooltipWithShortcut(
+        context,
+        on ? context.l10n.playerHideSubtitles : context.l10n.playerShowSubtitles,
+        shortcut,
+      ),
       onPressed: () => unawaited(ref.read(playerControllerProvider.notifier).toggleSubtitles()),
       icon: Icon(subtitlesToggleIcon(on: on)),
     );
@@ -52,12 +57,14 @@ class SubtitlesToggleButton extends ConsumerWidget {
 IconData subtitlesToggleIcon({required bool on}) => on ? Icons.closed_caption : Icons.closed_caption_off_outlined;
 
 class PlayerSettingsButton extends StatelessWidget {
-  const PlayerSettingsButton({super.key});
+  final String? shortcut;
+
+  const PlayerSettingsButton({super.key, this.shortcut});
 
   @override
   Widget build(BuildContext context) => IconButton(
     key: const Key('settingsButton'),
-    tooltip: context.l10n.playerSettings,
+    tooltip: tooltipWithShortcut(context, context.l10n.playerSettings, shortcut),
     onPressed: () => showPlayerSettings(context),
     icon: const Icon(Icons.settings_outlined),
   );
@@ -327,6 +334,20 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
                 ? () => _setBand(settings.equalizer, band, settings.equalizer[band] + 1)
                 : null,
           ),
+        SwitchListTile(
+          key: const ValueKey('equalizer-volume-normalization'),
+          title: Text(l10n.playerVolumeNormalization),
+          subtitle: Text(l10n.playerVolumeNormalizationDescription),
+          value: settings.volumeNormalization,
+          onChanged: (value) => unawaited(_controller.setVolumeNormalization(value)),
+        ),
+        SwitchListTile(
+          key: const ValueKey('equalizer-dynamic-compression'),
+          title: Text(l10n.playerDynamicCompression),
+          subtitle: Text(l10n.playerDynamicCompressionDescription),
+          value: settings.dynamicCompression,
+          onChanged: (value) => unawaited(_controller.setDynamicCompression(value)),
+        ),
       ],
       _SettingsPage.startFrom => [
         for (final value in StartFrom.values)

@@ -17,14 +17,6 @@ import '../../helpers/test_overrides.dart';
 
 void main() {
   group('equalizer', () {
-    test('flat gains need no filter; others become one peaking filter per non-zero band', () {
-      expect(equalizerFilter(EqualizerPreset.reset.bands), '');
-      expect(
-        equalizerFilter([4, 0, 0, 0, -2.5]),
-        'lavfi=[equalizer=f=60:width_type=o:width=2:g=4.0,equalizer=f=14000:width_type=o:width=2:g=-2.5]',
-      );
-    });
-
     test('presets match spec-06 and are recognized; anything else is custom', () {
       expect(EqualizerPreset.clearDialogue.bands, [0, 2, 4, 5, 1]);
       expect(EqualizerPreset.cinema.bands, [4, 2, 0, 2, 4]);
@@ -112,6 +104,8 @@ void main() {
       await settings.setEndAction(EndAction.playAgain);
       await settings.setShuffle(true);
       await settings.setEqualizer([1, 2, 3, 4, 5]);
+      await settings.setVolumeNormalization(true);
+      await settings.setDynamicCompression(true);
       expect(c.read(playerSettingsProvider).floatingPlayer, isTrue, reason: 'floating player is on by default');
       await settings.setFloatingPlayer(false);
 
@@ -121,6 +115,8 @@ void main() {
       expect(prefs.getString(AppPreferences.videoPlayerEndsAction), 'playAgain');
       expect(prefs.getBool(AppPreferences.videoPlayerShuffleMode), isTrue);
       expect(prefs.getString(AppPreferences.videoPlayerEqualizerBands), '1.0,2.0,3.0,4.0,5.0');
+      expect(prefs.getBool(AppPreferences.videoPlayerVolumeNormalization), isTrue);
+      expect(prefs.getBool(AppPreferences.videoPlayerDynamicCompression), isTrue);
       expect(prefs.getBool(AppPreferences.floatingVideoPlayerEnabled), isFalse);
 
       c.invalidate(playerSettingsProvider);
@@ -132,6 +128,8 @@ void main() {
           endAction: EndAction.playAgain,
           shuffle: true,
           equalizer: [1, 2, 3, 4, 5],
+          volumeNormalization: true,
+          dynamicCompression: true,
           floatingPlayer: false,
         ),
       );
@@ -175,15 +173,21 @@ void main() {
     test('speed and equalizer reach the backend and survive item changes', () async {
       await setUpWith(prefs: {AppPreferences.videoPlayerEqualizerBands: '4,2,0,2,4'});
       await controller.open('alpha', 'm1', item: 0);
-      expect(backend.calls, contains(startsWith('af:lavfi=[equalizer=f=60')));
+      expect(backend.audioEffects, const AudioEffects(bands: [4, 2, 0, 2, 4]));
 
       await controller.setSpeed(1.5);
       await controller.setEqualizer(EqualizerPreset.reset.bands);
-      expect(backend.calls.sublist(backend.calls.length - 2), ['speed:1.5', 'af:']);
+      expect(backend.calls.sublist(backend.calls.length - 2), ['speed:1.5', 'effects']);
+      expect(backend.audioEffects.isNeutral, isTrue);
 
       await controller.next();
       expect(c.read(playerControllerProvider)!.speed, 1.5);
       expect(c.read(playerSettingsProvider).equalizer, EqualizerPreset.reset.bands);
+
+      await controller.setVolumeNormalization(true);
+      expect(backend.audioEffects, const AudioEffects(volumeNormalization: true));
+      await controller.next();
+      expect(backend.audioEffects, const AudioEffects(volumeNormalization: true));
     });
   });
 }

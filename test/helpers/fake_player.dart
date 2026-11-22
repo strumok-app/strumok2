@@ -6,6 +6,7 @@ import 'package:strumok/core/platform/device_levels.dart';
 import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/features/player/data/pip/pip.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
+import 'package:strumok/features/player/domain/equalizer.dart';
 
 class FakeVideoSource extends VideoMediaItemSource {
   @override
@@ -44,6 +45,7 @@ class FakeSubtitleSource extends SubtitleMediaItemSource {
 /// Records calls; tests drive [status], [ended] and [errors].
 class FakeVideoBackend implements VideoBackend {
   final calls = <String>[];
+  var audioEffects = const AudioEffects();
   final opened = <VideoOpenRequest>[];
   final _status = ValueNotifier(const PlaybackStatus());
   final _tracks = ValueNotifier(const PlaybackTracks());
@@ -140,7 +142,10 @@ class FakeVideoBackend implements VideoBackend {
   Future<void> setSpeed(double speed) async => calls.add('speed:$speed');
 
   @override
-  Future<void> setAudioFilter(String filter) async => calls.add('af:$filter');
+  Future<void> setAudioEffects(AudioEffects effects) async {
+    audioEffects = effects;
+    calls.add('effects');
+  }
 
   @override
   Widget buildView() => const SizedBox.expand(key: Key('fakeVideo'));

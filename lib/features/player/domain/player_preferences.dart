@@ -19,6 +19,12 @@ final class PlayerPreferences {
   final bool shuffle;
   final List<double> equalizer;
 
+  /// Evens out loudness over time (mpv `dynaudnorm`).
+  final bool volumeNormalization;
+
+  /// Reduces the gap between loud and quiet sounds (mpv `acompressor`).
+  final bool dynamicCompression;
+
   /// Keep playing in a mini player after leaving the player (spec-06 §6.9).
   final bool floatingPlayer;
 
@@ -28,6 +34,8 @@ final class PlayerPreferences {
     this.endAction = EndAction.playNext,
     this.shuffle = false,
     this.equalizer = const [0, 0, 0, 0, 0],
+    this.volumeNormalization = false,
+    this.dynamicCompression = false,
     this.floatingPlayer = true,
   });
 
@@ -37,6 +45,8 @@ final class PlayerPreferences {
     EndAction? endAction,
     bool? shuffle,
     List<double>? equalizer,
+    bool? volumeNormalization,
+    bool? dynamicCompression,
     bool? floatingPlayer,
   }) => PlayerPreferences(
     startFrom: startFrom ?? this.startFrom,
@@ -44,6 +54,8 @@ final class PlayerPreferences {
     endAction: endAction ?? this.endAction,
     shuffle: shuffle ?? this.shuffle,
     equalizer: equalizer ?? this.equalizer,
+    volumeNormalization: volumeNormalization ?? this.volumeNormalization,
+    dynamicCompression: dynamicCompression ?? this.dynamicCompression,
     floatingPlayer: floatingPlayer ?? this.floatingPlayer,
   );
 
@@ -55,11 +67,24 @@ final class PlayerPreferences {
       other.endAction == endAction &&
       other.shuffle == shuffle &&
       listEquals(other.equalizer, equalizer) &&
+      other.volumeNormalization == volumeNormalization &&
+      other.dynamicCompression == dynamicCompression &&
       other.floatingPlayer == floatingPlayer;
 
   @override
-  int get hashCode =>
-      Object.hash(startFrom, fixedPosition, endAction, shuffle, Object.hashAll(equalizer), floatingPlayer);
+  int get hashCode => Object.hash(
+    startFrom,
+    fixedPosition,
+    endAction,
+    shuffle,
+    Object.hashAll(equalizer),
+    volumeNormalization,
+    dynamicCompression,
+    floatingPlayer,
+  );
+
+  AudioEffects get audioEffects =>
+      AudioEffects(bands: equalizer, volumeNormalization: volumeNormalization, dynamicCompression: dynamicCompression);
 
   EqualizerPreset? get equalizerPreset => EqualizerPreset.of(equalizer);
 }

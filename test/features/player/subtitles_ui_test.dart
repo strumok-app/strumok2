@@ -12,6 +12,7 @@ import 'package:strumok/app/router.dart';
 import 'package:strumok/app/widgets/side_sheet.dart';
 import 'package:strumok/core/platform/device_class.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
+import 'package:strumok/features/player/domain/equalizer.dart';
 import 'package:strumok/features/player/domain/player_preferences.dart';
 import 'package:strumok/features/player/domain/player_session.dart';
 import 'package:strumok/features/player/presentation/player_controller.dart';
@@ -154,13 +155,13 @@ void main() {
 
   testAppWidgets('show/hide: the button and C turn subtitles on (the last chosen) and off', (tester) async {
     final container = await openPlayer(tester);
-    expect(find.byTooltip('Показати субтитри'), findsOneWidget);
+    expect(find.byTooltip('Показати субтитри (C)'), findsOneWidget);
     expect(find.byIcon(Icons.closed_caption_off_outlined), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('subtitlesButton')));
     await tester.pumpAndSettle();
     expect(container.read(playerControllerProvider)!.subtitle!.description, 'UA', reason: 'nothing chosen yet: first');
-    expect(find.byTooltip('Сховати субтитри'), findsOneWidget);
+    expect(find.byTooltip('Сховати субтитри (C)'), findsOneWidget);
     backend.emit(position: const Duration(seconds: 12));
     await tester.pump();
     final line = find.descendant(of: find.byKey(const Key('subtitleText')), matching: find.byType(Text));
@@ -341,12 +342,29 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Кіно'));
     await tester.pumpAndSettle();
-    expect(backend.calls.last, startsWith('af:lavfi=[equalizer=f=60:width_type=o:width=2:g=4.0'));
+    expect(backend.audioEffects, const AudioEffects(bands: [4, 2, 0, 2, 4]));
     final bass = find.byKey(const ValueKey('equalizer-band-0'));
     expect(find.descendant(of: bass, matching: find.text('60 Гц')), findsOneWidget);
     await tester.tap(find.descendant(of: bass, matching: find.byTooltip('Збільшити')));
     await tester.pumpAndSettle();
     expect(find.descendant(of: bass, matching: find.text('+5 дБ')), findsOneWidget);
+    final normalization = find.byKey(const ValueKey('equalizer-volume-normalization'));
+    final compression = find.byKey(const ValueKey('equalizer-dynamic-compression'));
+    await tester.scrollUntilVisible(normalization, 100, scrollable: find.byType(Scrollable).last);
+    await tester.tap(normalization);
+    await tester.pumpAndSettle();
+    expect(backend.audioEffects, const AudioEffects(bands: [5, 2, 0, 2, 4], volumeNormalization: true));
+    await tester.scrollUntilVisible(compression, 100, scrollable: find.byType(Scrollable).last);
+    await tester.tap(compression);
+    await tester.pumpAndSettle();
+    expect(
+      backend.audioEffects,
+      const AudioEffects(bands: [5, 2, 0, 2, 4], volumeNormalization: true, dynamicCompression: true),
+    );
+    await tester.tap(compression);
+    await tester.tap(normalization);
+    await tester.pumpAndSettle();
+    expect(backend.audioEffects, const AudioEffects(bands: [5, 2, 0, 2, 4]));
     await tester.tap(find.byKey(const ValueKey('settings-back')));
     await tester.pumpAndSettle();
     expect(find.descendant(of: row('equalizer'), matching: find.text('Власний')), findsOneWidget);

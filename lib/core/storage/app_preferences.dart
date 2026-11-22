@@ -40,6 +40,8 @@ class AppPreferences {
   static const videoPlayerStartFrom = 'video_player_setting_start_from';
   static const videoPlayerFixedPosition = 'video_player_setting_fixed_position';
   static const videoPlayerEqualizerBands = 'video_player_equalizer_bands';
+  static const videoPlayerVolumeNormalization = 'video_player_volume_normalization';
+  static const videoPlayerDynamicCompression = 'video_player_dynamic_compression';
   static const floatingVideoPlayerEnabled = 'floating_video_player_enabled';
   static const mangaReaderBackground = 'manga_reader_background';
   static const mangaReaderMode = 'manga_reader_mode';

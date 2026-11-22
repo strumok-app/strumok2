@@ -501,6 +501,67 @@
   "@playerUnmute": {
     "description": "Player unmute button"
   },
+  "playerShortcutHint": "{label} ({key})",
+  "@playerShortcutHint": {
+    "description": "Desktop player button tooltip with its keyboard shortcut, e.g. Next (])",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "playerShortcutsTitle": "Гарячі клавіші",
+  "@playerShortcutsTitle": {
+    "description": "Desktop player: keyboard shortcuts overlay title"
+  },
+  "playerShortcutsClose": "Натисніть будь-яку клавішу або клацніть, щоб закрити",
+  "@playerShortcutsClose": {
+    "description": "Desktop player: keyboard shortcuts overlay dismiss hint"
+  },
+  "playerShortcutPlayPause": "Відтворення / пауза",
+  "@playerShortcutPlayPause": {
+    "description": "Desktop player shortcut: play or pause"
+  },
+  "playerShortcutSeek": "Перемотати назад / вперед на {seconds} с",
+  "@playerShortcutSeek": {
+    "description": "Desktop player shortcut: seek backward / forward",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "playerShortcutFrameStep": "Попередній / наступний кадр",
+  "@playerShortcutFrameStep": {
+    "description": "Desktop player shortcut: frame step"
+  },
+  "playerShortcutVolume": "Гучніше / тихіше (або колесо миші)",
+  "@playerShortcutVolume": {
+    "description": "Desktop player shortcut: volume"
+  },
+  "playerShortcutMute": "Вимкнути / увімкнути звук",
+  "@playerShortcutMute": {
+    "description": "Desktop player shortcut: toggle mute"
+  },
+  "playerShortcutPreviousNext": "Попередній / наступний епізод",
+  "@playerShortcutPreviousNext": {
+    "description": "Desktop player shortcut: previous or next item"
+  },
+  "playerShortcutSubtitles": "Показати / сховати субтитри",
+  "@playerShortcutSubtitles": {
+    "description": "Desktop player shortcut: toggle subtitles"
+  },
+  "playerShortcutHelp": "Показати цей список",
+  "@playerShortcutHelp": {
+    "description": "Desktop player shortcut: open the shortcuts overlay"
+  },
+  "playerKeybindings": "Гарячі клавіші",
+  "@playerKeybindings": {
+    "description": "Desktop player: tooltip for the top-bar button that opens the keyboard shortcuts overlay"
+  },
   "playerLock": "Заблокувати керування",
   "@playerLock": {
     "description": "Mobile player: lock controls and gestures"
@@ -1004,6 +1065,22 @@
   "playerFloatingDescription": "Продовжувати перегляд у міні-плеєрі після виходу з плеєра",
   "@playerFloatingDescription": {
     "description": "Player setting: floating player switch subtitle"
+  },
+  "playerVolumeNormalization": "Нормалізація гучності",
+  "@playerVolumeNormalization": {
+    "description": "Equalizer page switch: even out loudness over time"
+  },
+  "playerVolumeNormalizationDescription": "Вирівнює гучність між тихими та гучними сценами",
+  "@playerVolumeNormalizationDescription": {
+    "description": "Equalizer page: volume normalization switch subtitle"
+  },
+  "playerDynamicCompression": "Зменшити гучні звуки",
+  "@playerDynamicCompression": {
+    "description": "Equalizer page switch: dynamic range compression"
+  },
+  "playerDynamicCompressionDescription": "Пом'якшує різкі гучні звуки, щоб діалоги лишалися чутними на малій гучності",
+  "@playerDynamicCompressionDescription": {
+    "description": "Equalizer page: reduce loud sounds switch subtitle"
   },
   "playerOpen": "Відкрити плеєр",
   "@playerOpen": {

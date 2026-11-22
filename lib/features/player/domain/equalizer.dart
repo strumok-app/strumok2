@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Band centers (Hz) of the 5-band equalizer (spec-06 §6.5).
 const equalizerFrequencies = [60, 230, 910, 4000, 14000];
 
@@ -33,14 +35,40 @@ bool _same(List<double> a, List<double> b) {
   return true;
 }
 
-/// mpv `af` value: one peaking filter (two octaves wide) per non-zero band; empty when flat.
-String equalizerFilter(List<double> bands) {
-  final filters = [
-    for (final (i, gain) in bands.indexed)
-      if (gain != 0 && i < equalizerFrequencies.length)
-        'equalizer=f=${equalizerFrequencies[i]}:width_type=o:width=2:g=${gain.toStringAsFixed(1)}',
-  ];
-  return filters.isEmpty ? '' : 'lavfi=[${filters.join(',')}]';
+/// Everything the audio chain applies on top of the decoded sound; backends turn it into their own filters.
+@immutable
+final class AudioEffects {
+  /// Gains (dB) per [equalizerFrequencies] band.
+  final List<double> bands;
+
+  /// Evens out loudness over time: quiet passages are lifted, loud ones tamed.
+  final bool volumeNormalization;
+
+  /// Tames sudden loud sounds so dialogue stays audible at a low volume.
+  final bool dynamicCompression;
+
+  const AudioEffects({
+    this.bands = const [0, 0, 0, 0, 0],
+    this.volumeNormalization = false,
+    this.dynamicCompression = false,
+  });
+
+  /// Nothing to apply.
+  bool get isNeutral => !volumeNormalization && !dynamicCompression && bands.every((gain) => gain == 0);
+
+  @override
+  bool operator ==(Object other) =>
+      other is AudioEffects &&
+      listEquals(other.bands, bands) &&
+      other.volumeNormalization == volumeNormalization &&
+      other.dynamicCompression == dynamicCompression;
+
+  @override
+  int get hashCode => Object.hash(Object.hashAll(bands), volumeNormalization, dynamicCompression);
+
+  @override
+  String toString() =>
+      'AudioEffects(bands: $bands, volumeNormalization: $volumeNormalization, dynamicCompression: $dynamicCompression)';
 }
 
 /// Spec-09 `video_player_equalizer_bands`: csv of 5 doubles; anything malformed reads as flat.

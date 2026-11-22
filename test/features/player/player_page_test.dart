@@ -166,6 +166,69 @@ void main() {
     expect(container.read(playerControllerProvider)!.itemIndex, 0);
   });
 
+  testAppWidgets('desktop: M mutes and restores the previous volume', (tester) async {
+    await openPlayer(tester);
+    await press(tester, LogicalKeyboardKey.arrowDown);
+    await press(tester, LogicalKeyboardKey.keyM);
+    await press(tester, LogicalKeyboardKey.keyM);
+    expect(backend.calls, containsAllInOrder(['volume:95', 'volume:0', 'volume:95']));
+  });
+
+  testAppWidgets('desktop: comma opens player settings', (tester) async {
+    await openPlayer(tester);
+    expect(find.byType(SideSheet), findsNothing);
+    await press(tester, LogicalKeyboardKey.comma);
+    expect(find.byType(SideSheet), findsOneWidget);
+    expect(find.text('Налаштування'), findsOneWidget);
+  });
+
+  testAppWidgets('desktop: the top-bar help button opens the shortcuts overlay', (tester) async {
+    await openPlayer(tester);
+    expect(find.byKey(const Key('shortcutsOverlay')), findsNothing);
+    await tester.tap(find.byKey(const Key('helpButton')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('shortcutsOverlay')), findsOneWidget);
+  });
+
+  testAppWidgets('desktop: ? / H open the shortcuts overlay; any key or a click closes it without acting', (
+    tester,
+  ) async {
+    final container = await openPlayer(tester);
+    final router = container.read(routerProvider);
+    final overlay = find.byKey(const Key('shortcutsOverlay'));
+    expect(overlay, findsNothing);
+
+    await press(tester, LogicalKeyboardKey.keyH);
+    expect(overlay, findsOneWidget);
+    expect(find.text('Гарячі клавіші'), findsOneWidget);
+
+    await press(tester, LogicalKeyboardKey.space);
+    expect(overlay, findsNothing);
+    expect(backend.calls, isNot(contains('playOrPause')));
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.slash);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.pumpAndSettle();
+    expect(overlay, findsOneWidget);
+
+    await press(tester, LogicalKeyboardKey.escape);
+    expect(overlay, findsNothing);
+    expect(router.state.uri.path, '/video/alpha/m1', reason: 'Esc only closes the overlay');
+
+    await press(tester, LogicalKeyboardKey.keyH);
+    await tester.tap(overlay);
+    await tester.pumpAndSettle();
+    expect(overlay, findsNothing);
+  });
+
+  testAppWidgets('desktop: button tooltips carry their keyboard shortcut', (tester) async {
+    await openPlayer(tester);
+    expect(find.byTooltip('Наступний (])'), findsOneWidget);
+    expect(find.byTooltip('Попередній ([)'), findsOneWidget);
+    expect(find.byTooltip('На весь екран (F)'), findsOneWidget);
+  });
+
   testAppWidgets('desktop: F/Enter/Esc control full screen; Esc when windowed leaves the player', (tester) async {
     final container = await openPlayer(tester);
     final router = container.read(routerProvider);
@@ -208,7 +271,7 @@ void main() {
 
   testAppWidgets('desktop: media tracks arriving later do not move the episodes button', (tester) async {
     await openPlayer(tester);
-    final episodes = find.byTooltip('Епізоди');
+    final episodes = find.byTooltip('Епізоди (P)');
     final before = tester.getRect(episodes);
 
     backend.tracks.value = const PlaybackTracks(video: [MediaTrack('1', height: 480), MediaTrack('2', height: 1080)]);
@@ -219,7 +282,7 @@ void main() {
 
   testAppWidgets('desktop: source selector switches the server', (tester) async {
     await openPlayer(tester);
-    await tester.tap(find.byTooltip('Джерело'));
+    await tester.tap(find.byTooltip('Джерело (S)'));
     await tester.pumpAndSettle();
     expect(find.text('A (Українська)'), findsOneWidget);
     expect(find.text('B'), findsOneWidget);

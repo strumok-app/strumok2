@@ -23,8 +23,8 @@ Future<void> showDownloadSheet(BuildContext context, ContentDetails details) => 
   builder: (_) => DownloadSheet(details: details),
 );
 
-/// What to download (spec-08 §8.1–8.2): everything, a season/volume or one item; then the source(s). A group of items
-/// downloads one at a time in order; each item gets a preferred source, falling back by language.
+/// What to download (spec-08 §8.1–8.2): everything, a season/volume or one item; then the source(s) in priority order.
+/// A group of items downloads one at a time in order; each item gets a preferred source, falling back by language.
 class DownloadSheet extends ConsumerStatefulWidget {
   final ContentDetails details;
 
@@ -197,10 +197,7 @@ class _SourceListState extends ConsumerState<_SourceList> {
   final _pickedSubtitles = <String>[];
   List<SubtitleMediaItemSource> _subtitles = const [];
   Map<String, ContentLanguage?> _subtitleLanguages = const {};
-  String? _singleSourceName;
   var _subtitleInitialized = false;
-
-  bool get _multiple => widget.items.length > 1;
 
   Future<List<ContentMediaItemSource>> _load() async {
     final sources = await widget.items.first.sources;
@@ -285,15 +282,20 @@ class _SourceListState extends ConsumerState<_SourceList> {
         AsyncSnapshot(:final data?) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (_multiple)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall),
-              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall),
+            ),
             Expanded(
               child: ListView(
                 children: [
-                  for (final (index, source) in data.indexed) _sourceTile(index, source),
+                  for (final (index, source) in data.indexed)
+                    _priorityTile(
+                      key: ValueKey('download-source-$index'),
+                      source: source,
+                      picked: _picked,
+                      autofocus: index == 0,
+                    ),
                   if (data.first is VideoMediaItemSource && _subtitles.isNotEmpty) ...[
                     const Divider(),
                     ListTile(title: Text(l10n.downloadsSubtitles), subtitle: Text(l10n.downloadsSubtitleHint)),
@@ -322,12 +324,11 @@ class _SourceListState extends ConsumerState<_SourceList> {
                 key: const ValueKey('download-start'),
                 icon: const Icon(Icons.download_outlined),
                 label: Text(l10n.detailsDownload),
-                onPressed: _busy || (_multiple && _picked.isEmpty)
+                onPressed: _busy || _picked.isEmpty
                     ? null
                     : () => unawaited(
                         _download([
-                          for (final name in _multiple ? _picked : [_singleSourceName ?? data.first.description])
-                            data.firstWhere((source) => source.description == name),
+                          for (final name in _picked) data.firstWhere((source) => source.description == name),
                         ]),
                       ),
               ),
@@ -336,28 +337,6 @@ class _SourceListState extends ConsumerState<_SourceList> {
         ),
         _ => const Center(child: CircularProgressIndicator()),
       },
-    );
-  }
-
-  Widget _sourceTile(int index, ContentMediaItemSource source) {
-    if (_multiple) {
-      return _priorityTile(
-        key: ValueKey('download-source-$index'),
-        source: source,
-        picked: _picked,
-        autofocus: index == 0,
-      );
-    }
-    final selected = (_singleSourceName ?? (index == 0 ? source.description : null)) == source.description;
-    return ListTile(
-      key: ValueKey('download-source-$index'),
-      autofocus: index == 0,
-      enabled: !_busy,
-      selected: selected,
-      leading: _icon(source),
-      title: Text(context.sourceLabel(source)),
-      trailing: Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked),
-      onTap: () => setState(() => _singleSourceName = source.description),
     );
   }
 

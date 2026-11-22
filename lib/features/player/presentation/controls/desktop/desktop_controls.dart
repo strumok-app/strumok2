@@ -15,6 +15,7 @@ import '../../player_fullscreen.dart';
 import '../../widgets/player_panels.dart';
 import '../../widgets/player_widgets.dart';
 import '../../widgets/subtitle_overlay.dart';
+import 'desktop_shortcuts.dart';
 
 /// Mouse + keyboard controls (spec-06 §6.6): the keyboard map works regardless of overlay visibility; the overlay
 /// shows on hover/keys and hides (with the cursor) after inactivity while playing.
@@ -36,6 +37,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
   late final PlayerFullscreen _fullscreen;
   late final ControlsVisibility _visibility;
   final _rootFocus = FocusNode(debugLabel: 'playerRoot');
+  bool _showShortcuts = false;
 
   @override
   void initState() {
@@ -59,9 +61,30 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
 
   void _changeVolume(double delta) => unawaited(_controller.setVolume(_controller.status.value.volume + delta));
 
+  void _setShortcuts(bool value) {
+    if (_showShortcuts != value) setState(() => _showShortcuts = value);
+  }
+
+  static final _modifiers = {
+    LogicalKeyboardKey.shiftLeft,
+    LogicalKeyboardKey.shiftRight,
+    LogicalKeyboardKey.controlLeft,
+    LogicalKeyboardKey.controlRight,
+    LogicalKeyboardKey.altLeft,
+    LogicalKeyboardKey.altRight,
+    LogicalKeyboardKey.metaLeft,
+    LogicalKeyboardKey.metaRight,
+  };
+
   KeyEventResult _onKey(FocusNode node, KeyEvent event) {
     if (event is KeyUpEvent) return KeyEventResult.ignored;
     final repeat = event is KeyRepeatEvent;
+    if (_showShortcuts) {
+      // Any key closes the overlay and is swallowed (so Esc does not also leave the player); Shift alone is the
+      // first half of `?`.
+      if (!_modifiers.contains(event.logicalKey) && !repeat) _setShortcuts(false);
+      return KeyEventResult.handled;
+    }
     final shift = HardwareKeyboard.instance.isShiftPressed;
     final fullscreen = ref.read(playerFullscreenProvider);
 
@@ -77,6 +100,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
       LogicalKeyboardKey.keyI => _run(() => _controller.seekBy(_longSeekStep)),
       LogicalKeyboardKey.arrowUp => _run(() async => _changeVolume(_volumeStep)),
       LogicalKeyboardKey.arrowDown => _run(() async => _changeVolume(-_volumeStep)),
+      LogicalKeyboardKey.keyM when !repeat => _run(_controller.toggleMute),
       LogicalKeyboardKey.bracketRight || LogicalKeyboardKey.mediaTrackNext when !repeat => _run(_controller.next),
       LogicalKeyboardKey.bracketLeft ||
       LogicalKeyboardKey.mediaTrackPrevious when !repeat => _run(_controller.previous),
@@ -91,6 +115,11 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
         () => showSourceSelector(context, widget.session, _controller.selectSource),
       ),
       LogicalKeyboardKey.keyC when !repeat && widget.session.subtitles.isNotEmpty => _run(_controller.toggleSubtitles),
+      LogicalKeyboardKey.comma when !repeat => _run(() => showPlayerSettings(context)),
+      LogicalKeyboardKey.question ||
+      LogicalKeyboardKey.keyH ||
+      LogicalKeyboardKey.f1 when !repeat => _run(() async => _setShortcuts(true)),
+      LogicalKeyboardKey.slash when shift && !repeat => _run(() async => _setShortcuts(true)),
       _ => false,
     };
     if (handled) _visibility.show();
@@ -145,7 +174,21 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                   duration: const Duration(milliseconds: 200),
                   child: Column(
                     children: [
-                      ControlsScrim(top: true, child: PlayerTopBar(session: session)),
+                      ControlsScrim(
+                        top: true,
+                        child: PlayerTopBar(
+                          session: session,
+                          padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+                          actions: [
+                            IconButton(
+                              key: const Key('helpButton'),
+                              tooltip: tooltipWithShortcut(context, l10n.playerKeybindings, DesktopKeys.help),
+                              onPressed: () => _setShortcuts(true),
+                              icon: const Icon(Icons.help_outline),
+                            ),
+                          ],
+                        ),
+                      ),
                       const Spacer(),
                       ControlsScrim(
                         top: false,
@@ -163,30 +206,47 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                               Row(
                                 children: [
                                   IconButton(
-                                    tooltip: l10n.playerPrevious,
+                                    tooltip: tooltipWithShortcut(context, l10n.playerPrevious, DesktopKeys.previous),
                                     onPressed: session.hasPrevious ? _controller.previous : null,
                                     icon: const Icon(Icons.skip_previous),
                                   ),
-                                  PlayPauseButton(status: status, onPressed: _controller.playOrPause),
+                                  PlayPauseButton(
+                                    status: status,
+                                    onPressed: _controller.playOrPause,
+                                    shortcut: DesktopKeys.playPause,
+                                  ),
                                   IconButton(
-                                    tooltip: l10n.playerNext,
+                                    tooltip: tooltipWithShortcut(context, l10n.playerNext, DesktopKeys.next),
                                     onPressed: session.hasNext ? _controller.next : null,
                                     icon: const Icon(Icons.skip_next),
                                   ),
-                                  _VolumeControl(status: status, onChanged: _controller.setVolume),
+                                  _VolumeControl(
+                                    status: status,
+                                    onChanged: _controller.setVolume,
+                                    onToggleMute: _controller.toggleMute,
+                                  ),
                                   const SizedBox(width: 8),
                                   PlayerTimeLabel(status: status),
                                   const Spacer(),
-                                  SubtitlesToggleButton(session: session),
+                                  SubtitlesToggleButton(session: session, shortcut: DesktopKeys.subtitles),
                                   if (session.sources.length > 1)
-                                    SourceButton(session: session, onSelected: _controller.selectSource),
-                                  const PlayerSettingsButton(),
-                                  if (session.items.length > 1) PlaylistButton(session: session),
+                                    SourceButton(
+                                      session: session,
+                                      onSelected: _controller.selectSource,
+                                      shortcut: DesktopKeys.sources,
+                                    ),
+                                  const PlayerSettingsButton(shortcut: DesktopKeys.settings),
+                                  if (session.items.length > 1)
+                                    PlaylistButton(session: session, shortcut: DesktopKeys.playlist),
                                   const SizedBox(width: 16),
                                   const PipButton(),
                                   IconButton(
                                     key: const Key('fullscreenButton'),
-                                    tooltip: fullscreen ? l10n.playerExitFullscreen : l10n.playerFullscreen,
+                                    tooltip: tooltipWithShortcut(
+                                      context,
+                                      fullscreen ? l10n.playerExitFullscreen : l10n.playerFullscreen,
+                                      DesktopKeys.fullscreen,
+                                    ),
                                     onPressed: _fullscreen.toggle,
                                     icon: Icon(fullscreen ? Icons.fullscreen_exit : Icons.fullscreen),
                                   ),
@@ -201,6 +261,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                 ),
               ),
               if (session.failure != null) PlayerFailureView(session: session),
+              if (_showShortcuts) ShortcutsOverlay(session: session, onClose: () => _setShortcuts(false)),
             ],
           ),
         ),
@@ -213,8 +274,9 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
 class _VolumeControl extends StatefulWidget {
   final ValueListenable<PlaybackStatus> status;
   final ValueChanged<double> onChanged;
+  final Future<void> Function() onToggleMute;
 
-  const _VolumeControl({required this.status, required this.onChanged});
+  const _VolumeControl({required this.status, required this.onChanged, required this.onToggleMute});
 
   @override
   State<_VolumeControl> createState() => _VolumeControlState();
@@ -223,7 +285,6 @@ class _VolumeControl extends StatefulWidget {
 class _VolumeControlState extends State<_VolumeControl> {
   // Not focusable: ↑/↓ change the volume through the key map.
   final _sliderFocus = FocusNode(canRequestFocus: false, skipTraversal: true);
-  double _beforeMute = 100;
 
   @override
   void dispose() {
@@ -240,11 +301,12 @@ class _VolumeControlState extends State<_VolumeControl> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: muted ? context.l10n.playerUnmute : context.l10n.playerMute,
-            onPressed: () {
-              if (!muted) _beforeMute = status.volume;
-              widget.onChanged(muted ? _beforeMute : 0);
-            },
+            tooltip: tooltipWithShortcut(
+              context,
+              muted ? context.l10n.playerUnmute : context.l10n.playerMute,
+              DesktopKeys.mute,
+            ),
+            onPressed: () => unawaited(widget.onToggleMute()),
             icon: Icon(
               muted
                   ? Icons.volume_off

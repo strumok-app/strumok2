@@ -8,6 +8,8 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../core/hls/hls_proxy.dart';
+import '../domain/equalizer.dart';
+import 'mpv_audio_filter.dart';
 import 'video_backend.dart';
 
 final _log = Logger('MediaKitVideoBackend');
@@ -229,9 +231,9 @@ class MediaKitVideoBackend implements VideoBackend {
   Future<void> setSpeed(double speed) => _player.setRate(speed);
 
   @override
-  Future<void> setAudioFilter(String filter) async {
+  Future<void> setAudioEffects(AudioEffects effects) async {
     await _configured;
-    await _native.setProperty('af', filter);
+    await _native.setProperty('af', mpvAudioFilter(effects));
   }
 
   @override

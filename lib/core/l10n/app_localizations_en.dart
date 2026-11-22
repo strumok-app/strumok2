@@ -378,6 +378,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerUnmute => 'Unmute';
 
   @override
+  String playerShortcutHint(String label, String key) {
+    return '$label ($key)';
+  }
+
+  @override
+  String get playerShortcutsTitle => 'Keyboard shortcuts';
+
+  @override
+  String get playerShortcutsClose => 'Press any key or click to close';
+
+  @override
+  String get playerShortcutPlayPause => 'Play / pause';
+
+  @override
+  String playerShortcutSeek(int seconds) {
+    return 'Seek back / forward $seconds s';
+  }
+
+  @override
+  String get playerShortcutFrameStep => 'Previous / next frame';
+
+  @override
+  String get playerShortcutVolume => 'Volume up / down (or mouse wheel)';
+
+  @override
+  String get playerShortcutMute => 'Mute / unmute';
+
+  @override
+  String get playerShortcutPreviousNext => 'Previous / next episode';
+
+  @override
+  String get playerShortcutSubtitles => 'Show / hide subtitles';
+
+  @override
+  String get playerShortcutHelp => 'Show this list';
+
+  @override
+  String get playerKeybindings => 'Keybindings';
+
+  @override
   String get playerLock => 'Lock controls';
 
   @override
@@ -727,6 +767,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playerFloatingDescription => 'Keep watching in a mini player after leaving the player';
+
+  @override
+  String get playerVolumeNormalization => 'Volume normalization';
+
+  @override
+  String get playerVolumeNormalizationDescription => 'Evens out loudness between quiet and loud scenes';
+
+  @override
+  String get playerDynamicCompression => 'Reduce loud sounds';
+
+  @override
+  String get playerDynamicCompressionDescription => 'Softens sudden loud sounds so dialogue stays clear at low volume';
 
   @override
   String get playerOpen => 'Open player';

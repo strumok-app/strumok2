@@ -806,6 +806,78 @@ abstract class AppLocalizations {
   /// **'Увімкнути звук'**
   String get playerUnmute;
 
+  /// Desktop player button tooltip with its keyboard shortcut, e.g. Next (])
+  ///
+  /// In uk, this message translates to:
+  /// **'{label} ({key})'**
+  String playerShortcutHint(String label, String key);
+
+  /// Desktop player: keyboard shortcuts overlay title
+  ///
+  /// In uk, this message translates to:
+  /// **'Гарячі клавіші'**
+  String get playerShortcutsTitle;
+
+  /// Desktop player: keyboard shortcuts overlay dismiss hint
+  ///
+  /// In uk, this message translates to:
+  /// **'Натисніть будь-яку клавішу або клацніть, щоб закрити'**
+  String get playerShortcutsClose;
+
+  /// Desktop player shortcut: play or pause
+  ///
+  /// In uk, this message translates to:
+  /// **'Відтворення / пауза'**
+  String get playerShortcutPlayPause;
+
+  /// Desktop player shortcut: seek backward / forward
+  ///
+  /// In uk, this message translates to:
+  /// **'Перемотати назад / вперед на {seconds} с'**
+  String playerShortcutSeek(int seconds);
+
+  /// Desktop player shortcut: frame step
+  ///
+  /// In uk, this message translates to:
+  /// **'Попередній / наступний кадр'**
+  String get playerShortcutFrameStep;
+
+  /// Desktop player shortcut: volume
+  ///
+  /// In uk, this message translates to:
+  /// **'Гучніше / тихіше (або колесо миші)'**
+  String get playerShortcutVolume;
+
+  /// Desktop player shortcut: toggle mute
+  ///
+  /// In uk, this message translates to:
+  /// **'Вимкнути / увімкнути звук'**
+  String get playerShortcutMute;
+
+  /// Desktop player shortcut: previous or next item
+  ///
+  /// In uk, this message translates to:
+  /// **'Попередній / наступний епізод'**
+  String get playerShortcutPreviousNext;
+
+  /// Desktop player shortcut: toggle subtitles
+  ///
+  /// In uk, this message translates to:
+  /// **'Показати / сховати субтитри'**
+  String get playerShortcutSubtitles;
+
+  /// Desktop player shortcut: open the shortcuts overlay
+  ///
+  /// In uk, this message translates to:
+  /// **'Показати цей список'**
+  String get playerShortcutHelp;
+
+  /// Desktop player: tooltip for the top-bar button that opens the keyboard shortcuts overlay
+  ///
+  /// In uk, this message translates to:
+  /// **'Гарячі клавіші'**
+  String get playerKeybindings;
+
   /// Mobile player: lock controls and gestures
   ///
   /// In uk, this message translates to:
@@ -1441,6 +1513,30 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Продовжувати перегляд у міні-плеєрі після виходу з плеєра'**
   String get playerFloatingDescription;
+
+  /// Equalizer page switch: even out loudness over time
+  ///
+  /// In uk, this message translates to:
+  /// **'Нормалізація гучності'**
+  String get playerVolumeNormalization;
+
+  /// Equalizer page: volume normalization switch subtitle
+  ///
+  /// In uk, this message translates to:
+  /// **'Вирівнює гучність між тихими та гучними сценами'**
+  String get playerVolumeNormalizationDescription;
+
+  /// Equalizer page switch: dynamic range compression
+  ///
+  /// In uk, this message translates to:
+  /// **'Зменшити гучні звуки'**
+  String get playerDynamicCompression;
+
+  /// Equalizer page: reduce loud sounds switch subtitle
+  ///
+  /// In uk, this message translates to:
+  /// **'Пом\'якшує різкі гучні звуки, щоб діалоги лишалися чутними на малій гучності'**
+  String get playerDynamicCompressionDescription;
 
   /// Floating mini player: reopen the full-screen player
   ///

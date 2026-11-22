@@ -75,8 +75,13 @@ to media_kit together with the source headers, stop the proxy when the backend i
 - 5-band equalizer via mpv `af` (bands 60, 230, 910, 4000, 14000 Hz; range ±12 dB) with presets:
   Reset `[0,0,0,0,0]`, Clear dialogue `[0,2,4,5,1]`, Cinema `[4,2,0,2,4]`, Night `[-3,0,3,4,-2]`, Action `[5,3,-1,1,3]`,
   Max `[12,12,12,12,12]` (full boost on every band).
-  Filter: `lavfi=[equalizer=f=<Hz>:width_type=o:width=2:g=<dB>,…]` for non-zero bands; empty when flat. Gains
+  The controller hands the backend an `AudioEffects` object (`VideoBackend.setAudioEffects`); the media_kit backend
+  builds the mpv filter itself (`data/mpv_audio_filter.dart`): `lavfi=[equalizer=f=<Hz>:width_type=o:width=2:g=<dB>,…]` for non-zero bands; empty when flat. Gains
   step by 1 dB; gains matching no preset show as "Custom".
+  Two switches on the Equalizer page, persisted (`video_player_volume_normalization`,
+  `video_player_dynamic_compression`, default off) and appended to the same `lavfi=[…]` chain after the bands:
+  "Reduce loud sounds" → `acompressor=threshold=-18dB:ratio=3:attack=20:release=250:makeup=2`, then
+  "Volume normalization" → `dynaudnorm=f=150:g=15`.
 - Settings: shuffle mode; on-end action (`playNext` default / `playAgain` / `doNothing`); start-from
   (`fromRemembered` default / `fromBeginning` / `fromFixedPosition` + seconds, 10 s steps). Shuffle applies to
   the automatic advance at the end (`playNext`): a random other item; the Next button stays sequential.
@@ -121,6 +126,7 @@ Buttons by frequency of use:
 | P | open playlist |
 | S | open source selector |
 | C | show/hide subtitles |
+| `?`, H, F1 | show the keyboard shortcuts overlay (any key or click closes it, the key is swallowed); button tooltips also show their key, e.g. `Next (])` |
 
 Layout: top bar = back, title, episode. Bottom bar = seek bar; row: prev, play, next, volume, time … subtitles,
 source, settings, episodes, gap, PiP, fullscreen (far right).

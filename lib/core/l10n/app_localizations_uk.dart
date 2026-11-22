@@ -379,6 +379,46 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playerUnmute => 'Увімкнути звук';
 
   @override
+  String playerShortcutHint(String label, String key) {
+    return '$label ($key)';
+  }
+
+  @override
+  String get playerShortcutsTitle => 'Гарячі клавіші';
+
+  @override
+  String get playerShortcutsClose => 'Натисніть будь-яку клавішу або клацніть, щоб закрити';
+
+  @override
+  String get playerShortcutPlayPause => 'Відтворення / пауза';
+
+  @override
+  String playerShortcutSeek(int seconds) {
+    return 'Перемотати назад / вперед на $seconds с';
+  }
+
+  @override
+  String get playerShortcutFrameStep => 'Попередній / наступний кадр';
+
+  @override
+  String get playerShortcutVolume => 'Гучніше / тихіше (або колесо миші)';
+
+  @override
+  String get playerShortcutMute => 'Вимкнути / увімкнути звук';
+
+  @override
+  String get playerShortcutPreviousNext => 'Попередній / наступний епізод';
+
+  @override
+  String get playerShortcutSubtitles => 'Показати / сховати субтитри';
+
+  @override
+  String get playerShortcutHelp => 'Показати цей список';
+
+  @override
+  String get playerKeybindings => 'Гарячі клавіші';
+
+  @override
   String get playerLock => 'Заблокувати керування';
 
   @override
@@ -728,6 +768,19 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get playerFloatingDescription => 'Продовжувати перегляд у міні-плеєрі після виходу з плеєра';
+
+  @override
+  String get playerVolumeNormalization => 'Нормалізація гучності';
+
+  @override
+  String get playerVolumeNormalizationDescription => 'Вирівнює гучність між тихими та гучними сценами';
+
+  @override
+  String get playerDynamicCompression => 'Зменшити гучні звуки';
+
+  @override
+  String get playerDynamicCompressionDescription =>
+      'Пом\'якшує різкі гучні звуки, щоб діалоги лишалися чутними на малій гучності';
 
   @override
   String get playerOpen => 'Відкрити плеєр';

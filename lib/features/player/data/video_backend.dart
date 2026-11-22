@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../domain/equalizer.dart';
+
 @immutable
 final class PlaybackStatus {
   final Duration position;
@@ -157,8 +159,8 @@ abstract interface class VideoBackend {
   /// Playback rate, 0.5–2.0.
   Future<void> setSpeed(double speed);
 
-  /// mpv `af` filter chain (see `equalizerFilter`); empty removes it.
-  Future<void> setAudioFilter(String filter);
+  /// Replaces the audio effects; [AudioEffects.isNeutral] removes them. How they are realized is up to the backend.
+  Future<void> setAudioEffects(AudioEffects effects);
 
   /// The video surface; build it in one place per backend.
   Widget buildView();

@@ -16,7 +16,6 @@ import '../../details/presentation/details_providers.dart';
 import '../data/media_kit_backend.dart';
 import '../data/subtitle_repository.dart';
 import '../data/video_backend.dart';
-import '../domain/equalizer.dart';
 import '../domain/player_preferences.dart';
 import '../domain/player_session.dart';
 import '../domain/subtitles.dart';
@@ -49,6 +48,9 @@ class PlayerController extends _$PlayerController {
   /// Incremented by every load; async steps of an older load stop when it changed (spec-06 §6.2.7).
   int _token = 0;
   double _speed = 1;
+
+  /// Volume restored by the mute toggle.
+  double _volumeBeforeMute = 100;
 
   /// Subtitles the show/hide toggle turns back on.
   String? _lastSubtitleName;
@@ -193,8 +195,20 @@ class PlayerController extends _$PlayerController {
   /// Persisted equalizer gains, applied right away.
   Future<void> setEqualizer(List<double> bands) async {
     await ref.read(playerSettingsProvider.notifier).setEqualizer(bands);
-    await _backend?.setAudioFilter(equalizerFilter(ref.read(playerSettingsProvider).equalizer));
+    await _applyAudioEffects();
   }
+
+  Future<void> setVolumeNormalization(bool enabled) async {
+    await ref.read(playerSettingsProvider.notifier).setVolumeNormalization(enabled);
+    await _applyAudioEffects();
+  }
+
+  Future<void> setDynamicCompression(bool enabled) async {
+    await ref.read(playerSettingsProvider.notifier).setDynamicCompression(enabled);
+    await _applyAudioEffects();
+  }
+
+  Future<void> _applyAudioEffects() async => _backend?.setAudioEffects(ref.read(playerSettingsProvider).audioEffects);
 
   /// Reloads after a failure; playback resumes at the last known position.
   Future<void> retry() async {
@@ -238,6 +252,17 @@ class PlayerController extends _$PlayerController {
     final clamped = volume.clamp(0, 100).toDouble();
     await _backend?.setVolume(clamped);
     await ref.read(appPreferencesProvider).setDouble(AppPreferences.volume, clamped);
+  }
+
+  /// Mutes (remembering the current level) or restores the previous level.
+  Future<void> toggleMute() async {
+    final current = status.value.volume;
+    if (current > 0) {
+      _volumeBeforeMute = current;
+      await setVolume(0);
+    } else {
+      await setVolume(_volumeBeforeMute > 0 ? _volumeBeforeMute : 100);
+    }
   }
 
   bool _isCurrent(int token) => ref.mounted && token == _token;
@@ -326,8 +351,8 @@ class PlayerController extends _$PlayerController {
     final volume = ref.read(appPreferencesProvider).getDouble(AppPreferences.volume);
     if (volume != null) unawaited(backend.setVolume(volume));
     if (_speed != 1) unawaited(backend.setSpeed(_speed));
-    final filter = equalizerFilter(ref.read(playerSettingsProvider).equalizer);
-    if (filter.isNotEmpty) unawaited(backend.setAudioFilter(filter));
+    final effects = ref.read(playerSettingsProvider).audioEffects;
+    if (!effects.isNeutral) unawaited(backend.setAudioEffects(effects));
     return backend;
   }
 

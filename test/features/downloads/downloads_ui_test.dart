@@ -220,6 +220,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('download-section-1')));
     await settle(tester);
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
     expect(queue().tasks.map((t) => t.id), ['alpha_m1_2']);
@@ -231,6 +232,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('mediaItem-1')));
     await settle(tester);
     await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
     expect(queue().tasks.map((t) => (t.id, t.request.sourceNames.join(', '))), [
@@ -246,7 +248,9 @@ void main() {
     await settle(tester);
 
     expect(tester.widget<ListTile>(find.byKey(const ValueKey('download-subtitle-0'))).selected, isTrue);
+    await tester.tap(find.byKey(const ValueKey('download-source-0')));
     await tester.tap(find.byKey(const ValueKey('download-subtitle-none')));
+    await tester.pump();
     await tester.tap(find.byKey(const ValueKey('download-start')));
     await settle(tester);
 

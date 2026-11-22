@@ -25,6 +25,8 @@ class PlayerSettings extends _$PlayerSettings {
           EndAction.values.asNameMap()[prefs.getString(AppPreferences.videoPlayerEndsAction)] ?? EndAction.playNext,
       shuffle: prefs.getBool(AppPreferences.videoPlayerShuffleMode) ?? false,
       equalizer: parseEqualizerBands(prefs.getString(AppPreferences.videoPlayerEqualizerBands)),
+      volumeNormalization: prefs.getBool(AppPreferences.videoPlayerVolumeNormalization) ?? false,
+      dynamicCompression: prefs.getBool(AppPreferences.videoPlayerDynamicCompression) ?? false,
       floatingPlayer: prefs.getBool(AppPreferences.floatingVideoPlayerEnabled) ?? true,
     );
   }
@@ -59,6 +61,16 @@ class PlayerSettings extends _$PlayerSettings {
     final value = [for (final b in bands) b.clamp(-equalizerMaxGain, equalizerMaxGain).toDouble()];
     state = state.copyWith(equalizer: value);
     await _prefs.setString(AppPreferences.videoPlayerEqualizerBands, formatEqualizerBands(value));
+  }
+
+  Future<void> setVolumeNormalization(bool value) async {
+    state = state.copyWith(volumeNormalization: value);
+    await _prefs.setBool(AppPreferences.videoPlayerVolumeNormalization, value);
+  }
+
+  Future<void> setDynamicCompression(bool value) async {
+    state = state.copyWith(dynamicCompression: value);
+    await _prefs.setBool(AppPreferences.videoPlayerDynamicCompression, value);
   }
 }
 
