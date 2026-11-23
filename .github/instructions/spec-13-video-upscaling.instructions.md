@@ -187,21 +187,7 @@ The controller and the UI never see mpv properties or shader paths. This is the 
   show a single hint per session suggesting a lighter preset or Off. **Never switch automatically.**
 - `avsync` jitters by up to ~5 frames (~170 ms at 30 fps) even when healthy. Never use one sample as a signal.
 
-## 13.8 Delivery stages
-
-Every stage: analyzer clean, tests green, Linux + Android debug builds run.
-
-| Stage | Content | Exit |
-|-------|---------|------|
-| **U0 — Spike** (throwaway branch) | Hard-coded `glsl-shaders` + `setSize(screen)`. Linux Mesa (Intel/AMD), Linux NVIDIA, Windows ANGLE: record the GL version, which presets compile, and GPU time for 720p→1440p and 1080p→2160p. Try a `media_kit_video` override requesting ES 3 on Windows. | Per-platform support matrix in this spec; decide on the Windows override (else ship Linux first); confirm licenses and asset size. |
-| **U1 — Domain + assets** | `upscaling.dart`, `upscaleOutputSize`, `mpv_shaders.dart`, pinned assets + licenses + `LicenseRegistry`, `ShaderStore`. | Unit tests; no UI. |
-| **U2 — Backend** | `VideoBackend` additions, `MediaKitVideoBackend` (commands, sizing, failure detection), `FakeVideoBackend`. | Presets run on Linux. |
-| **U3 — Controller + prefs** | Key, preferences, controller apply / persist / failure. | Controller tests. |
-| **U4 — UI + l10n** | Settings page and row, ARB strings, failure message. | Widget tests; manual Linux + Windows: windowed, fullscreen, floating, PiP. |
-| **U5 — Performance hint** | §13.7. | Manual check: heavy preset on a weak iGPU. |
-| **U6 — Docs** | README (Linux needs HW GL; Windows notes), acceptance ticked. | — |
-
-### U0 results (closed)
+## 13.8 Benchmark
 
 Setup: 720p source → 1080p output in fullscreen, spike branch `spike/upscaling-u0`, plus an mpv CLI benchmark with
 the same settings (`vo=gpu`, GLES, `framedrop=no`, `video-sync=audio`). GPU ms = CLI `vo-passes` per frame.
