@@ -159,7 +159,10 @@ The controller and the UI never see mpv properties or shader paths. This is the 
   - `setUpscaler(Upscaler?)`: persist, then apply to the backend.
   - In `_createBackend()`: apply the persisted upscaler (next to the audio effects), only if it is in
     `supportedUpscalers`.
-  - On `upscalerFailures`: persist off and show a localized message once. Playback continues.
+  - On `upscalerFailures`: persist off and re-emit on `PlayerController.upscalerFailures`; the UI shows a localized
+    message once (U4). Playback continues.
+  - The stored id is kept on devices that can't run it (it may be supported elsewhere); `PlayerController.upscaler`
+    resolves it to null there.
   - Expose `supportedUpscalers` for the UI.
 
 ## 13.6 UI

@@ -28,6 +28,7 @@ class PlayerSettings extends _$PlayerSettings {
       volumeNormalization: prefs.getBool(AppPreferences.videoPlayerVolumeNormalization) ?? false,
       dynamicCompression: prefs.getBool(AppPreferences.videoPlayerDynamicCompression) ?? false,
       floatingPlayer: prefs.getBool(AppPreferences.floatingVideoPlayerEnabled) ?? true,
+      upscaler: prefs.getString(AppPreferences.videoPlayerUpscaler),
     );
   }
 
@@ -66,6 +67,16 @@ class PlayerSettings extends _$PlayerSettings {
   Future<void> setVolumeNormalization(bool value) async {
     state = state.copyWith(volumeNormalization: value);
     await _prefs.setBool(AppPreferences.videoPlayerVolumeNormalization, value);
+  }
+
+  /// Null turns upscaling off.
+  Future<void> setUpscaler(String? id) async {
+    state = state.copyWith(upscaler: id, clearUpscaler: id == null);
+    if (id == null) {
+      await _prefs.remove(AppPreferences.videoPlayerUpscaler);
+    } else {
+      await _prefs.setString(AppPreferences.videoPlayerUpscaler, id);
+    }
   }
 
   Future<void> setDynamicCompression(bool value) async {

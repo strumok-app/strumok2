@@ -28,6 +28,9 @@ final class PlayerPreferences {
   /// Keep playing in a mini player after leaving the player (spec-06 §6.9).
   final bool floatingPlayer;
 
+  /// Upscaler id (spec-13); null is off. May name a preset that no longer exists or isn't supported here.
+  final String? upscaler;
+
   const PlayerPreferences({
     this.startFrom = StartFrom.fromRemembered,
     this.fixedPosition = 0,
@@ -37,6 +40,7 @@ final class PlayerPreferences {
     this.volumeNormalization = false,
     this.dynamicCompression = false,
     this.floatingPlayer = true,
+    this.upscaler,
   });
 
   PlayerPreferences copyWith({
@@ -48,6 +52,8 @@ final class PlayerPreferences {
     bool? volumeNormalization,
     bool? dynamicCompression,
     bool? floatingPlayer,
+    String? upscaler,
+    bool clearUpscaler = false,
   }) => PlayerPreferences(
     startFrom: startFrom ?? this.startFrom,
     fixedPosition: fixedPosition ?? this.fixedPosition,
@@ -57,6 +63,7 @@ final class PlayerPreferences {
     volumeNormalization: volumeNormalization ?? this.volumeNormalization,
     dynamicCompression: dynamicCompression ?? this.dynamicCompression,
     floatingPlayer: floatingPlayer ?? this.floatingPlayer,
+    upscaler: clearUpscaler ? null : upscaler ?? this.upscaler,
   );
 
   @override
@@ -69,7 +76,8 @@ final class PlayerPreferences {
       listEquals(other.equalizer, equalizer) &&
       other.volumeNormalization == volumeNormalization &&
       other.dynamicCompression == dynamicCompression &&
-      other.floatingPlayer == floatingPlayer;
+      other.floatingPlayer == floatingPlayer &&
+      other.upscaler == upscaler;
 
   @override
   int get hashCode => Object.hash(
@@ -81,6 +89,7 @@ final class PlayerPreferences {
     volumeNormalization,
     dynamicCompression,
     floatingPlayer,
+    upscaler,
   );
 
   AudioEffects get audioEffects =>
