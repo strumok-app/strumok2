@@ -337,6 +337,23 @@ void main() {
       expect(find.byKey(const Key('playerSurface')), findsOneWidget, reason: 'still in the player');
     });
 
+    testAppWidgets('desktop: the keyboard map works again right after returning from PiP', (tester) async {
+      await openPlayer(tester);
+      await tester.tap(find.byKey(const Key('pipButton')));
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+
+      final before = backend().calls.length;
+      await tester.sendKeyEvent(LogicalKeyboardKey.space);
+      await tester.pump();
+      expect(
+        backend().calls.skip(before),
+        contains('playOrPause'),
+        reason: 'focus returns to the player, so shortcuts work without moving focus first',
+      );
+    });
+
     testAppWidgets('desktop: compact window close stops playback and closes the app', (tester) async {
       await openPlayer(tester);
       await tester.tap(find.byKey(const Key('pipButton')));

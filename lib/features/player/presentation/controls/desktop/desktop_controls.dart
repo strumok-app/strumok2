@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/localization.dart';
+import '../../../data/pip/pip.dart';
 import '../../../data/video_backend.dart';
 import '../../../domain/player_session.dart';
 import '../../pip_view.dart';
@@ -36,6 +37,7 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
   late final PlayerController _controller;
   late final PlayerFullscreen _fullscreen;
   late final ControlsVisibility _visibility;
+  late final Pip _pip;
   final _rootFocus = FocusNode(debugLabel: 'playerRoot');
   bool _showShortcuts = false;
 
@@ -45,13 +47,26 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
     _controller = ref.read(playerControllerProvider.notifier);
     _fullscreen = ref.read(playerFullscreenProvider.notifier);
     _visibility = ControlsVisibility(() => _controller.status)..addListener(_onVisibility);
+    _pip = ref.read(pipProvider);
+    _pip.isActive.addListener(_onPipChanged);
   }
 
   @override
   void dispose() {
+    _pip.isActive.removeListener(_onPipChanged);
     _visibility.dispose();
     _rootFocus.dispose();
     super.dispose();
+  }
+
+  /// Returning from PiP the controls become visible again, but `Visibility`'s `ExcludeFocus` does not restore focus
+  /// to [_rootFocus], so the keyboard map would stay dead until focus traversal reaches it. Re-request it after the
+  /// frame that re-includes the subtree.
+  void _onPipChanged() {
+    if (_pip.isActive.value) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_pip.isActive.value) _rootFocus.requestFocus();
+    });
   }
 
   void _onVisibility() {
