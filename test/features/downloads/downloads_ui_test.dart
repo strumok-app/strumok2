@@ -241,27 +241,6 @@ void main() {
     ], reason: 'a single item downloads after explicit confirmation');
   });
 
-  testAppWidgets('download sheet lets the user turn off the remembered subtitle', (tester) async {
-    await start(tester, items: [episode(0)], subtitleName: 'UA subs');
-    await go(tester, AppRoutes.details('alpha', 'm1'));
-    await tester.tap(find.byKey(const Key('downloadButton')));
-    await settle(tester);
-
-    expect(tester.widget<ListTile>(find.byKey(const ValueKey('download-subtitle-0'))).selected, isTrue);
-    await tester.tap(find.byKey(const ValueKey('download-source-0')));
-    await tester.tap(find.byKey(const ValueKey('download-subtitle-none')));
-    await tester.pump();
-    await tester.tap(find.byKey(const ValueKey('download-start')));
-    await settle(tester);
-
-    expect(queue().tasks.single.request.subtitleNames, isEmpty);
-    expect(
-      container.read(collectionItemProvider('alpha', 'm1'))?.currentSubtitleName,
-      'UA subs',
-      reason: 'download selection does not modify the collection preference',
-    );
-  });
-
   testAppWidgets('download sheet hides the subtitle panel when a video source has no subtitles', (tester) async {
     await start(
       tester,

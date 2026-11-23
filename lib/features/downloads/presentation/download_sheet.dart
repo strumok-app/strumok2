@@ -299,15 +299,6 @@ class _SourceListState extends ConsumerState<_SourceList> {
                   if (data.first is VideoMediaItemSource && _subtitles.isNotEmpty) ...[
                     const Divider(),
                     ListTile(title: Text(l10n.downloadsSubtitles), subtitle: Text(l10n.downloadsSubtitleHint)),
-                    ListTile(
-                      key: const ValueKey('download-subtitle-none'),
-                      enabled: !_busy,
-                      selected: _pickedSubtitles.isEmpty,
-                      leading: const Icon(Icons.closed_caption_off_outlined),
-                      title: Text(l10n.playerSubtitlesOff),
-                      trailing: Icon(_pickedSubtitles.isEmpty ? Icons.check_box : Icons.check_box_outline_blank),
-                      onTap: () => setState(_pickedSubtitles.clear),
-                    ),
                     for (final (index, subtitle) in _subtitles.indexed)
                       _priorityTile(
                         key: ValueKey('download-subtitle-$index'),

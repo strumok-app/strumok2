@@ -23,7 +23,7 @@ List<ShortcutEntry> desktopShortcuts(AppLocalizations l10n, PlayerSession sessio
   (keys: [DesktopKeys.playPause], label: l10n.playerShortcutPlayPause),
   (keys: ['←', '→'], label: l10n.playerShortcutSeek(10)),
   (keys: ['J', 'I'], label: l10n.playerShortcutSeek(60)),
-  (keys: ['Shift', '←', '→'], label: l10n.playerShortcutFrameStep),
+  (keys: ['Shift + ←', 'Shift + →'], label: l10n.playerShortcutFrameStep),
   (keys: ['↑', '↓'], label: l10n.playerShortcutVolume),
   (keys: [DesktopKeys.mute], label: l10n.playerShortcutMute),
   (keys: [DesktopKeys.previous, DesktopKeys.next], label: l10n.playerShortcutPreviousNext),
@@ -115,7 +115,7 @@ class _ShortcutRow extends StatelessWidget {
     child: Row(
       children: [
         SizedBox(
-          width: 60,
+          width: 80,
           child: Wrap(spacing: 4, runSpacing: 4, children: [for (final key in entry.keys) _KeyCap(key)]),
         ),
         const SizedBox(width: 8),
