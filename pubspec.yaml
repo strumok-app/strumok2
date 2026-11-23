@@ -60,3 +60,15 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
+  # Upscaling shaders (spec-13): desktop only, so Android builds don't carry them.
+  assets:
+    - path: assets/shaders/anime4k/
+      platforms: [linux, windows]
+    - path: assets/shaders/fsrcnnx/
+      platforms: [linux, windows]
+    - path: assets/shaders/ravu/
+      platforms: [linux, windows]
+    - path: assets/shaders/nnedi3/
+      platforms: [linux, windows]
+    - path: assets/shaders/GPL-3.0.txt
+      platforms: [linux, windows]

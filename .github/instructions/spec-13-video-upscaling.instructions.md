@@ -128,9 +128,10 @@ The controller and the UI never see mpv properties or shader paths. This is the 
   - MUST NOT `set` a joined path list: the separator is `:` on Unix and `;` on Windows, and drive letters (`C:`)
     break the split.
 - `data/shader_store.dart`: mpv needs real files, so this extracts one upscaler's assets on demand from
-  `rootBundle` into `<AppPaths.support>/shaders/<catalogVersion>/`. Extraction is atomic (temp dir → rename →
-  `.complete` marker) and idempotent. Directories of other catalog versions are deleted. The same code path is used on
-  every platform.
+  `rootBundle` into `<AppPaths.support>/shaders/v<shaderCatalogVersion>/<family>/<file>`. Each file is written under a
+  temporary name and renamed, so an existing file is always complete. Files shared between chains are extracted
+  once. Other catalog versions and leftover temp files are deleted on first use. The same code path is used on every
+  platform. **Bump `shaderCatalogVersion` whenever a shader file changes.**
 - `MediaKitVideoBackend`:
   - `supportedUpscalers`: the catalog filtered by platform (Linux; Windows only after T9 passes, see U0 results) and by HW rendering (empty
     under SW rendering), minus presets excluded for the platform (§13.3).
@@ -229,8 +230,9 @@ Decisions:
 
 - `upscaleOutputSize`: view ≤ source → null; letterbox/pillarbox fit; devicePixelRatio applied; `maxLongSide` cap.
 - `mpvShaderCommands`: `clr` + one `append` per path; a Windows path `C:\…\x.glsl` is passed through unsplit.
-- `ShaderStore` (fake bundle, temp dir): extracts; a second call is a no-op; a version bump re-extracts and deletes
-  the old dir; a missing `.complete` marker re-extracts.
+- `ShaderStore` (fake bundle, temp dir): extracts in hook order; a second call loads nothing; shared files load once;
+  a version bump deletes the old dir and leftover temp files.
+- Catalog: every upscaler maps to shader files that exist in `assets/shaders/`.
 - Settings: round-trip; unknown id → off.
 - Controller (fake backend): the persisted upscaler is applied on backend creation only when supported; a failure →
   off + persisted + message, and the playback error state is untouched.
