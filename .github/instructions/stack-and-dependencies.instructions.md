@@ -65,3 +65,7 @@ Use these only if you need the capability; they are proven on all target platfor
   works with codegen `2.13.0` modules (`forceSameCodegenVersion: false`). Bump the Rust-side codegen version
   only as part of a coordinated bundle-major change (as done for API 5).
 - If you need a `media_kit` fork/override (e.g. for Android fMP4 seeking), document why in `pubspec.yaml`.
+  Known candidate: a `media_kit_video` override that requests a GLES 3 context on Windows (ANGLE) for upscaling
+  shaders — only if spec-13 stage U0 proves it is needed.
+- Upscaling shaders (spec-13) are bundled assets, not packages; pin their upstream commits and licenses in
+  `assets/shaders/README.md`.

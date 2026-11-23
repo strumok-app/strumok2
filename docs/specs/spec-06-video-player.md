@@ -93,6 +93,8 @@ to media_kit together with the source headers, stop the proxy when the backend i
 - Settings: shuffle mode; on-end action (`playNext` default / `playAgain` / `doNothing`); start-from
   (`fromRemembered` default / `fromBeginning` / `fromFixedPosition` + seconds, 10 s steps). Shuffle applies to
   the automatic advance at the end (`playNext`): a random other item; the Next button stays sequential.
+- Upscaling with mpv GLSL shaders (desktop only, off by default) — specified in
+  [spec-13](spec-13-video-upscaling.instructions.md); the §6.3 properties stay unchanged.
 - Volume persisted (0–100, default 100). Keep screen awake while playing.
 - Progress → collection per spec-03 §3.3; mark `complete` is user-driven (don't auto-complete).
 
@@ -106,7 +108,7 @@ Buttons by frequency of use:
 | **Subtitles** (CC) | show/hide toggle: off when on, otherwise the last chosen subtitles of the session (the first when none) | own button when the item has supplier subtitles; CC icon on/off; tooltip "Show subtitles" / "Hide subtitles" |
 | **Source** (server) | sources, current checked | own button; also "Change source" in the error view |
 | **Episodes** | playlist grouped by section | own button |
-| **Settings** (gear) | rows: Subtitles (with supplier subtitles: off + list, size and offset pinned below the scrolling list; choosing stays on the page), Audio (with several tracks), Quality (with several qualities), Speed, Equalizer, Start from, When it ends → pages; Shuffle switch | own button, always shown |
+| **Settings** (gear) | rows: Subtitles (with supplier subtitles: off + list, size and offset pinned below the scrolling list; choosing stays on the page), Audio (with several tracks), Quality (with several qualities), Upscaling (desktop, [spec-13](spec-13-video-upscaling.instructions.md)), Speed, Equalizer, Start from, When it ends → pages; Shuffle switch | own button, always shown |
 | PiP, fullscreen, volume, lock | — | device-specific |
 
 - Order is fixed everywhere: **subtitles → source → settings → episodes**, then window/mode buttons. Episodes is

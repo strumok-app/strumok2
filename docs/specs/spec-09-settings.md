@@ -39,7 +39,8 @@ video_player_volume_normalization, video_player_dynamic_compression (bools),
 offline_mode, offline_downloads_directory, ffi_supplier_bundle_info (json), floating_video_player_enabled
 ```
 
-New keys (rewrite): update-check timestamps and "already notified version" for app and supplier bundle (spec-11).
+New keys (rewrite): update-check timestamps and "already notified version" for app and supplier bundle (spec-11);
+`video_player_upscaler` (upscaler id, absent = off; spec-13).
 
 Enum values are stored by `.name`.
 
