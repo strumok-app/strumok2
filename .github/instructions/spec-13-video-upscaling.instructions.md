@@ -17,7 +17,8 @@ Windows)**. Off by default. When it is off, playback MUST behave exactly as toda
 | F3 | By default the desktop **texture size = the video's own size** (`VideoControllerConfiguration.width/height` = null), and Flutter scales the texture. | `linux/video_output.cc` (`video_output_get_width`) | In that state mpv never upscales and the shaders' `//!WHEN` conditions are false. While upscaling is on, the output MUST be resized to on-screen physical pixels (§13.4). |
 | F4 | Both desktop embedders request a **GLES 2** context (`EGL_CONTEXT_CLIENT_VERSION 2`). Linux uses EGL; Windows uses ANGLE on D3D11. | `linux/video_output.cc`, `windows/angle_surface_manager.h` | Mesa and NVIDIA usually return a newer ES 3.x context (U0: Linux/Intel Mesa → **GLES 3.2** confirmed). ANGLE likely returns exactly ES 2.0, and most prescalers fail there. Windows may need a `media_kit_video` override that requests ES 3 (verified in U0). Compute shaders need GL 4.3 / ES 3.1: **fragment variants only**. |
 | F7 | On every `videoParams` change (new file, quality switch, rotation), media_kit calls `VideoOutputManager.SetSize` with the video size and so **overrides a fixed size**. `NativeVideoController.setSize` also returns early when the requested size equals its cached `width/height`, even after such a reset. | `native_video_controller/real.dart` (`videoParamsSubscription`, `setSize`) | After each `videoParams` event the backend MUST re-apply the output size (debounced), going through `setSize()` (native) and then `setSize(w, h)` so the dedupe check doesn't skip it. |
-| F5 | The player runs `framedrop=no` + `video-sync=audio` (spec-06 §6.3, MUST, unchanged). | `media_kit_backend.dart` | A shader that is too heavy makes video lag behind audio. Cost labels and a performance hint (§13.7) are required. |
+| F5 | The player runs `framedrop=no` + `video-sync=audio` (spec-06 §6.3). | `media_kit_backend.dart` | U0: with an over-budget shader the video falls behind audio and **never recovers** (frozen until the player closes), even after switching to a light preset or Off. With `framedrop=vo` it catches up. So **while an upscaler is active the backend MUST set `framedrop=vo`**, and restore `no` when upscaling is off (the only exception to §6.3). |
+| F8 | Through the libmpv render API, `vo-passes` is empty and `vo-delayed-frame-count` stays 0. `avsync` and `frame-drop-count` work. | U0 spike log | No in-app GPU timing. Overload detection (§13.7) uses `frame-drop-count` (VO drops with `framedrop=vo`) and `avsync`. |
 | F6 | The video view is built once per backend and moved between fullscreen, floating and PiP hosts. | spec-06 §6.1 | Output sizing lives inside the backend's view, so it follows every host. |
 
 ## 13.2 Scope
@@ -40,19 +41,23 @@ persisted values. If a preset is removed later, its id must still resolve to "of
 | id | Family | Files | Cost | Anime hint |
 |----|--------|-------|------|------------|
 | `fsrcnnx_8` | FSRCNNX | `FSRCNNX_x2_8-0-4-1.glsl` | light | — |
-| `fsrcnnx_16` | FSRCNNX | `FSRCNNX_x2_16-0-4-1.glsl` | medium | — |
+| `fsrcnnx_16` | FSRCNNX | `FSRCNNX_x2_16-0-4-1.glsl` | heavy | — |
 | `ravu_lite_r4` | RAVU | `ravu-lite-ar-r4.hook` | light | — |
-| `ravu_zoom_r3` | RAVU | `ravu-zoom-ar-r3.hook` (5.2 MB, embedded LUT) | medium | — |
+| `ravu_zoom_r3` | RAVU | `ravu-zoom-ar-r3.hook` (5.2 MB, embedded LUT) | light | — |
 | `nnedi3_64` | NNEDI3 | `nnedi3-nns64-win8x6.hook` | medium | — |
 | `nnedi3_128` | NNEDI3 | `nnedi3-nns128-win8x6.hook` | heavy | — |
-| `anime4k_a_fast` | Anime4K v4 | `Anime4K_Clamp_Highlights`, `Restore_CNN_M`, `Upscale_CNN_x2_M`, `AutoDownscalePre_x2`, `AutoDownscalePre_x4`, `Upscale_CNN_x2_S` | medium | yes |
+| `anime4k_a_fast` | Anime4K v4 | `Anime4K_Clamp_Highlights`, `Restore_CNN_M`, `Upscale_CNN_x2_M`, `AutoDownscalePre_x2`, `AutoDownscalePre_x4`, `Upscale_CNN_x2_S` | light | yes |
 | `anime4k_a_hq` | Anime4K v4 | official mode A (HQ) chain (`_VL`/`_L` variants) | heavy | yes |
 | `anime4k_b_hq` | Anime4K v4 | official mode B (HQ) chain | heavy | yes |
-| `anime4k_c_hq` | Anime4K v4 | official mode C (HQ) chain | heavy | yes |
+| `anime4k_c_hq` | Anime4K v4 | official mode C (HQ) chain | medium | yes |
 
+- Cost = GPU time per frame on a reference iGPU (Intel Arrow Lake, GLES, 720p → 1080p; U0): light < 20 ms,
+  medium 20–40 ms, heavy > 41.7 ms (more than one 24 fps frame, so it only plays with dropped frames).
 - Presets that fail on a platform in U0 MUST be excluded from that platform's `supportedUpscalers`.
-- **Dropped after U0:** ArtCNN (compute-only upstream; the compile failure on Linux/Mesa GLES 3.2 **crashed the app
-  inside mpv**, and it was too heavy anyway). A native crash can't be caught from Dart, so **only presets verified
+- **Dropped after U0:** ArtCNN v1.6.x. Its compute shaders need fp16 arithmetic
+  (`GL_EXT_shader_explicit_arithmetic_types_float16`), which in practice is Vulkan-only. On OpenGL/GLES, mpv's `gpu`
+  renderer **aborts** (`video.c: copy_image` assertion), which **crashed the app**, and `gpu-next` skips the shader.
+  media_kit renders through the libmpv OpenGL render API, so neither Vulkan nor `gpu-next` is available. A native crash can't be caught from Dart, so **only presets verified
   on a platform may be offered there**. Failure detection (§13.4) is a fallback for driver differences, not a
   safety net.
 - **Licenses (verified):** Anime4K is MIT. FSRCNNX, RAVU and NNEDI3 files are LGPL-3.0-or-later (per
@@ -127,10 +132,10 @@ The controller and the UI never see mpv properties or shader paths. This is the 
   `.complete` marker) and idempotent. Directories of other catalog versions are deleted. The same code path is used on
   every platform.
 - `MediaKitVideoBackend`:
-  - `supportedUpscalers`: the catalog filtered by platform (Linux, Windows only) and by HW rendering (empty
+  - `supportedUpscalers`: the catalog filtered by platform (Linux; Windows only after T9 passes, see U0 results) and by HW rendering (empty
     under SW rendering), minus presets excluded for the platform (§13.3).
-  - `setUpscaler`: `await _configured` → extract → run `mpvShaderCommands` → enable/disable output sizing. Off runs
-    `clr` and restores the native size (`setSize()` with nulls).
+  - `setUpscaler`: `await _configured` → extract → run `mpvShaderCommands` → `framedrop=vo` (F5) → enable output
+    sizing. Off runs `clr`, restores `framedrop=no` and the native size (`setSize()` with nulls).
   - **Output sizing (F3):** `buildView()` wraps `Video` in a `LayoutBuilder` and uses `MediaQuery.devicePixelRatioOf`.
     While an upscaler is active, it calls `VideoController.setSize` with `upscaleOutputSize(...)`, debounced
     ~150 ms for window resize and fullscreen changes, and re-evaluates when the video size or aspect changes.
@@ -167,9 +172,10 @@ The controller and the UI never see mpv properties or shader paths. This is the 
 
 ## 13.7 Performance hint
 
-- While an upscaler is active and playback is running (not paused or buffering), sample mpv
-  `vo-delayed-frame-count` and `frame-drop-count` every second. If the delta stays above a threshold for ~10 s, show
-  a single hint per session suggesting a lighter preset or Off. **Never switch automatically.**
+- While an upscaler is active and playback is running (not paused or buffering), sample mpv `frame-drop-count`
+  (VO drops, F5) and `avsync` every second (F8). If the drop rate stays above ~10 % of the video fps for ~10 s,
+  show a single hint per session suggesting a lighter preset or Off. **Never switch automatically.**
+- `avsync` jitters by up to ~5 frames (~170 ms at 30 fps) even when healthy. Never use one sample as a signal.
 
 ## 13.8 Delivery stages
 
@@ -185,21 +191,39 @@ Every stage: analyzer clean, tests green, Linux + Android debug builds run.
 | **U5 — Performance hint** | §13.7. | Manual check: heavy preset on a weak iGPU. |
 | **U6 — Docs** | README (Linux needs HW GL; Windows notes), acceptance ticked. | — |
 
-### U0 results (support matrix, filled in while testing)
+### U0 results (closed)
 
-Test: 1280×720 source → 1920×1080 output; "drops" = mpv `frame-drop-count` per 2 s after the switch-over burst
-(baseline with Off: ~1).
+Setup: 720p source → 1080p output in fullscreen, spike branch `spike/upscaling-u0`, plus an mpv CLI benchmark with
+the same settings (`vo=gpu`, GLES, `framedrop=no`, `video-sync=audio`). GPU ms = CLI `vo-passes` per frame.
+The 24 fps budget is 41.7 ms per frame.
 
-| Preset | Linux · Intel Arrow Lake (Mesa, GLES 3.2) | Linux · NVIDIA | Windows (ANGLE) |
-|--------|-------------------------------------------|----------------|-----------------|
-| `anime4k_a_fast` | ✅ drops ~1 (baseline) | ? | ? |
-| `anime4k_a_hq` | ✅ drops ~1 (baseline) | ? | ? |
-| `anime4k_b_hq` | ✅ drops ~1 (baseline) | ? | ? |
-| `anime4k_c_hq` | ✅ drops ~1 (baseline) | ? | ? |
-| `fsrcnnx_8`, `fsrcnnx_16` | ? | ? | ? |
-| `ravu_lite_r4`, `ravu_zoom_r3` | ? | ? | ? |
-| `nnedi3_64`, `nnedi3_128` | ? | ? | ? |
-| ArtCNN (dropped) | ❌ compute shader compile error → app crash | — | — |
+| Preset | Intel Arrow Lake (Mesa, GLES 3.2): GPU ms | Intel in app | NVIDIA RTX PRO 3000 (GLES 3.2): GPU ms | NVIDIA in app | Windows |
+|--------|------|------|------|------|------|
+| `ravu_zoom_r3` | 11.2 | ✅ | 1.0 | ✅ | not tested |
+| `ravu_lite_r4` | 12.3 | ✅ | 0.8 | ✅ | not tested |
+| `fsrcnnx_8` | 17.1 | ✅ | 3.9 | ✅ | not tested |
+| `anime4k_a_fast` | 17.9 | ✅ | 6.5 | ✅ | not tested |
+| `nnedi3_64` | timer 0 | lag grows → OK with `framedrop=vo` | 7.7 | ✅ | not tested |
+| `anime4k_c_hq` | 36.5 | lag grows → OK with `framedrop=vo` | 10.4 | ✅ (colour artifacts, see below) | not tested |
+| `fsrcnnx_16` | 55.6 | lag grows → OK with `framedrop=vo` | 10.2 | ✅ | not tested |
+| `anime4k_a_hq` | 65.5 | lag grows → OK with `framedrop=vo` | 21.3 | ✅ (colour artifacts) | not tested |
+| `anime4k_b_hq` | — | lag grows → OK with `framedrop=vo` | — | ✅ (colour artifacts) | not tested |
+| `nnedi3_128` | 71.2 | lag grows → OK with `framedrop=vo` | 20.0 | lag 1.4 s with `framedrop=no` | not tested |
+| ArtCNN | — | ❌ mpv abort → app crash | — | — | dropped |
+
+Also verified on Linux: output sizing for fullscreen/windowed/resize (T4); episode, quality and source changes keep
+the upscaled size (T5, F7); floating player and PiP go native and come back upscaled (T6); `hlsProxy` and
+downloaded files (T7).
+
+Decisions:
+- `framedrop=vo` while an upscaler is active (F5). With it, every remaining preset is playable on both GPUs; heavy
+  ones drop frames on weak GPUs, which is what the cost badge and the §13.7 hint are for.
+- The catalog stays as listed in §13.3; cost labels are taken from the Intel numbers.
+- NVIDIA colour artifacts with the Anime4K HQ chains are a known issue that won't be investigated. The mpv CLI on
+  the same GPU picks `rgba16f` FBOs, so the cause is not the FBO format.
+- **Windows is still unverified** (ANGLE GL version, compile results). U1–U4 build the Windows path the same way
+  as Linux, but `supportedUpscalers` stays **empty on Windows** until a Windows run of the U0 test plan (T9)
+  passes.
 
 ## 13.9 Tests (required)
 

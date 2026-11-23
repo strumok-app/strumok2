@@ -54,6 +54,7 @@ stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reco
 demuxer-lavf-o: append each reconnect option above + seg_max_retry=10   (use `change-list ... append` to keep media_kit defaults)
 alang / vlang = "<userLanguage>,en"
 ```
+Only exception: `framedrop=vo` while a desktop upscaler is active ([spec-13](spec-13-video-upscaling.instructions.md) F5).
 Treat "ended" with a ~5 s tolerance near EOF. Do not reconnect on 4xx (expired links).
 
 ## 6.4 Junked HLS sources (`hlsProxy == true`) — MUST
