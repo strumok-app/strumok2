@@ -1,5 +1,5 @@
 ---
-description: 'Use when working on video upscaling: mpv GLSL shaders (ArtCNN, RAVU, Anime4K, FSRCNNX, NNEDI3), VideoBackend upscaler API, render output sizing, shader assets/extraction, upscaling settings page.'
+description: 'Use when working on video upscaling: mpv GLSL shaders (RAVU, Anime4K, FSRCNNX, NNEDI3), VideoBackend upscaler API, render output sizing, shader assets/extraction, upscaling settings page.'
 applyTo: 'lib/features/player/**, assets/shaders/**'
 ---
 
@@ -15,7 +15,8 @@ Windows)**. Off by default. When it is off, playback MUST behave exactly as toda
 | F1 | Android also renders through mpv's GPU renderer (`vo=gpu`, `gpu-context=android`, `opengl-es=yes`, `hwdec=auto-safe`; software decoding on emulators). | `android_video_controller/real.dart` | Shaders are technically possible on Android. The limits there are GPU power and battery, especially on TV boxes. |
 | F2 | Desktop uses `vo=libmpv` (render API, OpenGL), which is the same `gpu` renderer, so `glsl-shaders` works. On Linux, if GL init fails it falls back to **SW rendering**. | `native_video_controller/real.dart`, `linux/video_output.cc` | With SW rendering or HW acceleration off, upscaling is unsupported. |
 | F3 | By default the desktop **texture size = the video's own size** (`VideoControllerConfiguration.width/height` = null), and Flutter scales the texture. | `linux/video_output.cc` (`video_output_get_width`) | In that state mpv never upscales and the shaders' `//!WHEN` conditions are false. While upscaling is on, the output MUST be resized to on-screen physical pixels (§13.4). |
-| F4 | Both desktop embedders request a **GLES 2** context (`EGL_CONTEXT_CLIENT_VERSION 2`). Linux uses EGL; Windows uses ANGLE on D3D11. | `linux/video_output.cc`, `windows/angle_surface_manager.h` | Mesa and NVIDIA usually return a newer ES 3.x context. ANGLE likely returns exactly ES 2.0, and most prescalers fail there. Windows may need a `media_kit_video` override that requests ES 3 (verified in U0). Compute shaders need GL 4.3 / ES 3.1, so fragment variants are preferred (ArtCNN exception, §13.3). |
+| F4 | Both desktop embedders request a **GLES 2** context (`EGL_CONTEXT_CLIENT_VERSION 2`). Linux uses EGL; Windows uses ANGLE on D3D11. | `linux/video_output.cc`, `windows/angle_surface_manager.h` | Mesa and NVIDIA usually return a newer ES 3.x context (U0: Linux/Intel Mesa → **GLES 3.2** confirmed). ANGLE likely returns exactly ES 2.0, and most prescalers fail there. Windows may need a `media_kit_video` override that requests ES 3 (verified in U0). Compute shaders need GL 4.3 / ES 3.1: **fragment variants only**. |
+| F7 | On every `videoParams` change (new file, quality switch, rotation), media_kit calls `VideoOutputManager.SetSize` with the video size and so **overrides a fixed size**. `NativeVideoController.setSize` also returns early when the requested size equals its cached `width/height`, even after such a reset. | `native_video_controller/real.dart` (`videoParamsSubscription`, `setSize`) | After each `videoParams` event the backend MUST re-apply the output size (debounced), going through `setSize()` (native) and then `setSize(w, h)` so the dedupe check doesn't skip it. |
 | F5 | The player runs `framedrop=no` + `video-sync=audio` (spec-06 §6.3, MUST, unchanged). | `media_kit_backend.dart` | A shader that is too heavy makes video lag behind audio. Cost labels and a performance hint (§13.7) are required. |
 | F6 | The video view is built once per backend and moved between fullscreen, floating and PiP hosts. | spec-06 §6.1 | Output sizing lives inside the backend's view, so it follows every host. |
 
@@ -31,9 +32,8 @@ Windows)**. Off by default. When it is off, playback MUST behave exactly as toda
 
 ## 13.3 Shader catalog (curated, pinned, bundled)
 
-Fragment-shader variants wherever upstream offers them (see F4). **Exception: ArtCNN is compute-only in every
-upstream release** (`//!COMPUTE`, needs GL 4.3 / GLES 3.1), so its presets are offered only on platforms where U0
-shows that compute works. Files live in `assets/shaders/<family>/`, shipped **unmodified**. Each one is pinned to an
+Fragment-shader variants only (see F4). Files live in `assets/shaders/<family>/`, shipped **unmodified**. Each one
+is pinned to an
 upstream release or commit, with its license and sha256, in `assets/shaders/README.md`. The ids are stable,
 persisted values. If a preset is removed later, its id must still resolve to "off".
 
@@ -45,22 +45,24 @@ persisted values. If a preset is removed later, its id must still resolve to "of
 | `ravu_zoom_r3` | RAVU | `ravu-zoom-ar-r3.hook` (5.2 MB, embedded LUT) | medium | — |
 | `nnedi3_64` | NNEDI3 | `nnedi3-nns64-win8x6.hook` | medium | — |
 | `nnedi3_128` | NNEDI3 | `nnedi3-nns128-win8x6.hook` | heavy | — |
-| `artcnn_c4f16` | ArtCNN | `ArtCNN_C4F16.glsl` (compute) | heavy | — |
-| `artcnn_c4f16_ds` | ArtCNN | `ArtCNN_C4F16_DS.glsl` (compute) | heavy | — |
 | `anime4k_a_fast` | Anime4K v4 | `Anime4K_Clamp_Highlights`, `Restore_CNN_M`, `Upscale_CNN_x2_M`, `AutoDownscalePre_x2`, `AutoDownscalePre_x4`, `Upscale_CNN_x2_S` | medium | yes |
 | `anime4k_a_hq` | Anime4K v4 | official mode A (HQ) chain (`_VL`/`_L` variants) | heavy | yes |
 | `anime4k_b_hq` | Anime4K v4 | official mode B (HQ) chain | heavy | yes |
 | `anime4k_c_hq` | Anime4K v4 | official mode C (HQ) chain | heavy | yes |
 
 - Presets that fail on a platform in U0 MUST be excluded from that platform's `supportedUpscalers`.
-- **Licenses (verified):** Anime4K and ArtCNN are MIT. FSRCNNX, RAVU and NNEDI3 files are LGPL-3.0-or-later (per
+- **Dropped after U0:** ArtCNN (compute-only upstream; the compile failure on Linux/Mesa GLES 3.2 **crashed the app
+  inside mpv**, and it was too heavy anyway). A native crash can't be caught from Dart, so **only presets verified
+  on a platform may be offered there**. Failure detection (§13.4) is a fallback for driver differences, not a
+  safety net.
+- **Licenses (verified):** Anime4K is MIT. FSRCNNX, RAVU and NNEDI3 files are LGPL-3.0-or-later (per
   file headers; the FSRCNN-TensorFlow *repo* is GPL-3.0, but the released shaders are LGPL). Each family folder holds
   its `LICENSE`; `assets/shaders/GPL-3.0.txt` ships the GPL text that LGPL-3.0 builds on. Register all of them
   with `LicenseRegistry`.
 - `.hook` (mpv-prescalers) is upstream's extension. mpv loads it like `.glsl`. Keep the upstream names.
 - Anime4K chains match upstream's mpv templates (`md/Template/GLSL_Mac_Linux_{High,Low}-end/input.conf`), listed
   in `assets/shaders/README.md`.
-- Total ≈ 7.2 MB, of which `ravu-zoom-ar-r3` is 5.2 MB (the r2 variant would be 3.0 MB). The catalog is kept
+- Total ≈ 6.8 MB, of which `ravu-zoom-ar-r3` is 5.2 MB (the r2 variant would be 3.0 MB). The catalog is kept
   as-is until U0 testing, then trimmed to what works and performs well.
 - **Desktop-only bundling (MUST):** register every shader folder with a platform filter (Flutter
   `platforms:` asset key, supported by the pinned SDK 3.47.9; folder entries are not recursive), so Android builds don't include the shaders:
@@ -69,7 +71,7 @@ persisted values. If a preset is removed later, its id must still resolve to "of
     assets:
       - path: assets/shaders/anime4k/
         platforms: [linux, windows]
-      # … the same for artcnn/, fsrcnnx/, ravu/, nnedi3/ and assets/shaders/GPL-3.0.txt
+      # … the same for fsrcnnx/, ravu/, nnedi3/ and assets/shaders/GPL-3.0.txt
   ```
   Register the licenses with `LicenseRegistry` only on desktop. Android builds must not reference the missing
   assets.
@@ -78,7 +80,7 @@ persisted values. If a preset is removed later, its id must still resolve to "of
 
 ### Domain (pure) — `lib/features/player/domain/upscaling.dart`
 ```dart
-enum UpscalerFamily { fsrcnnx, ravu, nnedi3, artcnn, anime4k }
+enum UpscalerFamily { fsrcnnx, ravu, nnedi3, anime4k }
 enum UpscalerCost { light, medium, heavy }
 
 @immutable
@@ -182,6 +184,22 @@ Every stage: analyzer clean, tests green, Linux + Android debug builds run.
 | **U4 — UI + l10n** | Settings page and row, ARB strings, failure message. | Widget tests; manual Linux + Windows: windowed, fullscreen, floating, PiP. |
 | **U5 — Performance hint** | §13.7. | Manual check: heavy preset on a weak iGPU. |
 | **U6 — Docs** | README (Linux needs HW GL; Windows notes), acceptance ticked. | — |
+
+### U0 results (support matrix, filled in while testing)
+
+Test: 1280×720 source → 1920×1080 output; "drops" = mpv `frame-drop-count` per 2 s after the switch-over burst
+(baseline with Off: ~1).
+
+| Preset | Linux · Intel Arrow Lake (Mesa, GLES 3.2) | Linux · NVIDIA | Windows (ANGLE) |
+|--------|-------------------------------------------|----------------|-----------------|
+| `anime4k_a_fast` | ✅ drops ~1 (baseline) | ? | ? |
+| `anime4k_a_hq` | ✅ drops ~1 (baseline) | ? | ? |
+| `anime4k_b_hq` | ✅ drops ~1 (baseline) | ? | ? |
+| `anime4k_c_hq` | ✅ drops ~1 (baseline) | ? | ? |
+| `fsrcnnx_8`, `fsrcnnx_16` | ? | ? | ? |
+| `ravu_lite_r4`, `ravu_zoom_r3` | ? | ? | ? |
+| `nnedi3_64`, `nnedi3_128` | ? | ? | ? |
+| ArtCNN (dropped) | ❌ compute shader compile error → app crash | — | — |
 
 ## 13.9 Tests (required)
 

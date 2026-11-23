@@ -9,7 +9,6 @@ files the same way as `.glsl`.
 | Folder | Upstream | Pin | License |
 |--------|----------|-----|---------|
 | `anime4k/` | [bloc97/Anime4K](https://github.com/bloc97/Anime4K) | release `v4.0.1` (commit `4029bf701ecaa15f163cdc49cffe5501c1acf410`), asset `Anime4K_v4.0.zip` | MIT — `anime4k/LICENSE` |
-| `artcnn/` | [Artoriuz/ArtCNN](https://github.com/Artoriuz/ArtCNN) | release `v1.6.2` (commit `f606e1f0ba7e6f0ab55049f33dac4d854819b00b`), release assets | MIT — `artcnn/LICENSE` |
 | `fsrcnnx/` | [igv/FSRCNN-TensorFlow](https://github.com/igv/FSRCNN-TensorFlow) | release `1.1`, release assets | LGPL-3.0-or-later (file headers) — `fsrcnnx/LICENSE` + `GPL-3.0.txt` |
 | `ravu/` | [bjin/mpv-prescalers](https://github.com/bjin/mpv-prescalers) | commit `b3f0a59d68f33b7162051ea5970a5169558f0ea2` (repo root = fragment variants) | LGPL-3.0-or-later — `ravu/LICENSE` + `GPL-3.0.txt` |
 | `nnedi3/` | [bjin/mpv-prescalers](https://github.com/bjin/mpv-prescalers) | commit `b3f0a59d68f33b7162051ea5970a5169558f0ea2` | LGPL-3.0-or-later — `nnedi3/LICENSE` + `GPL-3.0.txt` |
@@ -17,8 +16,8 @@ files the same way as `.glsl`.
 Notes:
 - The FSRCNN-TensorFlow *repository* is GPL-3.0, but the released `.glsl` files say LGPL v3.0 or later in their
   headers. LGPL-3.0 is a set of additional permissions on top of GPL-3.0, so the GPL text ships too (`GPL-3.0.txt`).
-- **ArtCNN files use compute shaders** (`//!COMPUTE`); every upstream release is compute-only. They need
-  GL 4.3 / GLES 3.1, so offer them only where spec-13 U0 shows that compute works.
+- ArtCNN was evaluated and dropped in spec-13 U0. Its shaders are compute-only and failed to compile on the
+  Linux/Mesa GLES 3.2 context, the failure crashed the app inside mpv, and it was too heavy anyway.
 - Anime4K mode chains follow upstream's mpv templates (`md/Template/GLSL_Mac_Linux_{High,Low}-end/input.conf`
   at commit `7684e9586f8dcc738af08a1cdceb024cc184f426`):
   - Mode A (Fast): Clamp_Highlights, Restore_CNN_M, Upscale_CNN_x2_M, AutoDownscalePre_x2, AutoDownscalePre_x4, Upscale_CNN_x2_S
@@ -39,8 +38,6 @@ dadb7b713cfa1d810c55b5deff616072f3390e546fed1e6a54f80ea555f7b95d  anime4k/Anime4
 4c53ec2e287908f7ee7bcb266b0170421626d663576468b7d7dafc62962649a4  anime4k/Anime4K_Upscale_CNN_x2_S.glsl
 5638fe31c37c151a3443fea3451a3ef91af073f4dbb9615f6c0d1e29db11493d  anime4k/Anime4K_Upscale_CNN_x2_VL.glsl
 359c48fe5a317fbc6b706ce368401eef496e84ed98abac7a43efebca2b65d79b  anime4k/Anime4K_Upscale_Denoise_CNN_x2_VL.glsl
-57df650fddec3969e17799f5522c9b03dd2d33b1aeace237fef216bf3858125a  artcnn/ArtCNN_C4F16_DS.glsl
-03d0b3d31cb82c898a94a46663021a3e8f02c5a21d69c5cfdf0208de4bfd453e  artcnn/ArtCNN_C4F16.glsl
 d5a24a271e5d9a3f7f7a053b150c460a44c25b3cf7f770857d57cc3a2e1c9965  fsrcnnx/FSRCNNX_x2_16-0-4-1.glsl
 e800dbc5c1c95185cc82216c597724533ff5f2880179f256eef600f03e8dc2ae  fsrcnnx/FSRCNNX_x2_8-0-4-1.glsl
 8997ce2e9a6be381e6865233a81c97ef4fdb741818f8258283ee78ffa371eec6  nnedi3/nnedi3-nns128-win8x6.hook
