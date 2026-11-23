@@ -7,6 +7,7 @@ import 'package:strumok/core/platform/window_fullscreen.dart';
 import 'package:strumok/features/player/data/pip/pip.dart';
 import 'package:strumok/features/player/data/video_backend.dart';
 import 'package:strumok/features/player/domain/equalizer.dart';
+import 'package:strumok/features/player/domain/upscaling.dart';
 
 class FakeVideoSource extends VideoMediaItemSource {
   @override
@@ -51,7 +52,14 @@ class FakeVideoBackend implements VideoBackend {
   final _tracks = ValueNotifier(const PlaybackTracks());
   final _ended = StreamController<void>.broadcast(sync: true);
   final _errors = StreamController<String>.broadcast(sync: true);
+  final _upscalerFailures = StreamController<Upscaler>.broadcast(sync: true);
   var disposed = false;
+
+  @override
+  final List<Upscaler> supportedUpscalers;
+  Upscaler? upscaler;
+
+  FakeVideoBackend({this.supportedUpscalers = const []});
 
   @override
   ValueNotifier<PlaybackStatus> get status => _status;
@@ -68,6 +76,22 @@ class FakeVideoBackend implements VideoBackend {
   void end() => _ended.add(null);
 
   void fail(String message) => _errors.add(message);
+
+  /// The active upscaler fails and turns itself off, like a shader compile error.
+  void failUpscaler() {
+    final failed = upscaler!;
+    upscaler = null;
+    _upscalerFailures.add(failed);
+  }
+
+  @override
+  Stream<Upscaler> get upscalerFailures => _upscalerFailures.stream;
+
+  @override
+  Future<void> setUpscaler(Upscaler? upscaler) async {
+    this.upscaler = supportedUpscalers.contains(upscaler) ? upscaler : null;
+    calls.add('upscaler:${this.upscaler?.id ?? 'off'}');
+  }
 
   void emit({Duration? position, Duration? duration, bool? playing}) =>
       _status.value = _status.value.copyWith(position: position, duration: duration, playing: playing);

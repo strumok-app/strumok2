@@ -8,17 +8,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/localization.dart';
 import '../../../core/network/http_client.dart';
+import '../../../core/platform/app_platform.dart';
 import '../../../core/storage/app_preferences.dart';
 import '../../collection/domain/collection_item.dart';
 import '../../collection/domain/progress.dart';
 import '../../collection/presentation/collection_providers.dart';
 import '../../details/presentation/details_providers.dart';
 import '../data/media_kit_backend.dart';
+import '../data/shader_store.dart';
 import '../data/subtitle_repository.dart';
 import '../data/video_backend.dart';
 import '../domain/player_preferences.dart';
 import '../domain/player_session.dart';
 import '../domain/subtitles.dart';
+import '../domain/upscaling.dart';
 import 'player_settings.dart';
 
 part 'player_controller.g.dart';
@@ -28,7 +31,10 @@ final _log = Logger('PlayerController');
 @Riverpod(keepAlive: true)
 VideoBackend Function() videoBackendFactory(Ref ref) {
   final client = ref.watch(httpClientProvider);
-  return () => MediaKitVideoBackend(client);
+  // spec-13: Linux only for now; Windows stays off until verified (U0 T9), Android never.
+  final upscaling = AppPlatform.current == AppPlatform.linux;
+  final shaders = upscaling ? ref.watch(shaderStoreProvider) : null;
+  return () => MediaKitVideoBackend(client, shaders: shaders, upscalers: upscaling ? upscalers : const []);
 }
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.

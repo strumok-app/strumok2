@@ -44,7 +44,7 @@ final class VideoBackendFactoryProvider
   }
 }
 
-String _$videoBackendFactoryHash() => r'506e30b37416763370b86454c667e80d70da4208';
+String _$videoBackendFactoryHash() => r'03dd518369c4bec5c99dd86957bdc0f801610f77';
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
 /// Kept alive so the session can outlive the player route (floating player / PiP, M6).
@@ -81,7 +81,7 @@ final class PlayerControllerProvider extends $NotifierProvider<PlayerController,
   }
 }
 
-String _$playerControllerHash() => r'4abe31e5da740893af0bac2bb62e27f83e64efbe';
+String _$playerControllerHash() => r'a0226a7c64c79f3a6682a5ccd601669c2178795b';
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
 /// Kept alive so the session can outlive the player route (floating player / PiP, M6).

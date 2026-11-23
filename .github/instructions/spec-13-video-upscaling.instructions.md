@@ -133,8 +133,10 @@ The controller and the UI never see mpv properties or shader paths. This is the 
   once. Other catalog versions and leftover temp files are deleted on first use. The same code path is used on every
   platform. **Bump `shaderCatalogVersion` whenever a shader file changes.**
 - `MediaKitVideoBackend`:
-  - `supportedUpscalers`: the catalog filtered by platform (Linux; Windows only after T9 passes, see U0 results) and by HW rendering (empty
-    under SW rendering), minus presets excluded for the platform (§13.3).
+  - `supportedUpscalers`: the catalog filtered by platform (Linux; Windows only after T9 passes, see U0 results),
+    minus presets excluded for the platform (§13.3). Decided in `videoBackendFactory`. media_kit doesn't report
+    whether it fell back to SW rendering, so that isn't checked. mpv ignores user shaders there, so a selected
+    upscaler has no effect but does no harm.
   - `setUpscaler`: `await _configured` → extract → run `mpvShaderCommands` → `framedrop=vo` (F5) → enable output
     sizing. Off runs `clr`, restores `framedrop=no` and the native size (`setSize()` with nulls).
   - **Output sizing (F3):** `buildView()` wraps `Video` in a `LayoutBuilder` and uses `MediaQuery.devicePixelRatioOf`.
@@ -143,8 +145,9 @@ The controller and the UI never see mpv properties or shader paths. This is the 
     When the result is null (floating player, PiP, view ≤ source), it restores the native size.
   - **Failure detection:** listen to `Player.stream.log` (`PlayerConfiguration.logLevel` ≥ warn). Error lines from
     the `vo`/`libmpv` prefixes about shader compile/link failures or unsupported features → `clr` shaders, restore
-    native size, emit `upscalerFailures`. Keep the matcher small and test it with log lines recorded in U0. Log the
-    GL version once at init (debug level).
+    native size, emit `upscalerFailures` (`isShaderFailureLog` in `mpv_shaders.dart`, error level only, so mpv keeps
+    the default `logLevel`). Keep the matcher small and test it with log lines recorded in U0. A failure while
+    extracting or applying also counts as an upscaler failure.
   - `dispose` cancels the log subscription and the sizing debounce.
 
 ## 13.5 Settings and controller

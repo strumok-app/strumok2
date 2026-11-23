@@ -58,3 +58,11 @@ List<List<String>> mpvShaderCommands(List<String> paths) => [
   ['change-list', 'glsl-shaders', 'clr', ''],
   for (final path in paths) ['change-list', 'glsl-shaders', 'append', path],
 ];
+
+/// An mpv log line reporting that a user shader failed (compile/link/parse); spec-13 §13.4. Compile failures start
+/// with e.g. `[libmpv_render] compute shader source:` before the source dump.
+bool isShaderFailureLog(String prefix, String level, String text) {
+  if (level != 'error' && level != 'fatal') return false;
+  if (!prefix.startsWith('vo') && !prefix.startsWith('libmpv')) return false;
+  return text.toLowerCase().contains('shader');
+}

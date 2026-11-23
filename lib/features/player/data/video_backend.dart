@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../domain/equalizer.dart';
+import '../domain/upscaling.dart';
 
 @immutable
 final class PlaybackStatus {
@@ -161,6 +162,15 @@ abstract interface class VideoBackend {
 
   /// Replaces the audio effects; [AudioEffects.isNeutral] removes them. How they are realized is up to the backend.
   Future<void> setAudioEffects(AudioEffects effects);
+
+  /// Upscalers this backend can run on this device; empty when unsupported (the setting is hidden, spec-13).
+  List<Upscaler> get supportedUpscalers;
+
+  /// Null turns upscaling off; an unsupported upscaler counts as off.
+  Future<void> setUpscaler(Upscaler? upscaler);
+
+  /// The active upscaler failed and was turned off. Not a playback error: playback continues without it.
+  Stream<Upscaler> get upscalerFailures;
 
   /// The video surface; build it in one place per backend.
   Widget buildView();

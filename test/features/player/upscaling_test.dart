@@ -68,6 +68,18 @@ void main() {
     ]);
   });
 
+  test('isShaderFailureLog: shader errors from the renderer only (lines recorded in U0)', () {
+    expect(isShaderFailureLog('libmpv_render', 'error', 'compute shader source:'), isTrue);
+    expect(isShaderFailureLog('vo/gpu', 'error', 'fragment shader compile log (status=0):'), isTrue);
+    expect(
+      isShaderFailureLog('libmpv_render', 'error', 'after creating texture: OpenGL error INVALID_OPERATION.'),
+      isFalse,
+      reason: 'NVIDIA start-up noise, unrelated to shaders',
+    );
+    expect(isShaderFailureLog('libmpv_render', 'v', "GL_SHADING_LANGUAGE_VERSION='OpenGL ES GLSL ES 3.20'"), isFalse);
+    expect(isShaderFailureLog('ffmpeg', 'error', 'shader'), isFalse);
+  });
+
   group('ShaderStore', () {
     late Directory support;
     late _Bundle bundle;
