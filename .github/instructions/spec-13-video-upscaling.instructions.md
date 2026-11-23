@@ -167,15 +167,18 @@ The controller and the UI never see mpv properties or shader paths. This is the 
 
 ## 13.6 UI
 
-- Player settings side sheet (spec-06 §6.5.1): new row **Upscaling right after Quality**. The root shows "Off" or the
-  preset name.
-- Page: "Off", then presets grouped by family. Each preset shows a cost badge (Light / Medium / Heavy) and an
-  "Anime" hint where `forAnime`. A short help line notes that it uses the GPU and heavy presets need a strong
-  graphics card. Choosing a value returns to the root (existing pattern).
-- The row is hidden when `supportedUpscalers` is empty.
+- Player settings side sheet (spec-06 §6.5.1): row **Upscaling right after Quality** (`settings-upscaling`). The
+  root shows "Off" or `<family> · <variant>` (`upscalerLabel`). Hidden when `supportedUpscalers` is empty.
+- Page: "Off", then the **supported** presets grouped by family under non-focusable family headers. Each preset
+  shows its variant name, with the cost (Light / Medium / Heavy) and "For anime" (where `forAnime`) as subtitle. A
+  non-focusable help line at the end says it uses the GPU and heavy modes skip frames on a weak one. Choosing a
+  value applies it, persists it and returns to the root (existing pattern).
+- Failure message: `PlayerPage` listens to `PlayerController.upscalerFailures` and shows a snackbar
+  ("Couldn't turn on “<name>”. Upscaling is off."). In the floating player there's no message; the setting still
+  turns off.
 - No new keyboard shortcut: the spec-06 §6.6 key map is a MUST list, so adding one requires a spec change first.
-- All texts in `app_uk.arb` (primary) + `app_en.arb`, including family names, cost labels, help, failure and
-  performance messages.
+- Texts live in `app_uk.arb` (primary) + `app_en.arb` (`playerUpscaling*`, `playerUpscaler*`). Family names are proper
+  nouns, identical in both languages.
 
 ## 13.7 Performance hint
 

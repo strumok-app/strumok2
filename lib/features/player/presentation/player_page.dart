@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/localization.dart';
 import '../../../core/platform/device_class.dart';
 import '../data/pip/pip.dart';
+import '../domain/upscaling.dart';
 import 'controls/desktop/desktop_controls.dart';
 import 'controls/mobile/mobile_controls.dart';
 import 'controls/tv/tv_controls.dart';
@@ -12,6 +14,7 @@ import 'floating_player.dart';
 import 'pip_view.dart';
 import 'player_controller.dart';
 import 'player_fullscreen.dart';
+import 'player_settings.dart';
 import 'player_theme.dart';
 
 /// Full-screen; outside the app shell, always in the dark player theme. Controls are picked by device class
@@ -35,6 +38,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
   late final PlayerFullscreen _fullscreen;
   late final FloatingPlayer _floating;
   late final Pip _pip;
+  late final StreamSubscription<Upscaler> _upscalerFailures;
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     _fullscreen = ref.read(playerFullscreenProvider.notifier);
     _floating = ref.read(floatingPlayerProvider.notifier);
     _pip = ref.read(pipProvider);
+    _upscalerFailures = _controller.upscalerFailures.listen(_onUpscalerFailed);
     _pip.isActive.addListener(_onPipChanged);
     unawaited(_pip.enable());
     // Providers must not change while the tree is building.
@@ -56,6 +61,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
 
   @override
   void dispose() {
+    unawaited(_upscalerFailures.cancel());
     _pip.isActive.removeListener(_onPipChanged);
     final pip = _pip, fullscreen = _fullscreen, floating = _floating;
     unawaited(
@@ -68,6 +74,14 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
       }),
     );
     super.dispose();
+  }
+
+  /// The controller already turned it off (spec-13 §13.5); say so once.
+  void _onUpscalerFailed(Upscaler upscaler) {
+    if (!mounted) return;
+    final l10n = context.l10n;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(l10n.playerUpscalingFailed(upscalerLabel(l10n, upscaler)))));
   }
 
   /// Side sheets would cover the picture in the PiP window.

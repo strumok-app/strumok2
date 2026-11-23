@@ -1092,4 +1092,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String downloadsSourcePriority(int priority) {
     return 'Priority $priority';
   }
+
+  @override
+  String get playerUpscaling => 'Upscaling';
+
+  @override
+  String get playerUpscalingOff => 'Off';
+
+  @override
+  String get playerUpscalingDescription =>
+      'Sharpens the video using the graphics card. On a weak graphics card, heavy modes will skip frames.';
+
+  @override
+  String playerUpscalingFailed(String name) {
+    return 'Couldn\'t turn on “$name”. Upscaling is off.';
+  }
+
+  @override
+  String playerUpscalerValue(String family, String variant) {
+    return '$family · $variant';
+  }
+
+  @override
+  String get playerUpscalerFamilyFsrcnnx => 'FSRCNNX';
+
+  @override
+  String get playerUpscalerFamilyRavu => 'RAVU';
+
+  @override
+  String get playerUpscalerFamilyNnedi3 => 'NNEDI3';
+
+  @override
+  String get playerUpscalerFamilyAnime4k => 'Anime4K';
+
+  @override
+  String get playerUpscalerFsrcnnx8 => 'Fast';
+
+  @override
+  String get playerUpscalerFsrcnnx16 => 'Quality';
+
+  @override
+  String get playerUpscalerRavuLite => 'Lite';
+
+  @override
+  String get playerUpscalerRavuZoom => 'Zoom';
+
+  @override
+  String get playerUpscalerNnedi3_64 => '64 neurons';
+
+  @override
+  String get playerUpscalerNnedi3_128 => '128 neurons';
+
+  @override
+  String get playerUpscalerAnime4kAFast => 'Mode A (fast)';
+
+  @override
+  String get playerUpscalerAnime4kAHq => 'Mode A (HQ)';
+
+  @override
+  String get playerUpscalerAnime4kBHq => 'Mode B (HQ)';
+
+  @override
+  String get playerUpscalerAnime4kCHq => 'Mode C (HQ)';
+
+  @override
+  String get playerUpscalerCostLight => 'Light';
+
+  @override
+  String get playerUpscalerCostMedium => 'Medium';
+
+  @override
+  String get playerUpscalerCostHeavy => 'Heavy';
+
+  @override
+  String get playerUpscalerForAnime => 'For anime';
 }

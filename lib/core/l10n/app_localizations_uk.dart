@@ -1112,4 +1112,78 @@ class AppLocalizationsUk extends AppLocalizations {
   String downloadsSourcePriority(int priority) {
     return 'Пріоритет $priority';
   }
+
+  @override
+  String get playerUpscaling => 'Покращення зображення';
+
+  @override
+  String get playerUpscalingOff => 'Вимкнено';
+
+  @override
+  String get playerUpscalingDescription =>
+      'Збільшує чіткість відео за допомогою відеокарти. Важкі режими на слабкій відеокарті пропускатимуть кадри.';
+
+  @override
+  String playerUpscalingFailed(String name) {
+    return 'Не вдалося увімкнути «$name». Покращення зображення вимкнено.';
+  }
+
+  @override
+  String playerUpscalerValue(String family, String variant) {
+    return '$family · $variant';
+  }
+
+  @override
+  String get playerUpscalerFamilyFsrcnnx => 'FSRCNNX';
+
+  @override
+  String get playerUpscalerFamilyRavu => 'RAVU';
+
+  @override
+  String get playerUpscalerFamilyNnedi3 => 'NNEDI3';
+
+  @override
+  String get playerUpscalerFamilyAnime4k => 'Anime4K';
+
+  @override
+  String get playerUpscalerFsrcnnx8 => 'Швидкий';
+
+  @override
+  String get playerUpscalerFsrcnnx16 => 'Якісний';
+
+  @override
+  String get playerUpscalerRavuLite => 'Lite';
+
+  @override
+  String get playerUpscalerRavuZoom => 'Zoom';
+
+  @override
+  String get playerUpscalerNnedi3_64 => '64 нейрони';
+
+  @override
+  String get playerUpscalerNnedi3_128 => '128 нейронів';
+
+  @override
+  String get playerUpscalerAnime4kAFast => 'Режим A (швидкий)';
+
+  @override
+  String get playerUpscalerAnime4kAHq => 'Режим A (якісний)';
+
+  @override
+  String get playerUpscalerAnime4kBHq => 'Режим B (якісний)';
+
+  @override
+  String get playerUpscalerAnime4kCHq => 'Режим C (якісний)';
+
+  @override
+  String get playerUpscalerCostLight => 'Легкий';
+
+  @override
+  String get playerUpscalerCostMedium => 'Середній';
+
+  @override
+  String get playerUpscalerCostHeavy => 'Важкий';
+
+  @override
+  String get playerUpscalerForAnime => 'Для аніме';
 }

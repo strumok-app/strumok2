@@ -11,6 +11,7 @@ import '../../data/video_backend.dart';
 import '../../domain/equalizer.dart';
 import '../../domain/player_preferences.dart';
 import '../../domain/player_session.dart';
+import '../../domain/upscaling.dart';
 import '../player_controller.dart';
 import '../player_settings.dart';
 import '../subtitle_size.dart';
@@ -146,7 +147,7 @@ class _ClippedInk extends StatelessWidget {
 }
 
 /// Settings pages; the root lists one row per page with its current value.
-enum _SettingsPage { subtitles, audio, quality, speed, equalizer, startFrom, endAction }
+enum _SettingsPage { subtitles, audio, quality, upscaling, speed, equalizer, startFrom, endAction }
 
 /// Root list of settings; a row opens its page in place, with a pinned back header. Back (key or header) returns
 /// to the root and focuses the row that was opened.
@@ -220,6 +221,9 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
         ),
       if (tracks.audio.length > 1) (page: _SettingsPage.audio, value: _currentAudio(tracks)),
       if (tracks.video.length > 1) (page: _SettingsPage.quality, value: _currentQuality(tracks)),
+      // Desktop only; hidden where no upscaler can run (spec-13 §13.6).
+      if (_controller.supportedUpscalers.isNotEmpty)
+        (page: _SettingsPage.upscaling, value: upscalerLabel(l10n, _controller.upscaler)),
       (page: _SettingsPage.speed, value: speedLabel(l10n, session.speed)),
       (page: _SettingsPage.equalizer, value: equalizerPresetLabel(l10n, settings.equalizerPreset)),
       (page: _SettingsPage.startFrom, value: startFrom),
@@ -261,6 +265,7 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     _SettingsPage.subtitles => context.l10n.playerSubtitles,
     _SettingsPage.audio => context.l10n.playerAudio,
     _SettingsPage.quality => context.l10n.playerQuality,
+    _SettingsPage.upscaling => context.l10n.playerUpscaling,
     _SettingsPage.speed => context.l10n.playerSpeed,
     _SettingsPage.equalizer => context.l10n.playerEqualizer,
     _SettingsPage.startFrom => context.l10n.playerStartFrom,
@@ -304,6 +309,7 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
             onTap: () => _choose(() => _controller.selectVideoTrack(track.id)),
           ),
       ],
+      _SettingsPage.upscaling => _upscalingChoices(),
       _SettingsPage.speed => [
         for (final value in playbackSpeeds)
           _Choice(
@@ -383,6 +389,37 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     };
   }
 
+  /// Off, then the supported presets grouped by family, each with its GPU cost.
+  List<Widget> _upscalingChoices() {
+    final l10n = context.l10n;
+    final supported = _controller.supportedUpscalers;
+    final current = _controller.upscaler;
+    return [
+      _Choice(
+        key: const ValueKey('upscaler-off'),
+        label: l10n.playerUpscalingOff,
+        selected: current == null,
+        onTap: () => _choose(() => _controller.setUpscaler(null)),
+      ),
+      for (final family in UpscalerFamily.values)
+        if (supported.any((u) => u.family == family)) ...[
+          _SectionHeader(upscalerFamilyLabel(l10n, family)),
+          for (final upscaler in supported.where((u) => u.family == family))
+            _Choice(
+              key: ValueKey('upscaler-${upscaler.id}'),
+              label: upscalerVariantLabel(l10n, upscaler),
+              description: [
+                upscalerCostLabel(l10n, upscaler.cost),
+                if (upscaler.forAnime) l10n.playerUpscalerForAnime,
+              ].join(' · '),
+              selected: current == upscaler,
+              onTap: () => _choose(() => _controller.setUpscaler(upscaler)),
+            ),
+        ],
+      _Hint(l10n.playerUpscalingDescription),
+    ];
+  }
+
   String _currentAudio(PlaybackTracks tracks) {
     final current = tracks.audio.indexed.where((t) => t.$2.id == tracks.audioId).firstOrNull;
     return current == null ? context.l10n.playerAuto : audioTrackLabel(context, current.$2, current.$1);
@@ -403,10 +440,42 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
   }
 }
 
+/// Not focusable: a group title inside a choice list.
+class _SectionHeader extends StatelessWidget {
+  final String text;
+
+  const _SectionHeader(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Text(text, style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary)),
+    );
+  }
+}
+
+class _Hint extends StatelessWidget {
+  final String text;
+
+  const _Hint(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Text(text, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+    );
+  }
+}
+
 /// One option of a single-choice list; the selected one is checked and takes initial focus.
 class _Choice extends StatelessWidget {
   final String label;
   final bool selected;
+  final String? description;
   final String? error;
   final bool loading;
   final VoidCallback onTap;
@@ -416,6 +485,7 @@ class _Choice extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.description,
     this.error,
     this.loading = false,
   });
@@ -427,7 +497,11 @@ class _Choice extends StatelessWidget {
       autofocus: selected,
       selected: selected,
       title: Text(label),
-      subtitle: error == null ? null : Text(error!, style: TextStyle(color: theme.colorScheme.error)),
+      subtitle: error != null
+          ? Text(error!, style: TextStyle(color: theme.colorScheme.error))
+          : description == null
+          ? null
+          : Text(description!),
       trailing: loading
           ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
           : selected
