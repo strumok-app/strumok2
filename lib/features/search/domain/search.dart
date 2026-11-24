@@ -29,9 +29,10 @@ List<SupplierConfig> searchableSuppliers(List<SupplierConfig> configs, SearchFil
       config,
 ];
 
-/// Toggles [name] where an empty selection means "all of [all]".
+/// Toggles [name]; an empty selection means all, so the first toggle selects only [name].
 Set<String> toggleSupplierSelection(Set<String> selected, String name, Iterable<String> all) {
-  final current = selected.isEmpty ? all.toSet() : {...selected};
+  if (selected.isEmpty) return {name};
+  final current = {...selected};
   current.contains(name) ? current.remove(name) : current.add(name);
   return current.length == all.length && current.containsAll(all) ? const {} : current;
 }

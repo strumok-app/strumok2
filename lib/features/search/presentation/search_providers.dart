@@ -60,6 +60,10 @@ class SearchFiltersNotifier extends _$SearchFiltersNotifier {
         if (c.enabled) c.name,
     ];
     final suppliers = toggleSupplierSelection(state.suppliers, name, all);
+    await setSupplierSelection(suppliers);
+  }
+
+  Future<void> setSupplierSelection(Set<String> suppliers) async {
     state = state.copyWith(suppliers: suppliers);
     await _prefs.setStringList(AppPreferences.selectedContentSuppliers, suppliers.toList());
   }

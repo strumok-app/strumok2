@@ -28,9 +28,10 @@ void main() {
     });
   });
 
-  test('toggling suppliers with "empty = all" semantics', () {
+  test('supplier chips switch from all to a specific selection and back', () {
     const all = ['a', 'b', 'c'];
-    expect(toggleSupplierSelection(const {}, 'b', all), {'a', 'c'});
+    expect(toggleSupplierSelection(const {}, 'b', all), {'b'});
+    expect(toggleSupplierSelection(const {'b'}, 'a', all), {'a', 'b'});
     expect(toggleSupplierSelection(const {'a', 'c'}, 'b', all), isEmpty);
     expect(toggleSupplierSelection(const {'a'}, 'a', all), isEmpty);
   });

@@ -178,10 +178,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchFilterSuppliers => 'Suppliers';
 
   @override
-  String get searchFilterSuppliersAll => 'All suppliers';
-
-  @override
-  String get searchFilterSuppliersChoose => 'Choose suppliers';
+  String get searchFilterSuppliersAll => 'All';
 
   @override
   String get searchEnterQuery => 'Enter a title to search';

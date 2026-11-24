@@ -93,12 +93,12 @@ void main() {
     final prefs = c.read(appPreferencesProvider);
     expect(prefs.getStringList(AppPreferences.selectedContentLanguage), unorderedEquals(['uk', 'en']));
     expect(prefs.getStringList(AppPreferences.selectedContentType), isNot(contains('manga')));
-    expect(prefs.getStringList(AppPreferences.selectedContentSuppliers), ['a']);
-    expect(c.read(searchSupplierNamesProvider), ['a']);
+    expect(prefs.getStringList(AppPreferences.selectedContentSuppliers), ['b']);
+    expect(c.read(searchSupplierNamesProvider), ['b']);
 
     final restarted = ProviderContainer(overrides: await testOverrides(prefs: prefs));
     addTearDown(restarted.dispose);
     expect(restarted.read(searchHistoryProvider).map((e) => e.query), ['second', 'first']);
-    expect(restarted.read(searchFiltersProvider).suppliers, {'a'});
+    expect(restarted.read(searchFiltersProvider).suppliers, {'b'});
   });
 }

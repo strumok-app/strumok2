@@ -54,10 +54,16 @@ class SearchFiltersSheet extends ConsumerWidget {
         _FilterGroup(
           title: l10n.searchFilterSuppliers,
           chips: [
+            FilterChip(
+              key: const Key('searchAllSuppliersChip'),
+              label: Text(l10n.searchFilterSuppliersAll),
+              selected: filters.suppliers.isEmpty,
+              onSelected: (_) => notifier.setSupplierSelection(const {}),
+            ),
             for (final name in suppliers)
               FilterChip(
                 label: Text(name),
-                selected: filters.suppliers.isEmpty || filters.suppliers.contains(name),
+                selected: filters.suppliers.contains(name),
                 onSelected: (_) => notifier.toggleSupplier(name),
               ),
           ],

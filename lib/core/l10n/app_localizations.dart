@@ -416,17 +416,11 @@ abstract class AppLocalizations {
   /// **'Постачальники'**
   String get searchFilterSuppliers;
 
-  /// Search supplier filter: include every enabled supplier
+  /// Search supplier filter chip: include every enabled supplier
   ///
   /// In uk, this message translates to:
-  /// **'Усі постачальники'**
+  /// **'Усі'**
   String get searchFilterSuppliersAll;
-
-  /// Search supplier filter: choose specific suppliers
-  ///
-  /// In uk, this message translates to:
-  /// **'Вибрати постачальників'**
-  String get searchFilterSuppliersChoose;
 
   /// Search: nothing submitted yet
   ///

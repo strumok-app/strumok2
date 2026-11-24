@@ -112,13 +112,14 @@ void main() {
     expect(focusedIn<ContentCard>(), isNotNull);
   });
 
-  testAppWidgets('filters dialog excludes suppliers', (tester) async {
+  testAppWidgets('supplier chips select one supplier and All restores every supplier', (tester) async {
     await openSearch(tester, [
       FakeSupplier('alpha', onSearch: pagesOf('alpha', pages: 1, count: 1)),
       FakeSupplier('beta', onSearch: pagesOf('beta', pages: 1, count: 1)),
     ]);
     await tester.tap(find.byKey(const Key('searchFiltersButton')));
     await tester.pumpAndSettle();
+    expect(tester.widget<FilterChip>(find.byKey(const Key('searchAllSuppliersChip'))).selected, isTrue);
     await tester.tap(find.widgetWithText(FilterChip, 'beta'));
     await tester.tap(find.byType(CloseButton));
     await tester.pumpAndSettle();
@@ -126,7 +127,15 @@ void main() {
     await tester.enterText(find.byType(TextField), 'x');
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
+    expect(find.text('alpha', findRichText: true), findsNothing);
+    expect(find.text('beta', findRichText: true), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('searchFiltersButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('searchAllSuppliersChip')));
+    await tester.tap(find.byType(CloseButton));
+    await tester.pumpAndSettle();
     expect(find.text('alpha', findRichText: true), findsOneWidget);
-    expect(find.text('beta', findRichText: true), findsNothing);
+    expect(find.text('beta', findRichText: true), findsOneWidget);
   });
 }

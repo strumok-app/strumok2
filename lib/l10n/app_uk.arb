@@ -231,13 +231,9 @@
   "@searchFilterSuppliers": {
     "description": "Search filter group: suppliers"
   },
-  "searchFilterSuppliersAll": "Усі постачальники",
+  "searchFilterSuppliersAll": "Усі",
   "@searchFilterSuppliersAll": {
-    "description": "Search supplier filter: include every enabled supplier"
-  },
-  "searchFilterSuppliersChoose": "Вибрати постачальників",
-  "@searchFilterSuppliersChoose": {
-    "description": "Search supplier filter: choose specific suppliers"
+    "description": "Search supplier filter chip: include every enabled supplier"
   },
   "searchEnterQuery": "Введіть назву для пошуку",
   "@searchEnterQuery": {
