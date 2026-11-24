@@ -58,7 +58,10 @@ class PlayerController extends _$PlayerController {
   /// Number (collection key) of the item the backend is currently playing; null while loading, so stale positions
   /// are never saved.
   int? _playingNumber;
-  CollectionItem? _base;
+
+  /// The collection item this session edits; seeded by [open], kept current after every save. [_latest]
+  /// re-merges it with live synced data. Only touched after [open] has seeded it (guarded by [_playingNumber]).
+  late CollectionItem _base;
   Duration _lastProgressCheck = Duration.zero;
   Duration _resumeAt = Duration.zero;
 
@@ -102,14 +105,23 @@ class PlayerController extends _$PlayerController {
       final collection = await ref.read(collectionItemsProvider.future);
       if (!_isCurrent(token)) return;
 
+      _base =
+          (collection[collectionItemKey(supplier, id)] ??
+                  CollectionItem(
+                    id: id,
+                    supplier: supplier,
+                    title: details.title,
+                    image: details.image,
+                    mediaType: details.mediaType,
+                  ))
+              .copyWith(title: details.title, image: details.image);
       state = state!.copyWith(title: details.title, items: items);
       if (items.isEmpty) {
         state = state!.copyWith(loading: false, failure: PlayerFailure.noSources);
         return;
       }
 
-      final currentItem = item ?? collection[collectionItemKey(supplier, id)]?.currentItem ?? 0;
-      await _openItem(token, itemIndexOfNumber(items, currentItem) ?? 0);
+      await _openItem(token, itemIndexOfNumber(items, item ?? _base.currentItem) ?? 0);
     } catch (e, st) {
       _fail(token, PlayerFailure.loadFailed, e, st);
     }
@@ -286,10 +298,10 @@ class PlayerController extends _$PlayerController {
         return;
       }
       final subtitles = all.whereType<SubtitleMediaItemSource>().toList();
-      final subtitleIndex = chooseSubtitles(subtitles, _latest?.currentSubtitleName);
+      final subtitleIndex = chooseSubtitles(subtitles, _latest.currentSubtitleName);
       state = state!.copyWith(
         sources: sources,
-        sourceIndex: chooseSource(sources, _latest?.currentSourceName),
+        sourceIndex: chooseSource(sources, _latest.currentSourceName),
         subtitles: subtitles,
         subtitleIndex: subtitleIndex,
       );
@@ -300,7 +312,7 @@ class PlayerController extends _$PlayerController {
       final settings = ref.read(playerSettingsProvider);
       final start = startPosition(
         settings.startFrom,
-        remembered: _latest?.positions[number],
+        remembered: _latest.positions[number],
         fixedSeconds: settings.fixedPosition,
       );
       await _openSource(token, Duration(seconds: start));
@@ -443,19 +455,15 @@ class PlayerController extends _$PlayerController {
     if (!listEquals(lines, _subtitleLines.value)) _subtitleLines.value = lines;
   }
 
-  /// Collection item with the latest synced data, refreshed with this session's title/image.
-  CollectionItem? get _latest {
-    final base = _base;
-    if (base == null) return null;
-    final stored = ref.read(collectionItemsProvider).value?[base.key];
-    return stored?.copyWith(title: base.title, image: base.image) ?? base;
+  /// [_base] merged with the latest synced data, keeping this session's title/image.
+  CollectionItem get _latest {
+    final stored = ref.read(collectionItemsProvider).value?[_base.key];
+    return stored?.copyWith(title: _base.title, image: _base.image) ?? _base;
   }
 
   /// Applies [change]; persists only items that are in the collection (saving `status == none` deletes).
   Future<void> _updateItem(CollectionItem Function(CollectionItem item) change) async {
-    final latest = _latest;
-    if (latest == null) return;
-    final updated = change(latest);
+    final updated = change(_latest);
     _base = updated;
     if (updated.status != CollectionStatus.none) {
       await ref.read(collectionItemsProvider.notifier).save(updated);
@@ -464,12 +472,11 @@ class PlayerController extends _$PlayerController {
 
   Future<void> _saveProgress() async {
     final number = _playingNumber;
-    final latest = _latest;
     final backend = _backend;
-    if (number == null || latest == null || backend == null) return;
+    if (number == null || backend == null) return;
     final status = backend.status.value;
     final updated = updateVideoProgress(
-      latest,
+      _latest,
       itemIndex: number,
       position: status.position.inSeconds,
       length: status.duration.inSeconds,
