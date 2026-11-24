@@ -1531,5 +1531,110 @@
         "type": "int"
       }
     }
+  },
+  "playerUpscaling": "Покращення зображення",
+  "@playerUpscaling": {
+    "description": "Player settings: upscaling (GPU shaders, desktop only, spec-13)"
+  },
+  "playerUpscalingOff": "Вимкнено",
+  "@playerUpscalingOff": {
+    "description": "Upscaling choice: off"
+  },
+  "playerUpscalingDescription": "Збільшує чіткість відео за допомогою відеокарти. Важкі режими на слабкій відеокарті пропускатимуть кадри.",
+  "@playerUpscalingDescription": {
+    "description": "Help text under the upscaling choices"
+  },
+  "playerUpscalingFailed": "Не вдалося увімкнути «{name}». Покращення зображення вимкнено.",
+  "@playerUpscalingFailed": {
+    "description": "Snackbar: the upscaler failed on this GPU and was turned off",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "playerUpscalerValue": "{family} · {variant}",
+  "@playerUpscalerValue": {
+    "description": "Current upscaler on the settings root: family and variant",
+    "placeholders": {
+      "family": {
+        "type": "String"
+      },
+      "variant": {
+        "type": "String"
+      }
+    }
+  },
+  "playerUpscalerFamilyFsrcnnx": "FSRCNNX",
+  "@playerUpscalerFamilyFsrcnnx": {
+    "description": "Upscaler family name (proper noun)"
+  },
+  "playerUpscalerFamilyRavu": "RAVU",
+  "@playerUpscalerFamilyRavu": {
+    "description": "Upscaler family name (proper noun)"
+  },
+  "playerUpscalerFamilyNnedi3": "NNEDI3",
+  "@playerUpscalerFamilyNnedi3": {
+    "description": "Upscaler family name (proper noun)"
+  },
+  "playerUpscalerFamilyAnime4k": "Anime4K",
+  "@playerUpscalerFamilyAnime4k": {
+    "description": "Upscaler family name (proper noun)"
+  },
+  "playerUpscalerFsrcnnx8": "Швидкий",
+  "@playerUpscalerFsrcnnx8": {
+    "description": "FSRCNNX variant with 8 filters"
+  },
+  "playerUpscalerFsrcnnx16": "Якісний",
+  "@playerUpscalerFsrcnnx16": {
+    "description": "FSRCNNX variant with 16 filters"
+  },
+  "playerUpscalerRavuLite": "Lite",
+  "@playerUpscalerRavuLite": {
+    "description": "RAVU lite variant (upstream name)"
+  },
+  "playerUpscalerRavuZoom": "Zoom",
+  "@playerUpscalerRavuZoom": {
+    "description": "RAVU zoom variant (upstream name)"
+  },
+  "playerUpscalerNnedi3_64": "64 нейрони",
+  "@playerUpscalerNnedi3_64": {
+    "description": "NNEDI3 variant with 64 neurons"
+  },
+  "playerUpscalerNnedi3_128": "128 нейронів",
+  "@playerUpscalerNnedi3_128": {
+    "description": "NNEDI3 variant with 128 neurons"
+  },
+  "playerUpscalerAnime4kAFast": "Режим A (швидкий)",
+  "@playerUpscalerAnime4kAFast": {
+    "description": "Anime4K mode A, fast chain"
+  },
+  "playerUpscalerAnime4kAHq": "Режим A (якісний)",
+  "@playerUpscalerAnime4kAHq": {
+    "description": "Anime4K mode A, HQ chain"
+  },
+  "playerUpscalerAnime4kBHq": "Режим B (якісний)",
+  "@playerUpscalerAnime4kBHq": {
+    "description": "Anime4K mode B, HQ chain"
+  },
+  "playerUpscalerAnime4kCHq": "Режим C (якісний)",
+  "@playerUpscalerAnime4kCHq": {
+    "description": "Anime4K mode C, HQ chain"
+  },
+  "playerUpscalerCostLight": "Легкий",
+  "@playerUpscalerCostLight": {
+    "description": "Upscaler GPU cost badge"
+  },
+  "playerUpscalerCostMedium": "Середній",
+  "@playerUpscalerCostMedium": {
+    "description": "Upscaler GPU cost badge"
+  },
+  "playerUpscalerCostHeavy": "Важкий",
+  "@playerUpscalerCostHeavy": {
+    "description": "Upscaler GPU cost badge"
+  },
+  "playerUpscalerForAnime": "Для аніме",
+  "@playerUpscalerForAnime": {
+    "description": "Upscaler hint: tuned for anime"
   }
 }

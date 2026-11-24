@@ -36,6 +36,9 @@ description: 'Use when verifying a milestone or release: acceptance checklist fo
 - [ ] `hlsProxy` sources with junked TS segments play and seek through the local proxy (spec-12).
 - [ ] One shared TS dejunker used by both the proxy and the downloader; legacy dejunk/proxy test cases ported and green.
 - [ ] Progress saved per spec-03 §3.3; resume rule (−60 s near end).
+- [ ] Upscaling (spec-13, desktop only): presets visibly upscale in fullscreen on Linux (and Windows if supported per
+  U0); setting hidden and shader assets absent on Android/TV builds; off restores native-size rendering; a failing
+  shader falls back to off without a playback error.
 
 ## Collection
 - [ ] Local collection works signed-out; realtime sync when signed-in; search by title; filters.

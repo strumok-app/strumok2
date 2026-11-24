@@ -5,6 +5,7 @@ import '../../../core/storage/app_preferences.dart';
 import '../domain/equalizer.dart';
 import '../domain/player_preferences.dart';
 import '../domain/player_session.dart';
+import '../domain/upscaling.dart';
 
 part 'player_settings.g.dart';
 
@@ -28,6 +29,7 @@ class PlayerSettings extends _$PlayerSettings {
       volumeNormalization: prefs.getBool(AppPreferences.videoPlayerVolumeNormalization) ?? false,
       dynamicCompression: prefs.getBool(AppPreferences.videoPlayerDynamicCompression) ?? false,
       floatingPlayer: prefs.getBool(AppPreferences.floatingVideoPlayerEnabled) ?? true,
+      upscaler: prefs.getString(AppPreferences.videoPlayerUpscaler),
     );
   }
 
@@ -68,6 +70,16 @@ class PlayerSettings extends _$PlayerSettings {
     await _prefs.setBool(AppPreferences.videoPlayerVolumeNormalization, value);
   }
 
+  /// Null turns upscaling off.
+  Future<void> setUpscaler(String? id) async {
+    state = state.copyWith(upscaler: id, clearUpscaler: id == null);
+    if (id == null) {
+      await _prefs.remove(AppPreferences.videoPlayerUpscaler);
+    } else {
+      await _prefs.setString(AppPreferences.videoPlayerUpscaler, id);
+    }
+  }
+
   Future<void> setDynamicCompression(bool value) async {
     state = state.copyWith(dynamicCompression: value);
     await _prefs.setBool(AppPreferences.videoPlayerDynamicCompression, value);
@@ -95,6 +107,38 @@ String equalizerPresetLabel(AppLocalizations l10n, EqualizerPreset? preset) => s
   EqualizerPreset.action => l10n.playerEqualizerAction,
   EqualizerPreset.max => l10n.playerEqualizerMax,
   null => l10n.playerEqualizerCustom,
+};
+
+/// Null is off; otherwise e.g. `Anime4K · Mode A (fast)`.
+String upscalerLabel(AppLocalizations l10n, Upscaler? upscaler) => upscaler == null
+    ? l10n.playerUpscalingOff
+    : l10n.playerUpscalerValue(upscalerFamilyLabel(l10n, upscaler.family), upscalerVariantLabel(l10n, upscaler));
+
+String upscalerFamilyLabel(AppLocalizations l10n, UpscalerFamily family) => switch (family) {
+  UpscalerFamily.fsrcnnx => l10n.playerUpscalerFamilyFsrcnnx,
+  UpscalerFamily.ravu => l10n.playerUpscalerFamilyRavu,
+  UpscalerFamily.nnedi3 => l10n.playerUpscalerFamilyNnedi3,
+  UpscalerFamily.anime4k => l10n.playerUpscalerFamilyAnime4k,
+};
+
+String upscalerVariantLabel(AppLocalizations l10n, Upscaler upscaler) => switch (upscaler.id) {
+  'fsrcnnx_8' => l10n.playerUpscalerFsrcnnx8,
+  'fsrcnnx_16' => l10n.playerUpscalerFsrcnnx16,
+  'ravu_lite_r4' => l10n.playerUpscalerRavuLite,
+  'ravu_zoom_r3' => l10n.playerUpscalerRavuZoom,
+  'nnedi3_64' => l10n.playerUpscalerNnedi3_64,
+  'nnedi3_128' => l10n.playerUpscalerNnedi3_128,
+  'anime4k_a_fast' => l10n.playerUpscalerAnime4kAFast,
+  'anime4k_a_hq' => l10n.playerUpscalerAnime4kAHq,
+  'anime4k_b_hq' => l10n.playerUpscalerAnime4kBHq,
+  'anime4k_c_hq' => l10n.playerUpscalerAnime4kCHq,
+  _ => upscaler.id,
+};
+
+String upscalerCostLabel(AppLocalizations l10n, UpscalerCost cost) => switch (cost) {
+  UpscalerCost.light => l10n.playerUpscalerCostLight,
+  UpscalerCost.medium => l10n.playerUpscalerCostMedium,
+  UpscalerCost.heavy => l10n.playerUpscalerCostHeavy,
 };
 
 String speedLabel(AppLocalizations l10n, double speed) =>

@@ -8,6 +8,7 @@ import 'package:strumok/features/collection/presentation/collection_providers.da
 import 'package:strumok/features/player/domain/equalizer.dart';
 import 'package:strumok/features/player/domain/player_preferences.dart';
 import 'package:strumok/features/player/domain/player_session.dart';
+import 'package:strumok/features/player/domain/upscaling.dart';
 import 'package:strumok/features/player/presentation/player_controller.dart';
 import 'package:strumok/features/player/presentation/player_settings.dart';
 import 'package:strumok/features/suppliers/data/supplier_registry.dart';
@@ -59,7 +60,11 @@ void main() {
     FakeMediaItem episode(int n) =>
         FakeMediaItem(n, 'Episode ${n + 1}', sourceList: [FakeVideoSource('A', url: 'https://a.example/$n.m3u8')]);
 
-    Future<void> setUpWith({Map<String, Object> prefs = const {}, int items = 3}) async {
+    Future<void> setUpWith({
+      Map<String, Object> prefs = const {},
+      int items = 3,
+      List<Upscaler> supportedUpscalers = const [],
+    }) async {
       final details = FakeDetails(
         'alpha',
         'm1',
@@ -75,7 +80,7 @@ void main() {
             bundleInfo('4.0.0'),
           ),
           prefs: await createTestPreferences(prefs),
-          videoBackend: () => backend = FakeVideoBackend(),
+          videoBackend: () => backend = FakeVideoBackend(supportedUpscalers: supportedUpscalers),
         ),
       );
       addTearDown(c.dispose);
@@ -188,6 +193,75 @@ void main() {
       expect(backend.audioEffects, const AudioEffects(volumeNormalization: true));
       await controller.next();
       expect(backend.audioEffects, const AudioEffects(volumeNormalization: true));
+    });
+
+    group('upscaler (spec-13)', () {
+      final ravu = upscalerById('ravu_lite_r4')!;
+      final anime4k = upscalerById('anime4k_a_fast')!;
+
+      test('persists the id under video_player_upscaler; off removes it; unknown ids resolve to off', () async {
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'artcnn_c4f16'});
+        expect(c.read(playerSettingsProvider).upscaler, 'artcnn_c4f16');
+        expect(upscalerById(c.read(playerSettingsProvider).upscaler), isNull, reason: 'dropped preset reads as off');
+
+        final settings = c.read(playerSettingsProvider.notifier);
+        await settings.setUpscaler('ravu_lite_r4');
+        expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), 'ravu_lite_r4');
+        c.invalidate(playerSettingsProvider);
+        expect(c.read(playerSettingsProvider).upscaler, 'ravu_lite_r4');
+
+        await settings.setUpscaler(null);
+        expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), isNull);
+        expect(c.read(playerSettingsProvider).upscaler, isNull);
+      });
+
+      test('the saved upscaler is applied when playback starts, only where it is supported', () async {
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'ravu_lite_r4'}, supportedUpscalers: [ravu]);
+        await controller.open('alpha', 'm1');
+        expect(backend.upscaler, ravu);
+        expect(controller.upscaler, ravu);
+        expect(controller.supportedUpscalers, [ravu]);
+      });
+
+      test('unsupported here (Android, Windows for now): nothing applied, nothing offered', () async {
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'ravu_lite_r4'});
+        await controller.open('alpha', 'm1');
+        expect(backend.calls.where((call) => call.startsWith('upscaler')), isEmpty);
+        expect(controller.supportedUpscalers, isEmpty);
+        expect(controller.upscaler, isNull);
+        expect(c.read(playerSettingsProvider).upscaler, 'ravu_lite_r4', reason: 'kept for a device that supports it');
+      });
+
+      test('switching applies right away and persists; off turns it off', () async {
+        await setUpWith(supportedUpscalers: [ravu, anime4k]);
+        await controller.open('alpha', 'm1');
+
+        await controller.setUpscaler(anime4k);
+        expect(backend.upscaler, anime4k);
+        expect(c.read(playerSettingsProvider).upscaler, 'anime4k_a_fast');
+
+        await controller.setUpscaler(null);
+        expect(backend.upscaler, isNull);
+        expect(c.read(playerSettingsProvider).upscaler, isNull);
+        expect(backend.calls.where((call) => call.startsWith('upscaler')), ['upscaler:anime4k_a_fast', 'upscaler:off']);
+      });
+
+      test('a failing upscaler is turned off and reported; playback is not failed', () async {
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'ravu_lite_r4'}, supportedUpscalers: [ravu]);
+        await controller.open('alpha', 'm1');
+        final failures = <Upscaler>[];
+        controller.upscalerFailures.listen(failures.add);
+
+        backend.failUpscaler();
+        await pumpEventQueue();
+
+        expect(failures, [ravu]);
+        expect(c.read(playerSettingsProvider).upscaler, isNull);
+        expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), isNull);
+        expect(controller.upscaler, isNull);
+        expect(c.read(playerControllerProvider)!.failure, isNull);
+        expect(backend.disposed, isFalse);
+      });
     });
   });
 }

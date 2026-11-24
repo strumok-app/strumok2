@@ -2053,6 +2053,144 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Пріоритет {priority}'**
   String downloadsSourcePriority(int priority);
+
+  /// Player settings: upscaling (GPU shaders, desktop only, spec-13)
+  ///
+  /// In uk, this message translates to:
+  /// **'Покращення зображення'**
+  String get playerUpscaling;
+
+  /// Upscaling choice: off
+  ///
+  /// In uk, this message translates to:
+  /// **'Вимкнено'**
+  String get playerUpscalingOff;
+
+  /// Help text under the upscaling choices
+  ///
+  /// In uk, this message translates to:
+  /// **'Збільшує чіткість відео за допомогою відеокарти. Важкі режими на слабкій відеокарті пропускатимуть кадри.'**
+  String get playerUpscalingDescription;
+
+  /// Snackbar: the upscaler failed on this GPU and was turned off
+  ///
+  /// In uk, this message translates to:
+  /// **'Не вдалося увімкнути «{name}». Покращення зображення вимкнено.'**
+  String playerUpscalingFailed(String name);
+
+  /// Current upscaler on the settings root: family and variant
+  ///
+  /// In uk, this message translates to:
+  /// **'{family} · {variant}'**
+  String playerUpscalerValue(String family, String variant);
+
+  /// Upscaler family name (proper noun)
+  ///
+  /// In uk, this message translates to:
+  /// **'FSRCNNX'**
+  String get playerUpscalerFamilyFsrcnnx;
+
+  /// Upscaler family name (proper noun)
+  ///
+  /// In uk, this message translates to:
+  /// **'RAVU'**
+  String get playerUpscalerFamilyRavu;
+
+  /// Upscaler family name (proper noun)
+  ///
+  /// In uk, this message translates to:
+  /// **'NNEDI3'**
+  String get playerUpscalerFamilyNnedi3;
+
+  /// Upscaler family name (proper noun)
+  ///
+  /// In uk, this message translates to:
+  /// **'Anime4K'**
+  String get playerUpscalerFamilyAnime4k;
+
+  /// FSRCNNX variant with 8 filters
+  ///
+  /// In uk, this message translates to:
+  /// **'Швидкий'**
+  String get playerUpscalerFsrcnnx8;
+
+  /// FSRCNNX variant with 16 filters
+  ///
+  /// In uk, this message translates to:
+  /// **'Якісний'**
+  String get playerUpscalerFsrcnnx16;
+
+  /// RAVU lite variant (upstream name)
+  ///
+  /// In uk, this message translates to:
+  /// **'Lite'**
+  String get playerUpscalerRavuLite;
+
+  /// RAVU zoom variant (upstream name)
+  ///
+  /// In uk, this message translates to:
+  /// **'Zoom'**
+  String get playerUpscalerRavuZoom;
+
+  /// NNEDI3 variant with 64 neurons
+  ///
+  /// In uk, this message translates to:
+  /// **'64 нейрони'**
+  String get playerUpscalerNnedi3_64;
+
+  /// NNEDI3 variant with 128 neurons
+  ///
+  /// In uk, this message translates to:
+  /// **'128 нейронів'**
+  String get playerUpscalerNnedi3_128;
+
+  /// Anime4K mode A, fast chain
+  ///
+  /// In uk, this message translates to:
+  /// **'Режим A (швидкий)'**
+  String get playerUpscalerAnime4kAFast;
+
+  /// Anime4K mode A, HQ chain
+  ///
+  /// In uk, this message translates to:
+  /// **'Режим A (якісний)'**
+  String get playerUpscalerAnime4kAHq;
+
+  /// Anime4K mode B, HQ chain
+  ///
+  /// In uk, this message translates to:
+  /// **'Режим B (якісний)'**
+  String get playerUpscalerAnime4kBHq;
+
+  /// Anime4K mode C, HQ chain
+  ///
+  /// In uk, this message translates to:
+  /// **'Режим C (якісний)'**
+  String get playerUpscalerAnime4kCHq;
+
+  /// Upscaler GPU cost badge
+  ///
+  /// In uk, this message translates to:
+  /// **'Легкий'**
+  String get playerUpscalerCostLight;
+
+  /// Upscaler GPU cost badge
+  ///
+  /// In uk, this message translates to:
+  /// **'Середній'**
+  String get playerUpscalerCostMedium;
+
+  /// Upscaler GPU cost badge
+  ///
+  /// In uk, this message translates to:
+  /// **'Важкий'**
+  String get playerUpscalerCostHeavy;
+
+  /// Upscaler hint: tuned for anime
+  ///
+  /// In uk, this message translates to:
+  /// **'Для аніме'**
+  String get playerUpscalerForAnime;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

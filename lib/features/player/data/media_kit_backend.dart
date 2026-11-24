@@ -9,7 +9,10 @@ import 'package:media_kit_video/media_kit_video.dart';
 
 import '../../../core/hls/hls_proxy.dart';
 import '../domain/equalizer.dart';
+import '../domain/upscaling.dart';
 import 'mpv_audio_filter.dart';
+import 'mpv_shaders.dart';
+import 'shader_store.dart';
 import 'video_backend.dart';
 
 final _log = Logger('MediaKitVideoBackend');
@@ -17,6 +20,7 @@ final _log = Logger('MediaKitVideoBackend');
 /// media_kit (libmpv) backend with the mpv tuning of spec-06 §6.3.
 class MediaKitVideoBackend implements VideoBackend {
   static const _endTolerance = Duration(seconds: 5);
+  static const _resizeDelay = Duration(milliseconds: 150);
 
   // Proven on slow CDNs (spec-06 §6.3).
   static const _properties = {
@@ -46,12 +50,20 @@ class MediaKitVideoBackend implements VideoBackend {
   final http.Client _client;
   final Player _player;
   late final VideoController _video = VideoController(_player);
-  late final Widget _view = Video(
+  late final Widget _videoView = Video(
     controller: _video,
     controls: NoVideoControls,
     fill: Colors.black,
     // Subtitles are loaded, parsed and rendered by the player itself, never by mpv.
     subtitleViewConfiguration: const SubtitleViewConfiguration(visible: false),
+  );
+  // Reports the on-screen size in every host (full screen, floating, PiP) for upscaling output sizing.
+  late final Widget _view = LayoutBuilder(
+    builder: (context, constraints) {
+      final ratio = MediaQuery.devicePixelRatioOf(context);
+      _onViewSize(Size(constraints.maxWidth * ratio, constraints.maxHeight * ratio));
+      return _videoView;
+    },
   );
   late final Future<void> _configured = _configure();
 
@@ -62,14 +74,28 @@ class MediaKitVideoBackend implements VideoBackend {
   final _subscriptions = <StreamSubscription<Object?>>[];
   HlsProxy? _proxy;
 
+  final ShaderStore? _shaders;
+  final List<Upscaler> _supportedUpscalers;
+  final _upscalerFailures = StreamController<Upscaler>.broadcast();
+  Upscaler? _upscaler;
+  int _upscalerToken = 0;
+  Size? _viewSize;
+  Timer? _resizeTimer;
+
+  /// Fixed output size set for the active upscaler; null = the video's own size (media_kit default).
+  ({int width, int height})? _outputSize;
+
   /// mpv left idle after the current file started: it ended (EOF) or failed.
   bool _fileStarted = false;
   bool _finished = false;
   String? _lastError;
   bool _disposed = false;
 
-  MediaKitVideoBackend(this._client)
-    : _player = Player(
+  /// [upscalers] must be empty unless [shaders] is given.
+  MediaKitVideoBackend(this._client, {ShaderStore? shaders, List<Upscaler> upscalers = const []})
+    : _shaders = shaders,
+      _supportedUpscalers = shaders == null ? const [] : upscalers,
+      _player = Player(
         configuration: const PlayerConfiguration(title: 'Strumok', bufferSize: 128 * 1024 * 1024),
       ) {
     final stream = _player.stream;
@@ -91,6 +117,9 @@ class MediaKitVideoBackend implements VideoBackend {
         _log.fine('mpv: $message');
         _lastError = message;
       }),
+      stream.log.listen(_onLog),
+      // spec-13 F7: media_kit resets the output to the video size on every video-params change.
+      stream.videoParams.listen((_) => _scheduleResize(force: true)),
     ]);
   }
 
@@ -237,11 +266,80 @@ class MediaKitVideoBackend implements VideoBackend {
   }
 
   @override
+  List<Upscaler> get supportedUpscalers => _supportedUpscalers;
+
+  @override
+  Stream<Upscaler> get upscalerFailures => _upscalerFailures.stream;
+
+  @override
+  Future<void> setUpscaler(Upscaler? upscaler) =>
+      _applyUpscaler(_supportedUpscalers.contains(upscaler) ? upscaler : null);
+
+  Future<void> _applyUpscaler(Upscaler? upscaler) async {
+    final token = ++_upscalerToken;
+    try {
+      await _configured;
+      final files = upscaler == null ? const <String>[] : await _shaders!.files(upscaler);
+      if (_disposed || token != _upscalerToken) return;
+      _upscaler = upscaler;
+      for (final command in mpvShaderCommands(files)) {
+        await _native.command(command);
+      }
+      // spec-13 F5: with framedrop=no an overloaded shader leaves video behind audio for good.
+      await _native.setProperty('framedrop', upscaler == null ? 'no' : 'vo');
+      _scheduleResize(force: true);
+    } catch (e, st) {
+      _log.warning('Upscaler ${upscaler?.id} could not be applied', e, st);
+      if (upscaler != null && !_disposed && token == _upscalerToken) _failUpscaler(upscaler);
+    }
+  }
+
+  void _onLog(PlayerLog log) {
+    final upscaler = _upscaler;
+    if (upscaler == null || !isShaderFailureLog(log.prefix, log.level, log.text)) return;
+    _log.warning('Upscaler ${upscaler.id} failed: [${log.prefix}] ${log.text}');
+    _failUpscaler(upscaler);
+  }
+
+  void _failUpscaler(Upscaler upscaler) {
+    _upscaler = null;
+    _upscalerFailures.add(upscaler);
+    unawaited(_applyUpscaler(null));
+  }
+
+  void _onViewSize(Size size) {
+    if (!size.isFinite || size == _viewSize) return;
+    _viewSize = size;
+    _scheduleResize();
+  }
+
+  void _scheduleResize({bool force = false}) {
+    // Off and at the video's own size: nothing to do, keep media_kit's default sizing untouched.
+    if (_upscaler == null && _outputSize == null) return;
+    _resizeTimer?.cancel();
+    _resizeTimer = Timer(_resizeDelay, () => unawaited(_resize(force: force)));
+  }
+
+  Future<void> _resize({required bool force}) async {
+    final view = _viewSize;
+    final VideoParams(:dw, :dh, :rotate) = _player.state.videoParams;
+    final turned = rotate == 90 || rotate == 270;
+    final video = Size(((turned ? dh : dw) ?? 0).toDouble(), ((turned ? dw : dh) ?? 0).toDouble());
+    final target = _upscaler == null || view == null ? null : upscaleOutputSize(view, video);
+    if (_disposed || (!force && target == _outputSize)) return;
+    _outputSize = target;
+    // setSize skips a size equal to its cached one even after media_kit reset the output (F7): go native first.
+    await _video.setSize();
+    if (target != null) await _video.setSize(width: target.width, height: target.height);
+  }
+
+  @override
   Widget buildView() => _view;
 
   @override
   Future<void> dispose() async {
     _disposed = true;
+    _resizeTimer?.cancel();
     for (final s in _subscriptions) {
       await s.cancel();
     }
@@ -249,6 +347,7 @@ class MediaKitVideoBackend implements VideoBackend {
     await _proxy?.close();
     await _ended.close();
     await _errors.close();
+    await _upscalerFailures.close();
     _status.dispose();
     _tracks.dispose();
   }

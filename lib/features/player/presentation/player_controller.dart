@@ -8,17 +8,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/localization.dart';
 import '../../../core/network/http_client.dart';
+import '../../../core/platform/app_platform.dart';
 import '../../../core/storage/app_preferences.dart';
 import '../../collection/domain/collection_item.dart';
 import '../../collection/domain/progress.dart';
 import '../../collection/presentation/collection_providers.dart';
 import '../../details/presentation/details_providers.dart';
 import '../data/media_kit_backend.dart';
+import '../data/shader_store.dart';
 import '../data/subtitle_repository.dart';
 import '../data/video_backend.dart';
 import '../domain/player_preferences.dart';
 import '../domain/player_session.dart';
 import '../domain/subtitles.dart';
+import '../domain/upscaling.dart';
 import 'player_settings.dart';
 
 part 'player_controller.g.dart';
@@ -28,7 +31,10 @@ final _log = Logger('PlayerController');
 @Riverpod(keepAlive: true)
 VideoBackend Function() videoBackendFactory(Ref ref) {
   final client = ref.watch(httpClientProvider);
-  return () => MediaKitVideoBackend(client);
+  // spec-13: Linux only for now; Windows stays off until verified (U0 T9), Android never.
+  final upscaling = AppPlatform.current == AppPlatform.linux;
+  final shaders = upscaling ? ref.watch(shaderStoreProvider) : null;
+  return () => MediaKitVideoBackend(client, shaders: shaders, upscalers: upscaling ? upscalers : const []);
 }
 
 /// UI-agnostic player (spec-06 §6.1–6.2): loads items and sources, drives the backend, saves progress.
@@ -42,6 +48,7 @@ class PlayerController extends _$PlayerController {
   VideoBackend? _backend;
   final _subscriptions = <StreamSubscription<Object?>>[];
   final _subtitleLines = ValueNotifier<List<String>>(const []);
+  final _upscalerFailures = StreamController<Upscaler>.broadcast();
   SubtitleTrack? _subtitleTrack;
   int _subtitleToken = 0;
 
@@ -67,7 +74,10 @@ class PlayerController extends _$PlayerController {
 
   @override
   PlayerSession? build() {
-    ref.onDispose(() => unawaited(_disposeBackend()));
+    ref.onDispose(() {
+      unawaited(_disposeBackend());
+      unawaited(_upscalerFailures.close());
+    });
     return null;
   }
 
@@ -79,6 +89,18 @@ class PlayerController extends _$PlayerController {
   ValueListenable<List<String>> get subtitleLines => _subtitleLines;
 
   Widget? buildVideoView() => _backend?.buildView();
+
+  /// Upscalers the current backend can run; empty (setting hidden) without one or where unsupported (spec-13).
+  List<Upscaler> get supportedUpscalers => _backend?.supportedUpscalers ?? const [];
+
+  /// The chosen upscaler if it can run here; null is off.
+  Upscaler? get upscaler {
+    final chosen = upscalerById(ref.read(playerSettingsProvider).upscaler);
+    return supportedUpscalers.contains(chosen) ? chosen : null;
+  }
+
+  /// An upscaler failed and was turned off (the setting too); playback continues without it.
+  Stream<Upscaler> get upscalerFailures => _upscalerFailures.stream;
 
   /// Reopening the title of a running session (floating player → full screen) keeps it: no reload, no re-buffering.
   /// [item] is an item number (collection key); offline content lists only downloaded items, so numbers and list
@@ -214,6 +236,12 @@ class PlayerController extends _$PlayerController {
   }
 
   Future<void> _applyAudioEffects() async => _backend?.setAudioEffects(ref.read(playerSettingsProvider).audioEffects);
+
+  /// Persisted and applied right away; null turns upscaling off.
+  Future<void> setUpscaler(Upscaler? upscaler) async {
+    await ref.read(playerSettingsProvider.notifier).setUpscaler(upscaler?.id);
+    await _backend?.setUpscaler(upscaler);
+  }
 
   /// Reloads after a failure; playback resumes at the last known position.
   Future<void> retry() async {
@@ -354,12 +382,15 @@ class PlayerController extends _$PlayerController {
     backend.status.addListener(_onStatus);
     _subscriptions
       ..add(backend.ended.listen((_) => unawaited(_onEnded())))
-      ..add(backend.errors.listen(_onPlaybackError));
+      ..add(backend.errors.listen(_onPlaybackError))
+      ..add(backend.upscalerFailures.listen(_onUpscalerFailed));
     final volume = ref.read(appPreferencesProvider).getDouble(AppPreferences.volume);
     if (volume != null) unawaited(backend.setVolume(volume));
     if (_speed != 1) unawaited(backend.setSpeed(_speed));
     final effects = ref.read(playerSettingsProvider).audioEffects;
     if (!effects.isNeutral) unawaited(backend.setAudioEffects(effects));
+    final upscaler = upscalerById(ref.read(playerSettingsProvider).upscaler);
+    if (upscaler != null && backend.supportedUpscalers.contains(upscaler)) unawaited(backend.setUpscaler(upscaler));
     return backend;
   }
 
@@ -408,6 +439,14 @@ class PlayerController extends _$PlayerController {
     _log.warning('Playback failed: $message');
     _playingNumber = null;
     if (state != null) state = state!.copyWith(loading: false, failure: PlayerFailure.playbackFailed);
+  }
+
+  /// Off for good: the same shader would fail again next time (spec-13 §13.5).
+  void _onUpscalerFailed(Upscaler upscaler) {
+    _log.warning('Upscaler ${upscaler.id} failed; turned off');
+    final settings = ref.read(playerSettingsProvider.notifier);
+    if (ref.read(playerSettingsProvider).upscaler == upscaler.id) unawaited(settings.setUpscaler(null));
+    _upscalerFailures.add(upscaler);
   }
 
   void _fail(int token, PlayerFailure failure, Object error, StackTrace stackTrace) {
