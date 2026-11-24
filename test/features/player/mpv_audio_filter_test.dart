@@ -9,10 +9,13 @@ void main() {
       expect(mpvAudioFilter(const AudioEffects()), '');
     });
 
-    test('one peaking filter per non-zero band', () {
+    test('the preamp, then one octave-wide peaking filter per non-zero band', () {
       expect(
-        mpvAudioFilter(const AudioEffects(bands: [4, 0, 0, 0, -2.5])),
-        'lavfi=[equalizer=f=60:width_type=o:width=2:g=4.0,equalizer=f=14000:width_type=o:width=2:g=-2.5]',
+        mpvAudioFilter(
+          const AudioEffects(equalizer: EqualizerGains(preamp: -6, bands: [4, 0, 0, 0, 0, 0, 0, 0, 0, -2.5])),
+        ),
+        'lavfi=[volume=volume=-6.0dB,'
+        'equalizer=f=60:width_type=o:width=1:g=4.0,equalizer=f=16000:width_type=o:width=1:g=-2.5]',
       );
     });
 
@@ -22,8 +25,14 @@ void main() {
 
     test('bands, then compression, then normalization in one chain', () {
       expect(
-        mpvAudioFilter(const AudioEffects(bands: [4, 0, 0, 0, 0], volumeNormalization: true, dynamicCompression: true)),
-        'lavfi=[equalizer=f=60:width_type=o:width=2:g=4.0,'
+        mpvAudioFilter(
+          const AudioEffects(
+            equalizer: EqualizerGains(bands: [4, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            volumeNormalization: true,
+            dynamicCompression: true,
+          ),
+        ),
+        'lavfi=[equalizer=f=60:width_type=o:width=1:g=4.0,'
         'acompressor=threshold=-18dB:ratio=3:attack=20:release=250:makeup=2,dynaudnorm=f=150:g=15]',
       );
     });

@@ -25,7 +25,10 @@ class PlayerSettings extends _$PlayerSettings {
       endAction:
           EndAction.values.asNameMap()[prefs.getString(AppPreferences.videoPlayerEndsAction)] ?? EndAction.playNext,
       shuffle: prefs.getBool(AppPreferences.videoPlayerShuffleMode) ?? false,
-      equalizer: parseEqualizerBands(prefs.getString(AppPreferences.videoPlayerEqualizerBands)),
+      equalizer: parseEqualizerGains(
+        bandsCsv: prefs.getString(AppPreferences.videoPlayerEqualizerBands),
+        preamp: prefs.getDouble(AppPreferences.videoPlayerEqualizerPreamp),
+      ),
       volumeNormalization: prefs.getBool(AppPreferences.videoPlayerVolumeNormalization) ?? false,
       dynamicCompression: prefs.getBool(AppPreferences.videoPlayerDynamicCompression) ?? false,
       floatingPlayer: prefs.getBool(AppPreferences.floatingVideoPlayerEnabled) ?? true,
@@ -59,10 +62,11 @@ class PlayerSettings extends _$PlayerSettings {
     await _prefs.setBool(AppPreferences.floatingVideoPlayerEnabled, value);
   }
 
-  Future<void> setEqualizer(List<double> bands) async {
-    final value = [for (final b in bands) b.clamp(-equalizerMaxGain, equalizerMaxGain).toDouble()];
+  Future<void> setEqualizer(EqualizerGains gains) async {
+    final value = gains.clamped();
     state = state.copyWith(equalizer: value);
-    await _prefs.setString(AppPreferences.videoPlayerEqualizerBands, formatEqualizerBands(value));
+    await _prefs.setString(AppPreferences.videoPlayerEqualizerBands, formatEqualizerBands(value.bands));
+    await _prefs.setDouble(AppPreferences.videoPlayerEqualizerPreamp, value.preamp);
   }
 
   Future<void> setVolumeNormalization(bool value) async {
@@ -105,7 +109,6 @@ String equalizerPresetLabel(AppLocalizations l10n, EqualizerPreset? preset) => s
   EqualizerPreset.cinema => l10n.playerEqualizerCinema,
   EqualizerPreset.night => l10n.playerEqualizerNight,
   EqualizerPreset.action => l10n.playerEqualizerAction,
-  EqualizerPreset.max => l10n.playerEqualizerMax,
   null => l10n.playerEqualizerCustom,
 };
 
@@ -146,6 +149,10 @@ String speedLabel(AppLocalizations l10n, double speed) =>
 
 String frequencyLabel(AppLocalizations l10n, int hertz) =>
     hertz >= 1000 ? l10n.playerKilohertz(_number(hertz / 1000)) : l10n.playerHertz('$hertz');
+
+/// Compact band label for the equalizer graph, e.g. `170`, `1k`.
+String frequencyShortLabel(AppLocalizations l10n, int hertz) =>
+    hertz >= 1000 ? l10n.playerKilohertzShort(_number(hertz / 1000)) : '$hertz';
 
 String gainLabel(AppLocalizations l10n, double decibels) => l10n.playerDecibels(
   '${decibels > 0

@@ -18,23 +18,27 @@ import '../../helpers/test_overrides.dart';
 
 void main() {
   group('equalizer', () {
-    test('presets match spec-06 and are recognized; anything else is custom', () {
-      expect(EqualizerPreset.clearDialogue.bands, [0, 2, 4, 5, 1]);
-      expect(EqualizerPreset.cinema.bands, [4, 2, 0, 2, 4]);
-      expect(EqualizerPreset.night.bands, [-3, 0, 3, 4, -2]);
-      expect(EqualizerPreset.action.bands, [5, 3, -1, 1, 3]);
-      expect(EqualizerPreset.max.bands, [12, 12, 12, 12, 12]);
-      expect(EqualizerPreset.of(parseEqualizerBands('20,20,20,20,20')), EqualizerPreset.max, reason: 'clamped');
-      expect(EqualizerPreset.of([4, 2, 0, 2, 4]), EqualizerPreset.cinema);
-      expect(EqualizerPreset.of([4, 2, 0, 2, 5]), isNull);
+    test('presets are recognized by preamp and bands; anything else is custom', () {
+      for (final preset in EqualizerPreset.values) {
+        expect(preset.gains.bands, hasLength(10), reason: preset.name);
+        expect(EqualizerPreset.of(preset.gains), preset);
+      }
+      const cinema = EqualizerGains(bands: [4, 3, 1, 0, 0, 1, 2, 3, 4, 4]);
+      expect(EqualizerPreset.of(cinema), EqualizerPreset.cinema);
+      expect(EqualizerPreset.of(cinema.withBand(9, 5)), isNull);
+      expect(EqualizerPreset.of(cinema.withPreamp(-1)), isNull, reason: 'the preamp is part of a preset');
     });
 
-    test('csv round trip; malformed reads as flat; gains are clamped to ±12 dB', () {
-      expect(parseEqualizerBands(formatEqualizerBands([5, 3, -1, 1, 3])), [5, 3, -1, 1, 3]);
-      expect(parseEqualizerBands(null), EqualizerPreset.reset.bands);
-      expect(parseEqualizerBands('1,2,3'), EqualizerPreset.reset.bands);
-      expect(parseEqualizerBands('1,x,3,4,5'), EqualizerPreset.reset.bands);
-      expect(parseEqualizerBands('20,-20,0,0,0'), [12, -12, 0, 0, 0]);
+    test('10-band csv round trip; anything else, including 5-band lists, reads as flat; gains clamp to ±20 dB', () {
+      const gains = EqualizerGains(preamp: -3, bands: [5, 3, -1, 1, 3, 0, 0, 2, 2, 1]);
+      expect(parseEqualizerGains(bandsCsv: formatEqualizerBands(gains.bands), preamp: -3), gains);
+      expect(parseEqualizerGains(), EqualizerGains.flat);
+      expect(parseEqualizerGains(bandsCsv: '4,2,0,2,4'), EqualizerGains.flat, reason: 'legacy 5-band value');
+      expect(parseEqualizerGains(bandsCsv: '1,x,3,4,5,6,7,8,9,10'), EqualizerGains.flat);
+      expect(
+        parseEqualizerGains(bandsCsv: '30,-30,0,0,0,0,0,0,0,0', preamp: 25),
+        const EqualizerGains(preamp: 20, bands: [20, -20, 0, 0, 0, 0, 0, 0, 0, 0]),
+      );
     });
   });
 
@@ -108,7 +112,7 @@ void main() {
       await settings.setFixedPosition(90);
       await settings.setEndAction(EndAction.playAgain);
       await settings.setShuffle(true);
-      await settings.setEqualizer([1, 2, 3, 4, 5]);
+      await settings.setEqualizer(const EqualizerGains(preamp: -2, bands: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
       await settings.setVolumeNormalization(true);
       await settings.setDynamicCompression(true);
       expect(c.read(playerSettingsProvider).floatingPlayer, isTrue, reason: 'floating player is on by default');
@@ -119,7 +123,8 @@ void main() {
       expect(prefs.getInt(AppPreferences.videoPlayerFixedPosition), 90);
       expect(prefs.getString(AppPreferences.videoPlayerEndsAction), 'playAgain');
       expect(prefs.getBool(AppPreferences.videoPlayerShuffleMode), isTrue);
-      expect(prefs.getString(AppPreferences.videoPlayerEqualizerBands), '1.0,2.0,3.0,4.0,5.0');
+      expect(prefs.getString(AppPreferences.videoPlayerEqualizerBands), '1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0');
+      expect(prefs.getDouble(AppPreferences.videoPlayerEqualizerPreamp), -2);
       expect(prefs.getBool(AppPreferences.videoPlayerVolumeNormalization), isTrue);
       expect(prefs.getBool(AppPreferences.videoPlayerDynamicCompression), isTrue);
       expect(prefs.getBool(AppPreferences.floatingVideoPlayerEnabled), isFalse);
@@ -132,7 +137,7 @@ void main() {
           fixedPosition: 90,
           endAction: EndAction.playAgain,
           shuffle: true,
-          equalizer: [1, 2, 3, 4, 5],
+          equalizer: EqualizerGains(preamp: -2, bands: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
           volumeNormalization: true,
           dynamicCompression: true,
           floatingPlayer: false,
@@ -176,18 +181,18 @@ void main() {
     });
 
     test('speed and equalizer reach the backend and survive item changes', () async {
-      await setUpWith(prefs: {AppPreferences.videoPlayerEqualizerBands: '4,2,0,2,4'});
+      await setUpWith(prefs: {AppPreferences.videoPlayerEqualizerBands: '4,3,1,0,0,1,2,3,4,4'});
       await controller.open('alpha', 'm1', item: 0);
-      expect(backend.audioEffects, const AudioEffects(bands: [4, 2, 0, 2, 4]));
+      expect(backend.audioEffects, AudioEffects(equalizer: EqualizerPreset.cinema.gains));
 
       await controller.setSpeed(1.5);
-      await controller.setEqualizer(EqualizerPreset.reset.bands);
+      await controller.setEqualizer(EqualizerPreset.reset.gains);
       expect(backend.calls.sublist(backend.calls.length - 2), ['speed:1.5', 'effects']);
       expect(backend.audioEffects.isNeutral, isTrue);
 
       await controller.next();
       expect(c.read(playerControllerProvider)!.speed, 1.5);
-      expect(c.read(playerSettingsProvider).equalizer, EqualizerPreset.reset.bands);
+      expect(c.read(playerSettingsProvider).equalizer, EqualizerGains.flat);
 
       await controller.setVolumeNormalization(true);
       expect(backend.audioEffects, const AudioEffects(volumeNormalization: true));

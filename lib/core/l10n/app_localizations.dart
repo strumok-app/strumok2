@@ -1352,7 +1352,7 @@ abstract class AppLocalizations {
   /// **'{value}×'**
   String playerSpeedValue(String value);
 
-  /// Player settings: 5-band equalizer
+  /// Player settings: 10-band equalizer
   ///
   /// In uk, this message translates to:
   /// **'Еквалайзер'**
@@ -1484,11 +1484,29 @@ abstract class AppLocalizations {
   /// **'Сховати субтитри'**
   String get playerHideSubtitles;
 
-  /// Equalizer preset: full +12 dB boost on every band
+  /// Equalizer: preamp (overall gain applied before the bands)
   ///
   /// In uk, this message translates to:
-  /// **'Максимум'**
-  String get playerEqualizerMax;
+  /// **'Підсилення'**
+  String get playerEqualizerPreamp;
+
+  /// Equalizer page: reset every gain to 0 dB (tooltip)
+  ///
+  /// In uk, this message translates to:
+  /// **'Скинути'**
+  String get playerEqualizerReset;
+
+  /// Equalizer page on TV: how to adjust a band with the remote
+  ///
+  /// In uk, this message translates to:
+  /// **'OK — змінити смугу, ↑↓ — рівень'**
+  String get playerEqualizerTvHint;
+
+  /// Equalizer graph: compact kilohertz band label
+  ///
+  /// In uk, this message translates to:
+  /// **'{value}к'**
+  String playerKilohertzShort(String value);
 
   /// Player: enter picture-in-picture (Android PiP / compact desktop window)
   ///

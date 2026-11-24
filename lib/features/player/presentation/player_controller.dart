@@ -18,6 +18,7 @@ import '../data/media_kit_backend.dart';
 import '../data/shader_store.dart';
 import '../data/subtitle_repository.dart';
 import '../data/video_backend.dart';
+import '../domain/equalizer.dart';
 import '../domain/player_preferences.dart';
 import '../domain/player_session.dart';
 import '../domain/subtitles.dart';
@@ -220,8 +221,8 @@ class PlayerController extends _$PlayerController {
   }
 
   /// Persisted equalizer gains, applied right away.
-  Future<void> setEqualizer(List<double> bands) async {
-    await ref.read(playerSettingsProvider.notifier).setEqualizer(bands);
+  Future<void> setEqualizer(EqualizerGains gains) async {
+    await ref.read(playerSettingsProvider.notifier).setEqualizer(gains);
     await _applyAudioEffects();
   }
 

@@ -15,6 +15,7 @@ import '../../domain/upscaling.dart';
 import '../player_controller.dart';
 import '../player_settings.dart';
 import '../subtitle_size.dart';
+import 'equalizer_page.dart';
 import 'player_widgets.dart';
 
 String audioTrackLabel(BuildContext context, MediaTrack track, int index) =>
@@ -204,12 +205,24 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
                 key: const ValueKey('settings-back'),
                 leading: const Icon(Icons.arrow_back),
                 title: Text(_title(page), style: Theme.of(context).textTheme.titleMedium),
+                trailing: page == _SettingsPage.equalizer
+                    ? IconButton(
+                        key: const ValueKey('equalizer-reset'),
+                        tooltip: context.l10n.playerEqualizerReset,
+                        onPressed: settings.equalizer.isFlat
+                            ? null
+                            : () => unawaited(_controller.setEqualizer(EqualizerGains.flat)),
+                        icon: const Icon(Icons.restart_alt),
+                      )
+                    : null,
                 onTap: _back,
               ),
               Expanded(
-                child: page == _SettingsPage.subtitles
-                    ? _SubtitlesPage(session: session)
-                    : _ClippedInk(child: ListView(children: _choices(page, session, tracks, settings))),
+                child: switch (page) {
+                  _SettingsPage.subtitles => _SubtitlesPage(session: session),
+                  _SettingsPage.equalizer => const _ClippedInk(child: EqualizerPage()),
+                  _ => _ClippedInk(child: ListView(children: _choices(page, session, tracks, settings))),
+                },
               ),
             ],
           ),
@@ -329,42 +342,8 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
             onTap: () => _choose(() => _controller.setSpeed(value)),
           ),
       ],
-      // Stays open: presets and per-band gains are tuned together.
-      _SettingsPage.equalizer => [
-        for (final preset in EqualizerPreset.values)
-          _Choice(
-            key: ValueKey('equalizer-${preset.name}'),
-            label: equalizerPresetLabel(l10n, preset),
-            selected: settings.equalizerPreset == preset,
-            onTap: () => unawaited(_controller.setEqualizer(preset.bands)),
-          ),
-        for (final (band, frequency) in equalizerFrequencies.indexed)
-          StepperTile(
-            key: ValueKey('equalizer-band-$band'),
-            label: frequencyLabel(l10n, frequency),
-            value: gainLabel(l10n, settings.equalizer[band]),
-            onDecrease: settings.equalizer[band] > -equalizerMaxGain
-                ? () => _setBand(settings.equalizer, band, settings.equalizer[band] - 1)
-                : null,
-            onIncrease: settings.equalizer[band] < equalizerMaxGain
-                ? () => _setBand(settings.equalizer, band, settings.equalizer[band] + 1)
-                : null,
-          ),
-        SwitchListTile(
-          key: const ValueKey('equalizer-volume-normalization'),
-          title: Text(l10n.playerVolumeNormalization),
-          subtitle: Text(l10n.playerVolumeNormalizationDescription),
-          value: settings.volumeNormalization,
-          onChanged: (value) => unawaited(_controller.setVolumeNormalization(value)),
-        ),
-        SwitchListTile(
-          key: const ValueKey('equalizer-dynamic-compression'),
-          title: Text(l10n.playerDynamicCompression),
-          subtitle: Text(l10n.playerDynamicCompressionDescription),
-          value: settings.dynamicCompression,
-          onChanged: (value) => unawaited(_controller.setDynamicCompression(value)),
-        ),
-      ],
+      // Built by EqualizerPage: presets and gains are tuned together.
+      _SettingsPage.equalizer => const [],
       _SettingsPage.startFrom => [
         for (final value in StartFrom.values)
           _Choice(
@@ -434,9 +413,6 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     final current = tracks.audio.indexed.where((t) => t.$2.id == tracks.audioId).firstOrNull;
     return current == null ? context.l10n.playerAuto : audioTrackLabel(context, current.$2, current.$1);
   }
-
-  void _setBand(List<double> bands, int band, double gain) =>
-      unawaited(_controller.setEqualizer([...bands]..[band] = gain));
 
   /// Applies a single choice and returns to the root, which shows the new value.
   void _choose(Future<void> Function() apply) {

@@ -34,7 +34,8 @@ selected_content_language, selected_content_type, selected_content_suppliers, us
 theme_brightness, theme_color_scheme, volume, suppliers_order, suppliers.<name>.enabled,
 suppliers.<name>.channels, manga_reader_background, manga_reader_mode, manga_reader_auto_crop,
 video_player_setting_shuffle_mode, video_player_setting_ends_action, video_player_setting_start_from,
-video_player_setting_fixed_position, video_player_subtitles_size, video_player_equalizer_bands (csv of 5 doubles),
+video_player_setting_fixed_position, video_player_subtitles_size, video_player_equalizer_bands (csv of 10 doubles;
+any other length reads as flat), video_player_equalizer_preamp (double, dB),
 video_player_volume_normalization, video_player_dynamic_compression (bools),
 offline_mode, offline_downloads_directory, ffi_supplier_bundle_info (json), floating_video_player_enabled
 ```

@@ -945,7 +945,7 @@
   },
   "playerEqualizer": "Еквалайзер",
   "@playerEqualizer": {
-    "description": "Player settings: 5-band equalizer"
+    "description": "Player settings: 10-band equalizer"
   },
   "playerEqualizerOff": "Вимкнено",
   "@playerEqualizerOff": {
@@ -1046,9 +1046,26 @@
   "@playerHideSubtitles": {
     "description": "Player: subtitles toggle while they are on"
   },
-  "playerEqualizerMax": "Максимум",
-  "@playerEqualizerMax": {
-    "description": "Equalizer preset: full +12 dB boost on every band"
+  "playerEqualizerPreamp": "Підсилення",
+  "@playerEqualizerPreamp": {
+    "description": "Equalizer: preamp (overall gain applied before the bands)"
+  },
+  "playerEqualizerReset": "Скинути",
+  "@playerEqualizerReset": {
+    "description": "Equalizer page: reset every gain to 0 dB (tooltip)"
+  },
+  "playerEqualizerTvHint": "OK — змінити смугу, ↑↓ — рівень",
+  "@playerEqualizerTvHint": {
+    "description": "Equalizer page on TV: how to adjust a band with the remote"
+  },
+  "playerKilohertzShort": "{value}к",
+  "@playerKilohertzShort": {
+    "description": "Equalizer graph: compact kilohertz band label",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
   },
   "playerPip": "Картинка в картинці",
   "@playerPip": {

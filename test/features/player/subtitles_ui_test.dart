@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:content_suppliers_api/content_suppliers_api.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -340,31 +341,39 @@ void main() {
 
     await tester.tap(row('equalizer'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Кіно'));
+    await tester.ensureVisible(find.byKey(const ValueKey('equalizer-cinema')));
+    await tester.tap(find.byKey(const ValueKey('equalizer-cinema')));
     await tester.pumpAndSettle();
-    expect(backend.audioEffects, const AudioEffects(bands: [4, 2, 0, 2, 4]));
+    expect(backend.audioEffects, AudioEffects(equalizer: EqualizerPreset.cinema.gains));
     final bass = find.byKey(const ValueKey('equalizer-band-0'));
-    expect(find.descendant(of: bass, matching: find.text('60 Гц')), findsOneWidget);
-    await tester.tap(find.descendant(of: bass, matching: find.byTooltip('Збільшити')));
+    expect(find.descendant(of: bass, matching: find.text('60')), findsOneWidget);
+    expect(
+      find.descendant(of: find.byKey(const ValueKey('equalizer-band-4')), matching: find.text('1к')),
+      findsOneWidget,
+    );
+    await tester.tap(bass);
+    await tester.pump(kDoubleTapTimeout);
+    await press(tester, LogicalKeyboardKey.arrowUp);
+    expect(find.descendant(of: find.byKey(const ValueKey('equalizer-value')), matching: find.text('+5 дБ')), findsOne);
+    await tester.drag(find.byKey(const ValueKey('equalizer-preamp')), const Offset(0, 300));
     await tester.pumpAndSettle();
-    expect(find.descendant(of: bass, matching: find.text('+5 дБ')), findsOneWidget);
+    final custom = EqualizerPreset.cinema.gains.withBand(0, 5).withPreamp(-20);
+    expect(backend.audioEffects, AudioEffects(equalizer: custom), reason: 'the drag wins over the page scroll');
+    expect(find.byKey(const ValueKey('equalizer-custom')), findsOneWidget);
     final normalization = find.byKey(const ValueKey('equalizer-volume-normalization'));
     final compression = find.byKey(const ValueKey('equalizer-dynamic-compression'));
     await tester.scrollUntilVisible(normalization, 100, scrollable: find.byType(Scrollable).last);
     await tester.tap(normalization);
     await tester.pumpAndSettle();
-    expect(backend.audioEffects, const AudioEffects(bands: [5, 2, 0, 2, 4], volumeNormalization: true));
+    expect(backend.audioEffects, AudioEffects(equalizer: custom, volumeNormalization: true));
     await tester.scrollUntilVisible(compression, 100, scrollable: find.byType(Scrollable).last);
     await tester.tap(compression);
     await tester.pumpAndSettle();
-    expect(
-      backend.audioEffects,
-      const AudioEffects(bands: [5, 2, 0, 2, 4], volumeNormalization: true, dynamicCompression: true),
-    );
+    expect(backend.audioEffects, AudioEffects(equalizer: custom, volumeNormalization: true, dynamicCompression: true));
     await tester.tap(compression);
     await tester.tap(normalization);
     await tester.pumpAndSettle();
-    expect(backend.audioEffects, const AudioEffects(bands: [5, 2, 0, 2, 4]));
+    expect(backend.audioEffects, AudioEffects(equalizer: custom));
     await tester.tap(find.byKey(const ValueKey('settings-back')));
     await tester.pumpAndSettle();
     expect(find.descendant(of: row('equalizer'), matching: find.text('Власний')), findsOneWidget);
@@ -388,7 +397,7 @@ void main() {
     expect(settings.startFrom, StartFrom.fromFixedPosition);
     expect(settings.endAction, EndAction.playAgain);
     expect(settings.shuffle, isTrue);
-    expect(settings.equalizer, [5, 2, 0, 2, 4]);
+    expect(settings.equalizer, EqualizerPreset.cinema.gains.withBand(0, 5).withPreamp(-20));
   });
 
   testAppWidgets('mobile: subtitles lift above visible controls; settings open in a side sheet', (tester) async {

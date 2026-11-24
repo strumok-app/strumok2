@@ -81,12 +81,24 @@ to media_kit together with the source headers, stop the proxy when the backend i
   ASS dialogue is rendered as plain text; styling, positioning, and vector drawings are not rendered.
 - Audio track and video quality track selection.
 - Playback speed (0.5–2.0, steps of 0.25); kept for the app session across items and titles, not persisted.
-- 5-band equalizer via mpv `af` (bands 60, 230, 910, 4000, 14000 Hz; range ±12 dB) with presets:
-  Reset `[0,0,0,0,0]`, Clear dialogue `[0,2,4,5,1]`, Cinema `[4,2,0,2,4]`, Night `[-3,0,3,4,-2]`, Action `[5,3,-1,1,3]`,
-  Max `[12,12,12,12,12]` (full boost on every band).
+- 10-band equalizer via mpv `af` on VLC's default bands (60, 170, 310, 600, 1k, 3k, 6k, 12k, 14k, 16k Hz) plus a
+  preamp applied before the bands; range ±20 dB for each, 1 dB steps. Persisted band lists of any other length
+  (e.g. the earlier 5-band equalizer) read as flat. Presets set the preamp and every band (`preamp | bands`):
+  Off `0 | 0×10`; Clear dialogue `0 | -2,-1,1,3,4,5,3,1,0,0`; Cinema `0 | 4,3,1,0,0,1,2,3,4,4`;
+  Night `0 | -4,-2,0,2,3,4,3,0,-2,-3`; Action `0 | 6,5,3,0,-1,1,2,3,3,3`.
+  Gains matching no preset (preamp included) show as "Custom".
   The controller hands the backend an `AudioEffects` object (`VideoBackend.setAudioEffects`); the media_kit backend
-  builds the mpv filter itself (`data/mpv_audio_filter.dart`): `lavfi=[equalizer=f=<Hz>:width_type=o:width=2:g=<dB>,…]` for non-zero bands; empty when flat. Gains
-  step by 1 dB; gains matching no preset show as "Custom".
+  builds the mpv filter itself (`data/mpv_audio_filter.dart`): `lavfi=[volume=volume=<dB>dB,
+  equalizer=f=<Hz>:width_type=o:width=1:g=<dB>,…]` — the preamp when non-zero, then one one-octave peaking filter
+  (VLC's width) per non-zero band; empty when flat.
+  Equalizer page: a scrolling row of preset chips (a non-selectable "Custom" chip leads it while custom), a reset
+  button in the page header, then a graphic equalizer — a preamp column, a divider, and 10 band columns over a
+  ±20 dB grid with a smooth curve through the band gains and the active column's gain shown above the graph.
+  Input: drag a column (the gain follows the pointer, clamped), mouse wheel over a column ±1 dB, double-tap resets
+  it to 0; with a keyboard ↑/↓ change the focused column. Phone/tablet: haptic tick per dB, stronger at 0.
+  TV: arrows move focus as usual; OK on a column enters adjust mode (↑/↓ ±1 dB, ←/→ move to the neighbor column
+  staying in adjust mode, OK or Back leave it — Back then does not leave the page); a hint under the graph
+  explains this.
   Two switches on the Equalizer page, persisted (`video_player_volume_normalization`,
   `video_player_dynamic_compression`, default off) and appended to the same `lavfi=[…]` chain after the bands:
   "Reduce loud sounds" → `acompressor=threshold=-18dB:ratio=3:attack=20:release=250:makeup=2`, then

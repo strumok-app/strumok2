@@ -755,7 +755,18 @@ class AppLocalizationsUk extends AppLocalizations {
   String get playerHideSubtitles => 'Сховати субтитри';
 
   @override
-  String get playerEqualizerMax => 'Максимум';
+  String get playerEqualizerPreamp => 'Підсилення';
+
+  @override
+  String get playerEqualizerReset => 'Скинути';
+
+  @override
+  String get playerEqualizerTvHint => 'OK — змінити смугу, ↑↓ — рівень';
+
+  @override
+  String playerKilohertzShort(String value) {
+    return '$valueк';
+  }
 
   @override
   String get playerPip => 'Картинка в картинці';

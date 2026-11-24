@@ -17,7 +17,7 @@ final class PlayerPreferences {
   final int fixedPosition;
   final EndAction endAction;
   final bool shuffle;
-  final List<double> equalizer;
+  final EqualizerGains equalizer;
 
   /// Evens out loudness over time (mpv `dynaudnorm`).
   final bool volumeNormalization;
@@ -36,7 +36,7 @@ final class PlayerPreferences {
     this.fixedPosition = 0,
     this.endAction = EndAction.playNext,
     this.shuffle = false,
-    this.equalizer = const [0, 0, 0, 0, 0],
+    this.equalizer = EqualizerGains.flat,
     this.volumeNormalization = false,
     this.dynamicCompression = false,
     this.floatingPlayer = true,
@@ -48,7 +48,7 @@ final class PlayerPreferences {
     int? fixedPosition,
     EndAction? endAction,
     bool? shuffle,
-    List<double>? equalizer,
+    EqualizerGains? equalizer,
     bool? volumeNormalization,
     bool? dynamicCompression,
     bool? floatingPlayer,
@@ -73,7 +73,7 @@ final class PlayerPreferences {
       other.fixedPosition == fixedPosition &&
       other.endAction == endAction &&
       other.shuffle == shuffle &&
-      listEquals(other.equalizer, equalizer) &&
+      other.equalizer == equalizer &&
       other.volumeNormalization == volumeNormalization &&
       other.dynamicCompression == dynamicCompression &&
       other.floatingPlayer == floatingPlayer &&
@@ -85,15 +85,18 @@ final class PlayerPreferences {
     fixedPosition,
     endAction,
     shuffle,
-    Object.hashAll(equalizer),
+    equalizer,
     volumeNormalization,
     dynamicCompression,
     floatingPlayer,
     upscaler,
   );
 
-  AudioEffects get audioEffects =>
-      AudioEffects(bands: equalizer, volumeNormalization: volumeNormalization, dynamicCompression: dynamicCompression);
+  AudioEffects get audioEffects => AudioEffects(
+    equalizer: equalizer,
+    volumeNormalization: volumeNormalization,
+    dynamicCompression: dynamicCompression,
+  );
 
   EqualizerPreset? get equalizerPreset => EqualizerPreset.of(equalizer);
 }

@@ -754,7 +754,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerHideSubtitles => 'Hide subtitles';
 
   @override
-  String get playerEqualizerMax => 'Max';
+  String get playerEqualizerPreamp => 'Preamp';
+
+  @override
+  String get playerEqualizerReset => 'Reset';
+
+  @override
+  String get playerEqualizerTvHint => 'OK to adjust a band, ↑↓ to change it';
+
+  @override
+  String playerKilohertzShort(String value) {
+    return '${value}k';
+  }
 
   @override
   String get playerPip => 'Picture in picture';
