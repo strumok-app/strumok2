@@ -93,7 +93,17 @@ final class PlaybackTracks {
   final String? videoId;
   final String? audioId;
 
-  const PlaybackTracks({this.video = const [], this.audio = const [], this.videoId, this.audioId});
+  /// The video track actually playing, resolved by the backend even while selection is automatic ([videoId] null);
+  /// null until known. Lets the UI show the real quality behind "Auto" (spec-06 §6.5).
+  final String? activeVideoId;
+
+  const PlaybackTracks({
+    this.video = const [],
+    this.audio = const [],
+    this.videoId,
+    this.audioId,
+    this.activeVideoId,
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -101,10 +111,11 @@ final class PlaybackTracks {
       listEquals(other.video, video) &&
       listEquals(other.audio, audio) &&
       other.videoId == videoId &&
-      other.audioId == audioId;
+      other.audioId == audioId &&
+      other.activeVideoId == activeVideoId;
 
   @override
-  int get hashCode => Object.hash(Object.hashAll(video), Object.hashAll(audio), videoId, audioId);
+  int get hashCode => Object.hash(Object.hashAll(video), Object.hashAll(audio), videoId, audioId, activeVideoId);
 }
 
 final class VideoOpenRequest {

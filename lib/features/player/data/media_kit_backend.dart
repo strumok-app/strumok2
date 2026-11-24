@@ -85,6 +85,9 @@ class MediaKitVideoBackend implements VideoBackend {
   /// Fixed output size set for the active upscaler; null = the video's own size (media_kit default).
   ({int width, int height})? _outputSize;
 
+  /// The video track mpv is actually decoding, resolved even under `vid=auto`; null when unknown.
+  String? _activeVideoId;
+
   /// mpv left idle after the current file started: it ended (EOF) or failed.
   bool _fileStarted = false;
   bool _finished = false;
@@ -141,6 +144,12 @@ class MediaKitVideoBackend implements VideoBackend {
         _onStopped();
       }
     });
+    // Resolves the rendition behind "Auto": mpv reports the decoded track id even when selection is automatic.
+    await _native.observeProperty('current-tracks/video/id', (value) async {
+      final id = value.trim();
+      _activeVideoId = id.isEmpty || id == 'no' ? null : id;
+      _updateTracks();
+    });
   }
 
   void _update(PlaybackStatus next) {
@@ -176,6 +185,7 @@ class MediaKitVideoBackend implements VideoBackend {
       ],
       videoId: id(selected.video.id),
       audioId: id(selected.audio.id),
+      activeVideoId: _activeVideoId,
     );
   }
 
@@ -224,6 +234,7 @@ class MediaKitVideoBackend implements VideoBackend {
     _fileStarted = false;
     _finished = false;
     _lastError = null;
+    _activeVideoId = null;
     _update(PlaybackStatus(volume: _status.value.volume));
     // Downloaded files (spec-08 §8.4) open by path: mpv takes it verbatim, without URL decoding.
     final resource = url.scheme == 'file' ? url.toFilePath() : url.toString();

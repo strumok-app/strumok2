@@ -54,6 +54,8 @@
   "searchFilterLanguages": "Languages",
   "searchFilterTypes": "Types",
   "searchFilterSuppliers": "Suppliers",
+  "searchFilterSuppliersAll": "All suppliers",
+  "searchFilterSuppliersChoose": "Choose suppliers",
   "searchEnterQuery": "Enter a title to search",
   "searchNoSuppliers": "No suppliers match the selected filters",
   "searchNothingFound": "Nothing found",

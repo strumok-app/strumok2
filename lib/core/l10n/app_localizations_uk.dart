@@ -178,6 +178,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get searchFilterSuppliers => 'Постачальники';
 
   @override
+  String get searchFilterSuppliersAll => 'Усі постачальники';
+
+  @override
+  String get searchFilterSuppliersChoose => 'Вибрати постачальників';
+
+  @override
   String get searchEnterQuery => 'Введіть назву для пошуку';
 
   @override

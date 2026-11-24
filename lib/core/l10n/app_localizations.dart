@@ -416,6 +416,18 @@ abstract class AppLocalizations {
   /// **'Постачальники'**
   String get searchFilterSuppliers;
 
+  /// Search supplier filter: include every enabled supplier
+  ///
+  /// In uk, this message translates to:
+  /// **'Усі постачальники'**
+  String get searchFilterSuppliersAll;
+
+  /// Search supplier filter: choose specific suppliers
+  ///
+  /// In uk, this message translates to:
+  /// **'Вибрати постачальників'**
+  String get searchFilterSuppliersChoose;
+
   /// Search: nothing submitted yet
   ///
   /// In uk, this message translates to:

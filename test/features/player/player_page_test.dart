@@ -182,6 +182,41 @@ void main() {
     expect(find.text('Налаштування'), findsOneWidget);
   });
 
+  testAppWidgets('desktop: settings shows the quality row for a single track, resolving Auto to the rendition', (
+    tester,
+  ) async {
+    await openPlayer(tester);
+    backend.tracks.value = const PlaybackTracks(video: [MediaTrack('1', height: 1080)], activeVideoId: '1');
+    await tester.pumpAndSettle();
+
+    await press(tester, LogicalKeyboardKey.comma);
+    expect(find.text('Якість'), findsOneWidget);
+    expect(find.text('Авто · 1080p'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('settings-quality')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('quality-auto')), findsOneWidget);
+    expect(find.byKey(const ValueKey('quality-1')), findsOneWidget);
+  });
+
+  testAppWidgets('desktop: choosing a quality shows it without the Auto prefix', (tester) async {
+    await openPlayer(tester);
+    backend.tracks.value = const PlaybackTracks(
+      video: [MediaTrack('1', height: 720), MediaTrack('2', height: 1080)],
+      activeVideoId: '2',
+    );
+    await tester.pumpAndSettle();
+
+    await press(tester, LogicalKeyboardKey.comma);
+    await tester.tap(find.byKey(const ValueKey('settings-quality')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('quality-1')));
+    await tester.pumpAndSettle();
+
+    expect(backend.calls, contains('video:1'));
+    expect(find.text('720p'), findsOneWidget);
+  });
+
   testAppWidgets('desktop: the top-bar help button opens the shortcuts overlay', (tester) async {
     await openPlayer(tester);
     expect(find.byKey(const Key('shortcutsOverlay')), findsNothing);

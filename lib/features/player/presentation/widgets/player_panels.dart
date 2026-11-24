@@ -27,6 +27,16 @@ String qualityLabel(BuildContext context, MediaTrack track, int index) => switch
   _ => context.l10n.playerTrack(index + 1),
 };
 
+/// The current video quality to display: the chosen track, or `Auto` resolved to the rendition actually playing
+/// (e.g. `Auto · 1080p`) when the backend reports it (spec-06 §6.5).
+String currentVideoQualityLabel(BuildContext context, PlaybackTracks tracks) {
+  final selected = tracks.video.indexed.where((t) => t.$2.id == tracks.videoId).firstOrNull;
+  if (selected != null) return qualityLabel(context, selected.$2, selected.$1);
+  final auto = context.l10n.playerAuto;
+  final active = tracks.video.indexed.where((t) => t.$2.id == tracks.activeVideoId).firstOrNull;
+  return active == null ? auto : '$auto · ${qualityLabel(context, active.$2, active.$1)}';
+}
+
 /// Signed seconds with one decimal, e.g. `+0.5`, `−1.0`.
 String formatSubtitleOffset(Duration offset) =>
     '${offset.isNegative ? '−' : '+'}${(offset.inMilliseconds.abs() / 1000).toStringAsFixed(1)}';
@@ -220,7 +230,7 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
           value: session.subtitle == null ? l10n.playerSubtitlesOff : context.sourceLabel(session.subtitle!),
         ),
       if (tracks.audio.length > 1) (page: _SettingsPage.audio, value: _currentAudio(tracks)),
-      if (tracks.video.length > 1) (page: _SettingsPage.quality, value: _currentQuality(tracks)),
+      if (tracks.video.isNotEmpty) (page: _SettingsPage.quality, value: currentVideoQualityLabel(context, tracks)),
       // Desktop only; hidden where no upscaler can run (spec-13 §13.6).
       if (_controller.supportedUpscalers.isNotEmpty)
         (page: _SettingsPage.upscaling, value: upscalerLabel(l10n, _controller.upscaler)),
@@ -423,11 +433,6 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
   String _currentAudio(PlaybackTracks tracks) {
     final current = tracks.audio.indexed.where((t) => t.$2.id == tracks.audioId).firstOrNull;
     return current == null ? context.l10n.playerAuto : audioTrackLabel(context, current.$2, current.$1);
-  }
-
-  String _currentQuality(PlaybackTracks tracks) {
-    final current = tracks.video.indexed.where((t) => t.$2.id == tracks.videoId).firstOrNull;
-    return current == null ? context.l10n.playerAuto : qualityLabel(context, current.$2, current.$1);
   }
 
   void _setBand(List<double> bands, int band, double gain) =>
