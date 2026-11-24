@@ -48,7 +48,7 @@ bottom of the side rail.
 
 ## Search
 - Text field with suggestions from local search history (store last queries; prune entries older than ~30 days).
-- Filters: content language (`en`, `uk`, `ja`), content type (`movie`, `anime`, `cartoon`, `series`, `manga`),
+- Filters: content language (`en`, `uk`), content type (`movie`, `anime`, `cartoon`, `series`, `manga`),
   suppliers. A supplier is searchable only if its `supportedLanguages ∩ selectedLanguages` and
   `supportedTypes ∩ selectedTypes` are non-empty. Persist filters.
 - Search runs on all selected suppliers **in parallel**; results grouped per supplier (horizontal rows),

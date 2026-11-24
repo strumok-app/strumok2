@@ -5,7 +5,7 @@ description: 'Guardrails for any change to collection persistence, Firebase Real
 
 # Firebase collection compatibility
 
-Contract: [spec-03-collection-and-firebase-sync.instructions.md](../../instructions/spec-03-collection-and-firebase-sync.instructions.md).
+Contract: [spec-03-collection-and-firebase-sync](../../../docs/specs/spec-03-collection-and-firebase-sync.md).
 
 ## Checklist before committing
 - [ ] Path is `collection/{uid}/{itemKey}`; `itemKey = supplier + id.replaceAll('/', '|').replaceAll('.', '')`.

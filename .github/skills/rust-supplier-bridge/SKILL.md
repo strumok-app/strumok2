@@ -5,7 +5,7 @@ description: 'Wire, verify or upgrade the flutter_rust_bridge supplier bundle (e
 
 # Rust supplier bridge
 
-Contract: [spec-02-content-suppliers-ffi.instructions.md](../../instructions/spec-02-content-suppliers-ffi.instructions.md). FRB codegen `2.13.0`,
+Contract: [spec-02-content-suppliers-ffi](../../../docs/specs/spec-02-content-suppliers-ffi.md). FRB codegen `2.13.0`,
 content hash `-1122641696`, API major `5`. Reference Rust crate + checksums:
 [contract.md](references/contract.md).
 

@@ -12,7 +12,7 @@ limit and are never queued behind content downloads.
 
 ## 11.1 Supplier library — install, update, hot reload
 
-Format and file naming are defined in [spec-02-content-suppliers-ffi.instructions.md](spec-02-content-suppliers-ffi.instructions.md). This section defines the
+Format and file naming are defined in [spec-02-content-suppliers-ffi](spec-02-content-suppliers-ffi.md). This section defines the
 required user flows.
 
 ### First install (startup guard) — MUST

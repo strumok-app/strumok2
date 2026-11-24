@@ -66,6 +66,33 @@ void main() {
       ]);
     });
 
+    test('ASS: parses dialogue timing and preserves text commas and line breaks', () {
+      const ass = r'''; generated subtitles
+[Script Info]
+ScriptType: v4.00+
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Comment: 0,0:00:01.00,0:00:02.00,Default,,0,0,0,,Not displayed
+Dialogue: 0,0:00:01.25,0:00:03.50,Default,,0,0,0,,{\an8}Hello, <friend>!\NSecond\nline
+Dialogue: 0,0:00:02.00,0:00:03.00,Default,,0,0,0,,{\p1}m 0 0 l 40 40{\p0}Visible\htext
+Dialogue: 0,0:00:02.00,0:00:03.00,Default,,0,0,0,,{\p1}m 0 0 l 40 40
+Dialogue: 0,0:00:05.00,0:00:04.00,Default,,0,0,0,,Invalid timing
+Dialogue: 0,0:00:01.00,0:00:02.00,Missing fields
+
+[Fonts]
+Dialogue: 0,0:00:01.00,0:00:02.00,Default,,0,0,0,,Outside Events
+''';
+      final track = parseSubtitles('\uFEFF${ass.replaceAll('\n', '\r\n')}');
+      expect(track.cues, [
+        SubtitleCue(ms(1250), ms(3500), 'Hello, <friend>!\nSecond line'),
+        SubtitleCue(ms(2000), ms(3000), 'Visible\u00A0text'),
+      ]);
+      expect(track.linesAt(ms(1249)), isEmpty);
+      expect(track.linesAt(ms(2500)), ['Hello, <friend>!', 'Second line', 'Visible\u00A0text']);
+      expect(track.linesAt(ms(3500)), isEmpty);
+    });
+
     test('CRLF line endings and a BOM', () {
       final track = parseSubtitles('\uFEFF${srt.replaceAll('\n', '\r\n')}');
       expect(track.cues, hasLength(2));

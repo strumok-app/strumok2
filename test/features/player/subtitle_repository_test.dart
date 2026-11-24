@@ -40,4 +40,16 @@ void main() {
     status = 200;
     expect((await repository.load('k', source)).cues, hasLength(1));
   });
+
+  test('loads ASS dialogue through the same isolate parser', () async {
+    const ass =
+        '[Script Info]\nScriptType: v4.00+\n[Events]\n'
+        'Format: Layer, End, Start, Text\n'
+        'Dialogue: 0,0:00:03.00,0:00:01.00,One, two';
+    final repository = SubtitleRepository(MockClient((_) async => http.Response.bytes(utf8.encode(ass), 200)));
+    final source = FakeSubtitleSource('English(US)', url: 'https://subs.example.com/0_en.ass');
+
+    final track = await repository.load('k', source);
+    expect(track.linesAt(const Duration(seconds: 2)), ['One, two']);
+  });
 }

@@ -81,6 +81,7 @@ class PlayerController extends _$PlayerController {
   /// [item] is an item number (collection key); offline content lists only downloaded items, so numbers and list
   /// indexes differ there.
   Future<void> open(String supplier, String id, {int? item}) async {
+    _log.fine('Opening player for supplier: $supplier, id: $id, item: $item');
     final current = state;
     if (current != null &&
         current.supplier == supplier &&
@@ -101,22 +102,14 @@ class PlayerController extends _$PlayerController {
       final collection = await ref.read(collectionItemsProvider.future);
       if (!_isCurrent(token)) return;
 
-      _base =
-          (collection[collectionItemKey(supplier, id)] ??
-                  CollectionItem(
-                    id: id,
-                    supplier: supplier,
-                    title: details.title,
-                    image: details.image,
-                    mediaType: details.mediaType,
-                  ))
-              .copyWith(title: details.title, image: details.image);
       state = state!.copyWith(title: details.title, items: items);
       if (items.isEmpty) {
         state = state!.copyWith(loading: false, failure: PlayerFailure.noSources);
         return;
       }
-      await _openItem(token, itemIndexOfNumber(items, item ?? _base!.currentItem) ?? 0);
+
+      final currentItem = item ?? collection[collectionItemKey(supplier, id)]?.currentItem ?? 0;
+      await _openItem(token, itemIndexOfNumber(items, currentItem) ?? 0);
     } catch (e, st) {
       _fail(token, PlayerFailure.loadFailed, e, st);
     }
@@ -320,6 +313,8 @@ class PlayerController extends _$PlayerController {
     final session = state!;
     final source = session.source!;
     _resumeAt = start;
+
+    _log.fine('Opening source: $source');
     try {
       final link = await source.link;
       if (!_isCurrent(token)) return;
@@ -421,6 +416,8 @@ class PlayerController extends _$PlayerController {
     final source = session?.subtitle;
     if (session == null) return;
     state = session.copyWith(subtitleLoading: source != null, subtitleFailed: false);
+
+    _log.fine('Loading subtitles for source: $source');
     if (source == null) return;
     try {
       final track = await ref

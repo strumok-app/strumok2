@@ -2,7 +2,7 @@
 
 The FRB contract crate lives at `packages/content_suppliers_rust/rust` (+ `flutter_rust_bridge.yaml`).
 It is the **source of truth** for the FFI contract between the app and the external supplier modules
-(`strumok_suppliers` 5.x). See [../spec-02-content-suppliers-ffi.md](../../../instructions/spec-02-content-suppliers-ffi.instructions.md).
+(`strumok_suppliers` 5.x). See [spec-02-content-suppliers-ffi](../../../../docs/specs/spec-02-content-suppliers-ffi.md).
 
 ```text
 packages/content_suppliers_rust/

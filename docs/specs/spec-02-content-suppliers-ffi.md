@@ -28,7 +28,7 @@ rather than API-derived, the `compatibleApiVersion` gate (not the hash) is what 
 **The FRB contract crate lives in the repo:** [content_suppliers_rust/](../../packages/content_suppliers_rust/)
 (`rust/src/api/mod.rs`, `rust/src/models.rs`, `rust/src/frb_generated.rs`, `rust/src/suppliers/` with the `dummy`
 test supplier, `rust/Cargo.toml`/`Cargo.lock`, `flutter_rust_bridge.yaml`). Checksums and rules:
-[contract.md](../skills/rust-supplier-bridge/references/contract.md).
+[contract.md](../../.github/skills/rust-supplier-bridge/references/contract.md).
 
 The Dart side lives alongside it:
 
@@ -88,7 +88,7 @@ enum ContentMediaItemSource {
   `ContentLanguage?` the same way as supported languages (unknown/absent codes become `null`).
 - `headers` MUST be sent for every request to that source (player, downloads, subtitles, manga images).
 - `hls_proxy: true` means the source's HLS segments are disguised with a junk prefix: playback MUST go through the
-  local dejunking HLS proxy ([spec-12](spec-12-hls-ts-dejunking.instructions.md)). Downloads dejunk TS segments always,
+  local dejunking HLS proxy ([spec-12](spec-12-hls-ts-dejunking.md)). Downloads dejunk TS segments always,
   so the flag does not change download behavior.
 - Video source identity is its `description` (stored as `currentSourceName`); subtitles likewise (`currentSubtitleName`).
 - Search & channel pages are **1-based** in app usage.
@@ -123,7 +123,7 @@ Bundle metadata JSON (fetched from `FFI_LIB_VERSION_CHECK_URL`, persisted in pre
 - Developer override: `--dart-define=FFI_SUPPLIER_LIB_NAME=<stem>` and `FFI_SUPPLIER_LIBS_DIR=<dir relative to cwd>`.
 - Unload (`DynamicLibrary.close`) the previous bundle only after the new one loaded successfully.
 - Install/update user flows (startup guard, update checks, hot swap) are **mandatory** and specified in
-  [spec-11-app-and-suppliers-updates.instructions.md](spec-11-app-and-suppliers-updates.instructions.md).
+  [spec-11-app-and-suppliers-updates](spec-11-app-and-suppliers-updates.md).
 
 ## 2.5 Supplier configuration (per supplier, persisted)
 

@@ -30,7 +30,7 @@ applyTo: 'lib/features/downloads/**'
 | Source kind | Handling | Output |
 |-------------|----------|--------|
 | Video, progressive (mp4 etc.) | HTTP GET with source headers, `Range` resume into `.part` file, rename on success | `<desc>.mp4` |
-| Video, HLS | Parse master → highest-bandwidth variant (fallback to next) → download segments sequentially → **dejunk every clear TS segment** (always, regardless of `hlsProxy`), AES-128 decrypt-then-dejunk, `EXT-X-BYTERANGE`, fMP4 init + media untouched — all per [spec-12 §12.5](spec-12-hls-ts-dejunking.instructions.md) → one file playable by media_kit | `<desc>.mp4` |
+| Video, HLS | Parse master → highest-bandwidth variant (fallback to next) → download segments sequentially → **dejunk every clear TS segment** (always, regardless of `hlsProxy`), AES-128 decrypt-then-dejunk, `EXT-X-BYTERANGE`, fMP4 init + media untouched — all per [spec-12 §12.5](spec-12-hls-ts-dejunking.md) → one file playable by media_kit | `<desc>.mp4` |
 | Subtitle | Plain GET | `<desc>.vtt` |
 | Manga | Download all pages (bounded parallelism ~4) | folder `pages_<desc>/` with ordered files |
 

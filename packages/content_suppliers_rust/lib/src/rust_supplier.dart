@@ -204,6 +204,10 @@ class _RustVideoSource extends VideoMediaItemSource {
 
   @override
   Future<Uri> get link async => Uri.parse(_link);
+
+  @override
+  String toString() =>
+      'VideoSource(description: $description, link: $_link, headers: $headers, hlsProxy: $hlsProxy, language: $language)';
 }
 
 class _RustSubtitleSource extends SubtitleMediaItemSource {
@@ -219,6 +223,10 @@ class _RustSubtitleSource extends SubtitleMediaItemSource {
 
   @override
   Future<Uri> get link async => Uri.parse(_link);
+
+  @override
+  String toString() =>
+      'SubtitleSource(description: $description, link: $_link, headers: $headers, language: $language)';
 }
 
 class _RustMangaSource extends MangaMediaItemSource {
@@ -246,6 +254,9 @@ class _RustMangaSource extends MangaMediaItemSource {
         _contentId,
         () => _supplier._api.crateApiLoadMangaPages(supplier: _supplier.name, id: _contentId, params: _source.params),
       );
+
+  @override
+  String toString() => 'MangaSource(description: $description, headers: $headers, language: $language)';
 }
 
 /// Caches a lazy load per object (spec-02 §2.3); a failed load is retried on the next access.

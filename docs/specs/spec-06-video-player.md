@@ -39,9 +39,16 @@ Overlays: FloatingPlayer (in-app mini player), PiP (Android native / desktop com
 ## 6.3 media_kit / mpv configuration — MUST (proven on slow CDNs)
 
 ```
-hr-seek=no                 force-seekable=yes        framedrop=no         video-sync=audio
-cache=yes                  cache-secs=180            demuxer-readahead-secs=180
-demuxer-max-bytes=128M     demuxer-max-back-bytes=32M cache-pause-wait=3
+hr-seek=no                 
+force-seekable=yes        
+framedrop=no         
+video-sync=audio
+cache=yes                  
+cache-secs=180            
+demuxer-readahead-secs=180
+demuxer-max-bytes=128M     
+demuxer-max-back-bytes=32M 
+cache-pause-wait=3
 network-timeout=30
 stream-lavf-o=reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reconnect_on_http_error=5xx,reconnect_delay_max=10
 demuxer-lavf-o: append each reconnect option above + seg_max_retry=10   (use `change-list ... append` to keep media_kit defaults)
@@ -54,7 +61,7 @@ Treat "ended" with a ~5 s tolerance near EOF. Do not reconnect on 4xx (expired l
 Sources flagged `hlsProxy` serve MPEG-TS segments disguised with a junk prefix (fake PNG/JPEG etc.). The backend
 MUST play them through the local HLS proxy, which dejunks every clear TS segment on the fly. The dejunk algorithm,
 proxy endpoints, playlist rewriting and response rules are specified in
-[spec-12](spec-12-hls-ts-dejunking.instructions.md) — implement them there, not in the player.
+[spec-12](spec-12-hls-ts-dejunking.md) — implement them there, not in the player.
 
 Player responsibilities only: start the proxy before opening the media, pass `http://127.0.0.1:<port>/master?url=…`
 to media_kit together with the source headers, stop the proxy when the backend is disposed.
@@ -68,8 +75,9 @@ to media_kit together with the source headers, stop the proxy when the backend i
 - Subtitles never go through media_kit/mpv: mpv runs with `sid=no` and the media_kit subtitle view is hidden; embedded
   subtitle tracks are not offered.
 - Supplier subtitles: fetch with headers over the shared HTTP client, then decode (BOM-aware UTF-8/UTF-16, fallback
-  Windows-1251) and parse **WebVTT and SRT** in a **separate isolate**; sanitize tags; render as Flutter overlay;
+  Windows-1251) and parse **WebVTT, SRT, and ASS** in a **separate isolate**; sanitize tags; render as Flutter overlay;
   size setting; offset (± seconds, 0.5 s steps); cache parsed tracks per (supplier, id, item, name).
+  ASS dialogue is rendered as plain text; styling, positioning, and vector drawings are not rendered.
 - Audio track and video quality track selection.
 - Playback speed (0.5–2.0, steps of 0.25); kept for the app session across items and titles, not persisted.
 - 5-band equalizer via mpv `af` (bands 60, 230, 910, 4000, 14000 Hz; range ±12 dB) with presets:

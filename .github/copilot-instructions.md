@@ -16,50 +16,50 @@ Everything else is optional; add a package only when a listed feature needs it a
 
 **Compatibility (acceptance-blocking):**
 1. Rust supplier modules: FRB codegen `2.13.0`, content hash `-1122641696`, API major `5`. Don't edit or regenerate
-   the bindings except as a coordinated bundle-major bump → [spec-02](instructions/spec-02-content-suppliers-ffi.instructions.md), skill `rust-supplier-bridge`.
+   the bindings except as a coordinated bundle-major bump → [spec-02](../docs/specs/spec-02-content-suppliers-ffi.md), skill `rust-supplier-bridge`.
 2. Firebase collection items: exact RTDB path `/collection/{uid}/{itemKey}` and JSON schema
-   → [spec-03](instructions/spec-03-collection-and-firebase-sync.instructions.md), skill `firebase-collection-compat`.
+   → [spec-03](../docs/specs/spec-03-collection-and-firebase-sync.md), skill `firebase-collection-compat`.
 3. TV pairing: existing cloud functions `generatecode` / `exchangecodefortoken` unchanged
-   → [spec-04](instructions/spec-04-auth-and-tv-pairing.instructions.md).
+   → [spec-04](../docs/specs/spec-04-auth-and-tv-pairing.md).
 
 **Mandatory update mechanisms:** supplier library install/update (startup guard, hot swap) and in-app self-update
-(APK installer, Windows installer, Linux link) → [spec-11](instructions/spec-11-app-and-suppliers-updates.instructions.md).
+(APK installer, Windows installer, Linux link) → [spec-11](../docs/specs/spec-11-app-and-suppliers-updates.md).
 
 **HLS TS dejunking:** some hosts disguise TS segments with junk prefixes (fake PNG/JPEG). One shared dejunker in
 `lib/core/hls/` MUST be used both by the local proxy (playback of `hlsProxy` sources) and by HLS downloads (always)
-→ [spec-12](instructions/spec-12-hls-ts-dejunking.instructions.md).
+→ [spec-12](../docs/specs/spec-12-hls-ts-dejunking.md).
 
 **Application id:** `app.strumok` (new app, side by side with legacy `app.cloud_hook`)
-→ [spec-10](instructions/spec-10-build-config-and-secrets.instructions.md).
+→ [spec-10](../docs/specs/spec-10-build-config-and-secrets.md).
 
 ## Where things are
 
-All agent material lives in `.github/`; application code never imports from it.
+Agent guidance lives in `.github/`; canonical feature specifications live in `docs/specs/`.
 
 | Path | Content |
 |------|---------|
-| `.github/instructions/*.instructions.md` | Engineering rules and feature specs; auto-attached by `applyTo` globs, otherwise load by description. |
+| `.github/instructions/*.instructions.md` | Engineering rules and spec entrypoints; auto-attached by `applyTo` globs, otherwise load by description. |
+| `docs/specs/*.md` | Canonical feature specifications, linked from the relevant instruction entrypoints. |
 | `.github/skills/<name>/SKILL.md` | Playbooks: `rust-supplier-bridge` (incl. reference Rust contract crate in `assets/`), `firebase-collection-compat`, `riverpod-feature`, `tv-focus-navigation`, `adaptive-video-controls`, `localization-strings`. |
 | `.github/prompts/*.prompt.md` | `/implement-milestone`, `/acceptance-review`. |
 
-Specs: [01 shell & pages](instructions/spec-01-app-shell-and-navigation.instructions.md) ·
-[02 suppliers FFI](instructions/spec-02-content-suppliers-ffi.instructions.md) ·
-[03 collection & sync](instructions/spec-03-collection-and-firebase-sync.instructions.md) ·
-[04 auth & TV pairing](instructions/spec-04-auth-and-tv-pairing.instructions.md) ·
-[05 profiles](instructions/spec-05-profiles-multi-tenancy.instructions.md) ·
-[06 video player](instructions/spec-06-video-player.instructions.md) ·
-[07 manga reader](instructions/spec-07-manga-reader.instructions.md) ·
-[08 downloads & offline](instructions/spec-08-downloads-and-offline.instructions.md) ·
-[09 settings](instructions/spec-09-settings.instructions.md) ·
-[10 build & secrets](instructions/spec-10-build-config-and-secrets.instructions.md) ·
-[11 updates](instructions/spec-11-app-and-suppliers-updates.instructions.md) ·
-[12 HLS TS dejunking & proxy](instructions/spec-12-hls-ts-dejunking.instructions.md).
-Plan: [roadmap](instructions/roadmap.instructions.md) · [acceptance](instructions/acceptance.instructions.md).
+[Specs](../docs/specs/): [01 shell & pages](../docs/specs/spec-01-app-shell-and-navigation.md) ·
+[02 suppliers FFI](../docs/specs/spec-02-content-suppliers-ffi.md) ·
+[03 collection & sync](../docs/specs/spec-03-collection-and-firebase-sync.md) ·
+[04 auth & TV pairing](../docs/specs/spec-04-auth-and-tv-pairing.md) ·
+[05 profiles](../docs/specs/spec-05-profiles-multi-tenancy.md) ·
+[06 video player](../docs/specs/spec-06-video-player.md) ·
+[07 manga reader](../docs/specs/spec-07-manga-reader.md) ·
+[08 downloads & offline](../docs/specs/spec-08-downloads-and-offline.md) ·
+[09 settings](../docs/specs/spec-09-settings.md) ·
+[10 build & secrets](../docs/specs/spec-10-build-config-and-secrets.md) ·
+[11 updates](../docs/specs/spec-11-app-and-suppliers-updates.md) ·
+[12 HLS TS dejunking & proxy](../docs/specs/spec-12-hls-ts-dejunking.md).
+Acceptance: [checklist](instructions/acceptance.instructions.md).
 
 ## Working agreement
 
-- Work milestone by milestone (roadmap). Each milestone must build and run on Linux and Android before the next.
-- Re-read the relevant spec before coding a feature. If ambiguous, follow legacy behavior and leave a `// SPEC:` note;
+- Read the relevant spec in `docs/specs/` before coding a feature. If ambiguous, follow legacy behavior and leave a `// SPEC:` note;
   never silently change a compatibility contract.
 - Branch UI by `DeviceClass` (phone/tablet/tv/desktop); every screen must work with D-pad only on TV.
 - All user-visible text in `lib/l10n/app_uk.arb` (primary) and `app_en.arb`. No hard-coded strings.

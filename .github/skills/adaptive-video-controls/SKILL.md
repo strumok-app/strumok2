@@ -5,13 +5,13 @@ description: 'Build or modify video player controls, floating player, or PiP acr
 
 # Adaptive video controls
 
-Spec: [spec-06-video-player.instructions.md](../../instructions/spec-06-video-player.instructions.md).
+Spec: [spec-06-video-player](../../../docs/specs/spec-06-video-player.md).
 
 ## Structure
 ```
 features/player/
   domain/   player_state.dart, playlist.dart, progress_policy.dart (pure, tested)
-  data/     media_kit_backend.dart, subtitles/ (vtt+srt parser), pip/{pip.dart,pip_android.dart,pip_desktop.dart,pip_unsupported.dart}
+  data/     media_kit_backend.dart, subtitle_repository.dart (isolate parsing), pip/{pip.dart,pip_android.dart,pip_desktop.dart,pip_unsupported.dart}
             (HLS proxy + dejunker live in lib/core/hls/, spec-12)
   presentation/
     player_controller.dart            # Riverpod notifier, owns backend
