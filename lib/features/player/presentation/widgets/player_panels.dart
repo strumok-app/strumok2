@@ -193,43 +193,48 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     final session = ref.watch(playerControllerProvider);
     final settings = ref.watch(playerSettingsProvider);
     if (session == null) return const SizedBox.shrink();
-    return PopScope(
-      canPop: _page == null,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _back();
+    return Actions(
+      actions: {
+        DismissIntent: CallbackAction<DismissIntent>(
+          onInvoke: (_) {
+            if (_page == null) {
+              Navigator.of(context).pop();
+            } else {
+              _back();
+            }
+            return null;
+          },
+        ),
       },
-      child: ValueListenableBuilder(
-        valueListenable: _controller.tracks,
-        builder: (context, tracks, _) => switch (_page) {
-          null => _root(session, tracks, settings),
-          final page => Column(
-            children: [
-              ListTile(
-                key: const ValueKey('settings-back'),
-                leading: const Icon(Icons.arrow_back),
-                title: Text(_title(page), style: Theme.of(context).textTheme.titleMedium),
-                trailing: page == _SettingsPage.equalizer
-                    ? IconButton(
-                        key: const ValueKey('equalizer-reset'),
-                        tooltip: context.l10n.playerEqualizerReset,
-                        onPressed: settings.equalizer.isFlat
-                            ? null
-                            : () => unawaited(_controller.setEqualizer(EqualizerGains.flat)),
-                        icon: const Icon(Icons.restart_alt),
-                      )
-                    : null,
-                onTap: _back,
-              ),
-              Expanded(
-                child: switch (page) {
-                  _SettingsPage.subtitles => _SubtitlesPage(session: session),
-                  _SettingsPage.equalizer => const _ClippedInk(child: EqualizerPage()),
-                  _ => _ClippedInk(child: ListView(children: _choices(page, session, tracks, settings))),
-                },
-              ),
-            ],
-          ),
+      child: BackButtonListener(
+        onBackButtonPressed: () async {
+          if (_page == null) return false;
+          _back();
+          return true;
         },
+        child: ValueListenableBuilder(
+          valueListenable: _controller.tracks,
+          builder: (context, tracks, _) => switch (_page) {
+            null => _root(session, tracks, settings),
+            final page => Column(
+              children: [
+                ListTile(
+                  key: const ValueKey('settings-back'),
+                  leading: const Icon(Icons.arrow_back),
+                  title: Text(_title(page), style: Theme.of(context).textTheme.titleMedium),
+                  onTap: _back,
+                ),
+                Expanded(
+                  child: switch (page) {
+                    _SettingsPage.subtitles => _SubtitlesPage(session: session),
+                    _SettingsPage.equalizer => const _ClippedInk(child: EqualizerPage()),
+                    _ => _ClippedInk(child: ListView(children: _choices(page, session, tracks, settings))),
+                  },
+                ),
+              ],
+            ),
+          },
+        ),
       ),
     );
   }

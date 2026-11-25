@@ -289,6 +289,24 @@ void main() {
     expect(clips, findsWidgets, reason: 'selected tile ink must not paint over the header when scrolled');
   });
 
+  testAppWidgets('equalizer drag applies audio effects only when released', (tester) async {
+    final container = await openPlayer(tester, subtitles: false);
+    await openSettingsPage(tester, 'equalizer');
+    final effectCalls = backend.calls.where((call) => call == 'effects').length;
+    final band = find.byKey(const ValueKey('equalizer-band-0'));
+    final gesture = await tester.startGesture(tester.getCenter(band));
+    await gesture.moveBy(const Offset(0, -40));
+    await tester.pumpAndSettle();
+
+    expect(container.read(playerSettingsProvider).equalizer, EqualizerGains.flat);
+    expect(backend.calls.where((call) => call == 'effects'), hasLength(effectCalls));
+
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(container.read(playerSettingsProvider).equalizer, isNot(EqualizerGains.flat));
+    expect(backend.calls.where((call) => call == 'effects'), hasLength(effectCalls + 1));
+  });
+
   testAppWidgets('settings: side sheet; a row opens its page, Back returns to the row, picking returns too', (
     tester,
   ) async {
@@ -323,6 +341,26 @@ void main() {
     await tester.tap(find.byType(CloseButton));
     await tester.pumpAndSettle();
     expect(find.byType(SideSheet), findsNothing, reason: 'the close button closes from a page too');
+  });
+
+  testAppWidgets('settings backdrop closes the side sheet from the root and a submenu', (tester) async {
+    await openPlayer(tester, subtitles: false, tracks: video);
+
+    await tester.tap(find.byKey(const Key('settingsButton')));
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(10, 360));
+    await tester.pumpAndSettle();
+    expect(find.byType(SideSheet), findsNothing, reason: 'backdrop closes from the root');
+
+    await tester.tap(find.byKey(const Key('settingsButton')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-quality')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('settings-back')), findsOneWidget);
+
+    await tester.tapAt(const Offset(10, 360));
+    await tester.pumpAndSettle();
+    expect(find.byType(SideSheet), findsNothing, reason: 'backdrop closes the whole sheet from a submenu');
   });
 
   testAppWidgets('settings: speed, equalizer, start from, on end and shuffle', (tester) async {

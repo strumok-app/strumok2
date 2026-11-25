@@ -171,22 +171,29 @@ class _EqualizerGraphState extends State<EqualizerGraph> {
   /// Column 0 is the preamp; column i > 0 is band i − 1.
   double _gain(int column) => column == 0 ? _gains.preamp : _gains.bands[column - 1];
 
-  void _set(int column, double gain) {
+  void _set(int column, double gain, {bool notify = true}) {
     final value = gain.clamp(-equalizerMaxGain, equalizerMaxGain).roundToDouble();
     if (value == _gain(column)) return;
-    setState(() => _gains = column == 0 ? _gains.withPreamp(value) : _gains.withBand(column - 1, value));
-    widget.onChanged(_gains);
+    final updated = column == 0 ? _gains.withPreamp(value) : _gains.withBand(column - 1, value);
+    setState(() => _gains = updated);
+    if (notify) widget.onChanged(updated);
   }
 
   void _setFromDrag(int column, double dy) {
     final trackHeight = EqualizerGraph.height - _bubbleHeight - _labelHeight;
     final fraction = ((dy - _bubbleHeight) / trackHeight).clamp(0.0, 1.0);
     final before = _gain(column);
-    _set(column, equalizerMaxGain - fraction * 2 * equalizerMaxGain);
+    _set(column, equalizerMaxGain - fraction * 2 * equalizerMaxGain, notify: false);
     final after = _gain(column);
     if (widget.haptics && after != before) {
       unawaited(after == 0 ? HapticFeedback.mediumImpact() : HapticFeedback.selectionClick());
     }
+  }
+
+  void _finishDrag() {
+    final finalGains = _gains;
+    setState(() => _dragging = null);
+    widget.onChanged(finalGains);
   }
 
   KeyEventResult _onKey(int column, KeyEvent event) {
@@ -321,8 +328,8 @@ class _EqualizerGraphState extends State<EqualizerGraph> {
                 _setFromDrag(column, details.localPosition.dy);
               },
               onVerticalDragUpdate: (details) => _setFromDrag(column, details.localPosition.dy),
-              onVerticalDragEnd: (_) => setState(() => _dragging = null),
-              onVerticalDragCancel: () => setState(() => _dragging = null),
+              onVerticalDragEnd: (_) => _finishDrag(),
+              onVerticalDragCancel: _finishDrag,
               child: Column(
                 children: [
                   const Spacer(),
