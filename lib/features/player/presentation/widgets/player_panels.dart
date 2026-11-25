@@ -84,7 +84,12 @@ class PlayerSettingsButton extends StatelessWidget {
 
 /// Settings in a side sheet on every device: a root list of settings, each opening its own page.
 Future<void> showPlayerSettings(BuildContext context) =>
-    showSideSheet<void>(context, title: context.l10n.playerSettings, builder: (_) => const PlayerSettingsPanel());
+    showSideSheet<void>(
+      context,
+      title: context.l10n.playerSettings,
+      builder: (_) => const PlayerSettingsPanel(),
+      barrierColor: Colors.transparent,
+    );
 
 /// Subtitle choices scroll; size and offset stay pinned below them.
 class _SubtitlesPage extends ConsumerWidget {
@@ -378,7 +383,7 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
     };
   }
 
-  /// Off, then the supported presets grouped by family, each with its GPU cost.
+  /// Off, then the supported presets in catalog order, each with its GPU cost.
   List<Widget> _upscalingChoices() {
     final l10n = context.l10n;
     final supported = _controller.supportedUpscalers;
@@ -388,23 +393,16 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
         key: const ValueKey('upscaler-off'),
         label: l10n.playerUpscalingOff,
         selected: current == null,
-        onTap: () => _choose(() => _controller.setUpscaler(null)),
+        onTap: () => _choose(() => _controller.setUpscaler(null), returnToRoot: false),
       ),
-      for (final family in UpscalerFamily.values)
-        if (supported.any((u) => u.family == family)) ...[
-          _SectionHeader(upscalerFamilyLabel(l10n, family)),
-          for (final upscaler in supported.where((u) => u.family == family))
-            _Choice(
-              key: ValueKey('upscaler-${upscaler.id}'),
-              label: upscalerVariantLabel(l10n, upscaler),
-              description: [
-                upscalerCostLabel(l10n, upscaler.cost),
-                if (upscaler.forAnime) l10n.playerUpscalerForAnime,
-              ].join(' · '),
-              selected: current == upscaler,
-              onTap: () => _choose(() => _controller.setUpscaler(upscaler)),
-            ),
-        ],
+      for (final upscaler in supported)
+        _Choice(
+          key: ValueKey('upscaler-${upscaler.id}'),
+          label: upscalerVariantLabel(l10n, upscaler),
+          description: upscalerCostLabel(l10n, upscaler.cost),
+          selected: current == upscaler,
+          onTap: () => _choose(() => _controller.setUpscaler(upscaler), returnToRoot: false),
+        ),
       _Hint(l10n.playerUpscalingDescription),
     ];
   }
@@ -415,25 +413,9 @@ class _PlayerSettingsPanelState extends ConsumerState<PlayerSettingsPanel> {
   }
 
   /// Applies a single choice and returns to the root, which shows the new value.
-  void _choose(Future<void> Function() apply) {
+  void _choose(Future<void> Function() apply, {bool returnToRoot = true}) {
     unawaited(apply());
-    _back();
-  }
-}
-
-/// Not focusable: a group title inside a choice list.
-class _SectionHeader extends StatelessWidget {
-  final String text;
-
-  const _SectionHeader(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-      child: Text(text, style: theme.textTheme.titleSmall?.copyWith(color: theme.colorScheme.primary)),
-    );
+    if (returnToRoot) _back();
   }
 }
 

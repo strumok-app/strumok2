@@ -335,16 +335,12 @@
   "playerUpscalingOff": "Off",
   "playerUpscalingDescription": "Sharpens the video using the graphics card. On a weak graphics card, heavy modes will skip frames.",
   "playerUpscalingFailed": "Couldn't turn on “{name}”. Upscaling is off.",
-  "playerUpscalerValue": "{family} · {variant}",
-  "playerUpscalerFamilyAnime4k": "Anime4K",
-  "playerUpscalerFamilyCustom": "Custom",
-  "playerUpscalerCustomDetailCasGrain": "Detail + CAS + grain",
-  "playerUpscalerAnime4kAFast": "Mode A (fast)",
-  "playerUpscalerAnime4kAHq": "Mode A (HQ)",
-  "playerUpscalerAnime4kBHq": "Mode B (HQ)",
-  "playerUpscalerAnime4kCHq": "Mode C (HQ)",
+  "playerUpscalerLumaCasFilmGrain": "LUMA/CAS/FILM GRAIN",
+  "playerUpscalerAnime4kAFast": "Anime4K — Mode A (fast)",
+  "playerUpscalerAnime4kAHq": "Anime4K — Mode A (HQ)",
+  "playerUpscalerAnime4kBHq": "Anime4K — Mode B (HQ)",
+  "playerUpscalerAnime4kCHq": "Anime4K — Mode C (HQ)",
   "playerUpscalerCostLight": "Light",
   "playerUpscalerCostMedium": "Medium",
-  "playerUpscalerCostHeavy": "Heavy",
-  "playerUpscalerForAnime": "For anime"
+  "playerUpscalerCostHeavy": "Heavy"
 }

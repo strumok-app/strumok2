@@ -1123,30 +1123,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String playerUpscalerValue(String family, String variant) {
-    return '$family · $variant';
-  }
+  String get playerUpscalerLumaCasFilmGrain => 'LUMA/CAS/FILM GRAIN';
 
   @override
-  String get playerUpscalerFamilyAnime4k => 'Anime4K';
+  String get playerUpscalerAnime4kAFast => 'Anime4K — Mode A (fast)';
 
   @override
-  String get playerUpscalerFamilyCustom => 'Custom';
+  String get playerUpscalerAnime4kAHq => 'Anime4K — Mode A (HQ)';
 
   @override
-  String get playerUpscalerCustomDetailCasGrain => 'Detail + CAS + grain';
+  String get playerUpscalerAnime4kBHq => 'Anime4K — Mode B (HQ)';
 
   @override
-  String get playerUpscalerAnime4kAFast => 'Mode A (fast)';
-
-  @override
-  String get playerUpscalerAnime4kAHq => 'Mode A (HQ)';
-
-  @override
-  String get playerUpscalerAnime4kBHq => 'Mode B (HQ)';
-
-  @override
-  String get playerUpscalerAnime4kCHq => 'Mode C (HQ)';
+  String get playerUpscalerAnime4kCHq => 'Anime4K — Mode C (HQ)';
 
   @override
   String get playerUpscalerCostLight => 'Light';
@@ -1156,7 +1145,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playerUpscalerCostHeavy => 'Heavy';
-
-  @override
-  String get playerUpscalerForAnime => 'For anime';
 }

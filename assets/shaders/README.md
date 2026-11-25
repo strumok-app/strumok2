@@ -6,7 +6,7 @@ and update the checksums. The `.hook` extension is upstream's; mpv loads these f
 
 ## Sources (pinned)
 
-Two families ship: **Anime4K** and an experimental **custom** detail/sharpen/grain chain. FSRCNNX, RAVU and NNEDI3
+Anime4K presets ship alongside the experimental **LUMA/CAS/FILM GRAIN** chain. FSRCNNX, RAVU and NNEDI3
 were evaluated in spec-13 U0 field testing and dropped because they made no noticeable difference; their folders were
 removed.
 
@@ -19,7 +19,7 @@ removed.
 
 Notes:
 - Anime4K ships **Mode A (fast)** and the HQ modes **A/B/C** (chains listed below).
-- The `custom/` folder is an **experimental test chain** (`custom_detail_cas_grain`): SSimSuperRes luma detail
+- The `custom/` folder is the **LUMA/CAS/FILM GRAIN** chain (`luma_cas_grain`): SSimSuperRes luma detail
   recovery → AMD CAS sharpening → film grain, applied in that order. The three files keep their upstream names; the
   user-facing chain references them in `data/mpv_shaders.dart`. All three are fragment shaders (no compute), as
   required on GLES (spec-13 F4).

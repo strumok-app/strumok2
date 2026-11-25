@@ -34,9 +34,9 @@ Windows)**. Off by default. When it is off, playback MUST behave exactly as toda
 ## 13.3 Shader catalog (curated, pinned, bundled)
 
 > **Shipped catalog (post-U0 field testing):** Anime4K **`anime4k_a_fast`** and the HQ modes **`anime4k_a_hq`**,
-> **`anime4k_b_hq`**, **`anime4k_c_hq`**, plus an experimental **`custom_detail_cas_grain`** chain (SSimSuperRes luma
+> **`anime4k_b_hq`**, **`anime4k_c_hq`**, plus an experimental **`luma_cas_grain`** chain (SSimSuperRes luma
 > detail → AMD CAS sharpening → film grain). FSRCNNX, RAVU and NNEDI3 made no noticeable difference in real-world use
-> and were removed (catalog entries, shader assets, `UpscalerFamily` values and l10n all dropped). The table below is
+> and were removed (catalog entries, shader assets and l10n all dropped). The table below is
 > the original evaluated catalog.
 >
 > **Shader license bundling was removed** (no `LICENSE`/`GPL-3.0.txt` assets, no `shaderLicenses`, no
@@ -45,20 +45,21 @@ Windows)**. Off by default. When it is off, playback MUST behave exactly as toda
 Fragment-shader variants only (see F4). Files live in `assets/shaders/<family>/`, shipped **unmodified**. Each one
 is pinned to an
 upstream release or commit, with its license and sha256, in `assets/shaders/README.md`. The ids are stable,
-persisted values. If a preset is removed later, its id must still resolve to "off".
+persisted values. If a preset is removed later, its id must still resolve to "off". The previous
+`custom_detail_cas_grain` id resolves to `luma_cas_grain` to preserve existing preferences.
 
-| id | Family | Files | Cost | Anime hint |
-|----|--------|-------|------|------------|
-| `fsrcnnx_8` | FSRCNNX | `FSRCNNX_x2_8-0-4-1.glsl` | light | — |
-| `fsrcnnx_16` | FSRCNNX | `FSRCNNX_x2_16-0-4-1.glsl` | heavy | — |
-| `ravu_lite_r4` | RAVU | `ravu-lite-ar-r4.hook` | light | — |
-| `ravu_zoom_r3` | RAVU | `ravu-zoom-ar-r3.hook` (5.2 MB, embedded LUT) | light | — |
-| `nnedi3_64` | NNEDI3 | `nnedi3-nns64-win8x6.hook` | medium | — |
-| `nnedi3_128` | NNEDI3 | `nnedi3-nns128-win8x6.hook` | heavy | — |
-| `anime4k_a_fast` | Anime4K v4 | `Anime4K_Clamp_Highlights`, `Restore_CNN_M`, `Upscale_CNN_x2_M`, `AutoDownscalePre_x2`, `AutoDownscalePre_x4`, `Upscale_CNN_x2_S` | light | yes |
-| `anime4k_a_hq` | Anime4K v4 | official mode A (HQ) chain (`_VL`/`_L` variants) | heavy | yes |
-| `anime4k_b_hq` | Anime4K v4 | official mode B (HQ) chain | heavy | yes |
-| `anime4k_c_hq` | Anime4K v4 | official mode C (HQ) chain | medium | yes |
+| id | Files | Cost |
+|----|-------|------|
+| `fsrcnnx_8` | `FSRCNNX_x2_8-0-4-1.glsl` | light |
+| `fsrcnnx_16` | `FSRCNNX_x2_16-0-4-1.glsl` | heavy |
+| `ravu_lite_r4` | `ravu-lite-ar-r4.hook` | light |
+| `ravu_zoom_r3` | `ravu-zoom-ar-r3.hook` (5.2 MB, embedded LUT) | light |
+| `nnedi3_64` | `nnedi3-nns64-win8x6.hook` | medium |
+| `nnedi3_128` | `nnedi3-nns128-win8x6.hook` | heavy |
+| `anime4k_a_fast` | `Anime4K_Clamp_Highlights`, `Restore_CNN_M`, `Upscale_CNN_x2_M`, `AutoDownscalePre_x2`, `AutoDownscalePre_x4`, `Upscale_CNN_x2_S` | light |
+| `anime4k_a_hq` | official mode A (HQ) chain (`_VL`/`_L` variants) | heavy |
+| `anime4k_b_hq` | official mode B (HQ) chain | heavy |
+| `anime4k_c_hq` | official mode C (HQ) chain | medium |
 
 - Cost = GPU time per frame on a reference iGPU (Intel Arrow Lake, GLES, 720p → 1080p; U0): light < 20 ms,
   medium 20–40 ms, heavy > 41.7 ms (more than one 24 fps frame, so it only plays with dropped frames).
@@ -94,15 +95,12 @@ persisted values. If a preset is removed later, its id must still resolve to "of
 
 ### Domain (pure) — `lib/features/player/domain/upscaling.dart`
 ```dart
-enum UpscalerFamily { fsrcnnx, ravu, nnedi3, anime4k }
 enum UpscalerCost { light, medium, heavy }
 
 @immutable
 final class Upscaler {
   final String id;          // persisted, stable (§13.3)
-  final UpscalerFamily family;
   final UpscalerCost cost;
-  final bool forAnime;      // UI hint only
 }
 
 const upscalers = <Upscaler>[/* §13.3, in table order */];
@@ -177,17 +175,16 @@ The controller and the UI never see mpv properties or shader paths. This is the 
 ## 13.6 UI
 
 - Player settings side sheet (spec-06 §6.5.1): row **Upscaling right after Quality** (`settings-upscaling`). The
-  root shows "Off" or `<family> · <variant>` (`upscalerLabel`). Hidden when `supportedUpscalers` is empty.
-- Page: "Off", then the **supported** presets grouped by family under non-focusable family headers. Each preset
-  shows its variant name, with the cost (Light / Medium / Heavy) and "For anime" (where `forAnime`) as subtitle. A
-  non-focusable help line at the end says it uses the GPU and heavy modes skip frames on a weak one. Choosing a
-  value applies it, persists it and returns to the root (existing pattern).
+  root shows "Off" or the localized preset name (`upscalerLabel`). Hidden when `supportedUpscalers` is empty.
+- Page: "Off", then the **supported** presets in catalog order, without family grouping. Each preset shows its
+  localized name, with the cost (Light / Medium / Heavy) as subtitle. A non-focusable help line at the end says it
+  uses the GPU and heavy modes skip frames on a weak one. Choosing a value applies and persists it while staying on
+  the page; Back returns to the root.
 - Failure message: `PlayerPage` listens to `PlayerController.upscalerFailures` and shows a snackbar
   ("Couldn't turn on “<name>”. Upscaling is off."). In the floating player there's no message; the setting still
   turns off.
 - No new keyboard shortcut: the spec-06 §6.6 key map is a MUST list, so adding one requires a spec change first.
-- Texts live in `app_uk.arb` (primary) + `app_en.arb` (`playerUpscaling*`, `playerUpscaler*`). Family names are proper
-  nouns, identical in both languages.
+- Texts live in `app_uk.arb` (primary) + `app_en.arb` (`playerUpscaling*`, `playerUpscaler*`).
 
 ## 13.7 Performance hint
 

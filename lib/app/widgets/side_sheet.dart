@@ -3,12 +3,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 /// Panel sliding in from the trailing edge; Escape/back, a tap outside or the close button dismisses it.
-Future<T?> showSideSheet<T>(BuildContext context, {required String title, required WidgetBuilder builder}) =>
+Future<T?> showSideSheet<T>(
+  BuildContext context, {
+  required String title,
+  required WidgetBuilder builder,
+  Color barrierColor = Colors.black54,
+}) =>
     showGeneralDialog<T>(
       context: context,
       barrierDismissible: true,
       barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: Colors.black54,
+      barrierColor: barrierColor,
       transitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (context, _, _) => SideSheet(title: title, child: builder(context)),
       transitionBuilder: (_, animation, _, child) => SlideTransition(

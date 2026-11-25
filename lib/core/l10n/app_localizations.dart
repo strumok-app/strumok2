@@ -2102,52 +2102,34 @@ abstract class AppLocalizations {
   /// **'Не вдалося увімкнути «{name}». Покращення зображення вимкнено.'**
   String playerUpscalingFailed(String name);
 
-  /// Current upscaler on the settings root: family and variant
+  /// LUMA/CAS/FILM GRAIN chain: SSimSuperRes detail recovery + AMD CAS sharpening + film grain
   ///
   /// In uk, this message translates to:
-  /// **'{family} · {variant}'**
-  String playerUpscalerValue(String family, String variant);
-
-  /// Upscaler family name (proper noun)
-  ///
-  /// In uk, this message translates to:
-  /// **'Anime4K'**
-  String get playerUpscalerFamilyAnime4k;
-
-  /// Upscaler family name for the custom experimental shader chain
-  ///
-  /// In uk, this message translates to:
-  /// **'Власний'**
-  String get playerUpscalerFamilyCustom;
-
-  /// Custom chain variant: SSimSuperRes detail recovery + AMD CAS sharpening + film grain
-  ///
-  /// In uk, this message translates to:
-  /// **'Деталізація + CAS + зерно'**
-  String get playerUpscalerCustomDetailCasGrain;
+  /// **'LUMA/CAS/FILM GRAIN'**
+  String get playerUpscalerLumaCasFilmGrain;
 
   /// Anime4K mode A, fast chain
   ///
   /// In uk, this message translates to:
-  /// **'Режим A (швидкий)'**
+  /// **'Anime4K — режим A (швидкий)'**
   String get playerUpscalerAnime4kAFast;
 
   /// Anime4K mode A, HQ chain
   ///
   /// In uk, this message translates to:
-  /// **'Режим A (якісний)'**
+  /// **'Anime4K — режим A (якісний)'**
   String get playerUpscalerAnime4kAHq;
 
   /// Anime4K mode B, HQ chain
   ///
   /// In uk, this message translates to:
-  /// **'Режим B (якісний)'**
+  /// **'Anime4K — режим B (якісний)'**
   String get playerUpscalerAnime4kBHq;
 
   /// Anime4K mode C, HQ chain
   ///
   /// In uk, this message translates to:
-  /// **'Режим C (якісний)'**
+  /// **'Anime4K — режим C (якісний)'**
   String get playerUpscalerAnime4kCHq;
 
   /// Upscaler GPU cost badge
@@ -2167,12 +2149,6 @@ abstract class AppLocalizations {
   /// In uk, this message translates to:
   /// **'Важкий'**
   String get playerUpscalerCostHeavy;
-
-  /// Upscaler hint: tuned for anime
-  ///
-  /// In uk, this message translates to:
-  /// **'Для аніме'**
-  String get playerUpscalerForAnime;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

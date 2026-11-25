@@ -112,22 +112,17 @@ String equalizerPresetLabel(AppLocalizations l10n, EqualizerPreset? preset) => s
   null => l10n.playerEqualizerCustom,
 };
 
-/// Null is off; otherwise e.g. `Anime4K · Mode A (fast)`.
+/// Null is off; otherwise the localized preset name.
 String upscalerLabel(AppLocalizations l10n, Upscaler? upscaler) => upscaler == null
     ? l10n.playerUpscalingOff
-    : l10n.playerUpscalerValue(upscalerFamilyLabel(l10n, upscaler.family), upscalerVariantLabel(l10n, upscaler));
-
-String upscalerFamilyLabel(AppLocalizations l10n, UpscalerFamily family) => switch (family) {
-  UpscalerFamily.anime4k => l10n.playerUpscalerFamilyAnime4k,
-  UpscalerFamily.custom => l10n.playerUpscalerFamilyCustom,
-};
+    : upscalerVariantLabel(l10n, upscaler);
 
 String upscalerVariantLabel(AppLocalizations l10n, Upscaler upscaler) => switch (upscaler.id) {
   'anime4k_a_fast' => l10n.playerUpscalerAnime4kAFast,
   'anime4k_a_hq' => l10n.playerUpscalerAnime4kAHq,
   'anime4k_b_hq' => l10n.playerUpscalerAnime4kBHq,
   'anime4k_c_hq' => l10n.playerUpscalerAnime4kCHq,
-  'custom_detail_cas_grain' => l10n.playerUpscalerCustomDetailCasGrain,
+  'luma_cas_grain' => l10n.playerUpscalerLumaCasFilmGrain,
   _ => upscaler.id,
 };
 

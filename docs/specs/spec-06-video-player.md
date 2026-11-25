@@ -131,7 +131,8 @@ Buttons by frequency of use:
 - The top bar is identity only (back, title, episode) plus rare mode switches; actions live in the bottom bar.
 - Panels open as side sheets from the trailing edge on every device, focused on the current choice. Settings: the
   root lists one row per setting with its current value; a row opens its page in place under a pinned back header;
-  Back returns to the root (focus on that row), choosing a value returns too, the close button closes the sheet.
+  Back returns to the root (focus on that row), choosing a value returns too except for upscaler choices, which
+  remain on their page; the close button closes the sheet.
 
 ## 6.6 Desktop controls (keyboard map — MUST)
 

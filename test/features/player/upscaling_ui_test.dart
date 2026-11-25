@@ -58,20 +58,26 @@ void main() {
     expect(row, findsNothing);
   });
 
-  testAppWidgets('off, then supported presets by family with cost; choosing applies, persists and returns', (
-    tester,
-  ) async {
-    final container = await openSettings(tester, supported: [anime4k]);
+  testAppWidgets('player settings sheet has a transparent backdrop', (tester) async {
+    await openSettings(tester);
+    final barrier = tester.widget<ModalBarrier>(find.byType(ModalBarrier).last);
+    expect(barrier.color?.a ?? 0, 0);
+  });
+
+  testAppWidgets('flat upscaler choices keep the page open and update when selected', (tester) async {
+    final custom = upscalerById('luma_cas_grain')!;
+    final container = await openSettings(tester, supported: [anime4k, custom]);
     final l10n = tester.element(row).l10n;
     expect(subtitleOf(tester, row), l10n.playerUpscalingOff);
 
     await tester.tap(row);
     await tester.pumpAndSettle();
-    expect(find.text(l10n.playerUpscalerFamilyAnime4k), findsOneWidget);
     expect(tileOf(tester, find.byKey(const ValueKey('upscaler-off'))).selected, isTrue);
+    expect(find.byKey(const ValueKey('upscaler-luma_cas_grain')), findsOneWidget);
+    expect(find.text('LUMA/CAS/FILM GRAIN'), findsOneWidget);
     expect(
       subtitleOf(tester, find.byKey(const ValueKey('upscaler-anime4k_a_fast'))),
-      '${l10n.playerUpscalerCostLight} · ${l10n.playerUpscalerForAnime}',
+      l10n.playerUpscalerCostLight,
     );
     expect(find.text(l10n.playerUpscalingDescription), findsOneWidget);
 
@@ -80,9 +86,14 @@ void main() {
 
     expect(backend.upscaler, anime4k);
     expect(container.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), 'anime4k_a_fast');
+    expect(find.byKey(const ValueKey('settings-back')), findsOneWidget, reason: 'remain on the upscaler page');
+    expect(tileOf(tester, find.byKey(const ValueKey('upscaler-anime4k_a_fast'))).selected, isTrue);
+
+    await tester.tap(find.byKey(const ValueKey('settings-back')));
+    await tester.pumpAndSettle();
     expect(
       subtitleOf(tester, row),
-      l10n.playerUpscalerValue(l10n.playerUpscalerFamilyAnime4k, l10n.playerUpscalerAnime4kAFast),
+      l10n.playerUpscalerAnime4kAFast,
       reason: 'back on the root, showing the new value',
     );
   });
@@ -93,12 +104,14 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('upscaler-anime4k_a_fast')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-back')));
+    await tester.pumpAndSettle();
     final l10n = tester.element(row).l10n;
 
     backend.failUpscaler();
     await tester.pumpAndSettle();
 
-    final name = l10n.playerUpscalerValue(l10n.playerUpscalerFamilyAnime4k, l10n.playerUpscalerAnime4kAFast);
+    final name = l10n.playerUpscalerAnime4kAFast;
     expect(find.text(l10n.playerUpscalingFailed(name)), findsOneWidget);
     expect(subtitleOf(tester, row), l10n.playerUpscalingOff);
   });

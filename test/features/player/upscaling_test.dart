@@ -50,6 +50,11 @@ void main() {
     }
     expect(upscalerById('artcnn_c4f16'), isNull, reason: 'dropped preset');
     expect(upscalerById(null), isNull);
+    expect(
+      upscalerById('custom_detail_cas_grain'),
+      same(upscalerById('luma_cas_grain')),
+      reason: 'the previously persisted id migrates to the renamed preset',
+    );
   });
 
   test('mpvShaderCommands clears, then appends one file each, keeping Windows paths whole', () {
@@ -88,7 +93,7 @@ void main() {
     Upscaler of(String id) => upscalerById(id)!;
 
     // Mode A (HQ) is kept in the shader manifest but commented out of the catalog, so it is built directly here.
-    const anime4kAHq = Upscaler('anime4k_a_hq', UpscalerFamily.anime4k, UpscalerCost.heavy, forAnime: true);
+    const anime4kAHq = Upscaler('anime4k_a_hq', UpscalerCost.heavy);
 
     test('extracts the files of an upscaler in hook order, once', () async {
       final store = ShaderStore(bundle, support, version: 3);

@@ -1574,43 +1574,23 @@
       }
     }
   },
-  "playerUpscalerValue": "{family} · {variant}",
-  "@playerUpscalerValue": {
-    "description": "Current upscaler on the settings root: family and variant",
-    "placeholders": {
-      "family": {
-        "type": "String"
-      },
-      "variant": {
-        "type": "String"
-      }
-    }
+  "playerUpscalerLumaCasFilmGrain": "LUMA/CAS/FILM GRAIN",
+  "@playerUpscalerLumaCasFilmGrain": {
+    "description": "LUMA/CAS/FILM GRAIN chain: SSimSuperRes detail recovery + AMD CAS sharpening + film grain"
   },
-  "playerUpscalerFamilyAnime4k": "Anime4K",
-  "@playerUpscalerFamilyAnime4k": {
-    "description": "Upscaler family name (proper noun)"
-  },
-  "playerUpscalerFamilyCustom": "Власний",
-  "@playerUpscalerFamilyCustom": {
-    "description": "Upscaler family name for the custom experimental shader chain"
-  },
-  "playerUpscalerCustomDetailCasGrain": "Деталізація + CAS + зерно",
-  "@playerUpscalerCustomDetailCasGrain": {
-    "description": "Custom chain variant: SSimSuperRes detail recovery + AMD CAS sharpening + film grain"
-  },
-  "playerUpscalerAnime4kAFast": "Режим A (швидкий)",
+  "playerUpscalerAnime4kAFast": "Anime4K — режим A (швидкий)",
   "@playerUpscalerAnime4kAFast": {
     "description": "Anime4K mode A, fast chain"
   },
-  "playerUpscalerAnime4kAHq": "Режим A (якісний)",
+  "playerUpscalerAnime4kAHq": "Anime4K — режим A (якісний)",
   "@playerUpscalerAnime4kAHq": {
     "description": "Anime4K mode A, HQ chain"
   },
-  "playerUpscalerAnime4kBHq": "Режим B (якісний)",
+  "playerUpscalerAnime4kBHq": "Anime4K — режим B (якісний)",
   "@playerUpscalerAnime4kBHq": {
     "description": "Anime4K mode B, HQ chain"
   },
-  "playerUpscalerAnime4kCHq": "Режим C (якісний)",
+  "playerUpscalerAnime4kCHq": "Anime4K — режим C (якісний)",
   "@playerUpscalerAnime4kCHq": {
     "description": "Anime4K mode C, HQ chain"
   },
@@ -1625,9 +1605,5 @@
   "playerUpscalerCostHeavy": "Важкий",
   "@playerUpscalerCostHeavy": {
     "description": "Upscaler GPU cost badge"
-  },
-  "playerUpscalerForAnime": "Для аніме",
-  "@playerUpscalerForAnime": {
-    "description": "Upscaler hint: tuned for anime"
   }
 }

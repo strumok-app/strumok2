@@ -5,46 +5,39 @@ import 'package:flutter/foundation.dart';
 
 /// Desktop upscaling with mpv user shaders (spec-13).
 ///
-/// U0 field testing showed the FSRCNNX, RAVU and NNEDI3 families made no noticeable difference, so they were dropped;
-/// Anime4K (Mode A fast + HQ A/B/C) and a custom detail/sharpen/grain chain remain.
-enum UpscalerFamily { anime4k, custom }
-
 /// GPU cost on the reference iGPU (spec-13 §13.3): heavy presets exceed one 24 fps frame there.
 enum UpscalerCost { light, medium, heavy }
 
 @immutable
 final class Upscaler {
-  /// Persisted (`video_player_upscaler`), never renamed.
+  /// Stable persisted identifier (`video_player_upscaler`).
   final String id;
-  final UpscalerFamily family;
   final UpscalerCost cost;
 
-  /// UI hint: tuned for anime.
-  final bool forAnime;
-
-  const Upscaler(this.id, this.family, this.cost, {this.forAnime = false});
+  const Upscaler(this.id, this.cost);
 
   @override
   String toString() => 'Upscaler($id)';
 }
 
-/// The catalog (spec-13 §13.3), in display order within each family.
+/// The catalog (spec-13 §13.3), in display order.
 ///
-/// Anime4K Mode A (fast) and the HQ modes (A/B/C) ship; a custom experimental chain is offered for testing. The
-/// FSRCNNX, RAVU and NNEDI3 families were removed outright after U0 testing found they made no noticeable difference.
+/// Anime4K Mode A (fast) and the HQ modes (A/B/C) ship; the LUMA/CAS/FILM GRAIN chain is experimental. The FSRCNNX,
+/// RAVU and NNEDI3 families were removed outright after U0 testing found they made no noticeable difference.
 const upscalers = <Upscaler>[
-  Upscaler('anime4k_a_fast', UpscalerFamily.anime4k, UpscalerCost.light, forAnime: true),
-  Upscaler('anime4k_a_hq', UpscalerFamily.anime4k, UpscalerCost.heavy, forAnime: true),
-  Upscaler('anime4k_b_hq', UpscalerFamily.anime4k, UpscalerCost.heavy, forAnime: true),
-  Upscaler('anime4k_c_hq', UpscalerFamily.anime4k, UpscalerCost.medium, forAnime: true),
+  Upscaler('anime4k_a_fast', UpscalerCost.light),
+  Upscaler('anime4k_a_hq', UpscalerCost.heavy),
+  Upscaler('anime4k_b_hq', UpscalerCost.heavy),
+  Upscaler('anime4k_c_hq', UpscalerCost.medium),
   // Experimental test chain (spec-13): SSimSuperRes luma detail recovery + AMD CAS sharpening + film grain.
-  Upscaler('custom_detail_cas_grain', UpscalerFamily.custom, UpscalerCost.medium),
+  Upscaler('luma_cas_grain', UpscalerCost.medium),
 ];
 
 /// Unknown, removed or null ids mean "off".
 Upscaler? upscalerById(String? id) {
+  final canonicalId = id == 'custom_detail_cas_grain' ? 'luma_cas_grain' : id;
   for (final upscaler in upscalers) {
-    if (upscaler.id == id) return upscaler;
+    if (upscaler.id == canonicalId) return upscaler;
   }
   return null;
 }
