@@ -7,6 +7,26 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
                       _In_ wchar_t *command_line, _In_ int show_command) {
+  HANDLE instance_mutex =
+      ::CreateMutexW(nullptr, TRUE, L"Local\\app.strumok.SingleInstance");
+  if (instance_mutex == nullptr) {
+    ::OutputDebugStringW(
+        L"Strumok: Failed to create the single-instance mutex.\n");
+    return EXIT_FAILURE;
+  }
+  if (::GetLastError() == ERROR_ALREADY_EXISTS) {
+    HWND existing_window =
+        ::FindWindowW(L"FLUTTER_RUNNER_WIN32_WINDOW", L"Strumok");
+    if (existing_window != nullptr) {
+      if (::IsIconic(existing_window)) {
+        ::ShowWindow(existing_window, SW_RESTORE);
+      }
+      ::SetForegroundWindow(existing_window);
+    }
+    ::CloseHandle(instance_mutex);
+    return EXIT_SUCCESS;
+  }
+
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
@@ -33,6 +53,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   const int free_y = static_cast<int>((work_area.bottom - work_area.top) / scale) - 720;
   Win32Window::Point origin(free_x > 0 ? free_x / 2 : 0, free_y > 0 ? free_y / 2 : 0);
   if (!window.Create(L"Strumok", origin, size)) {
+    ::ReleaseMutex(instance_mutex);
+    ::CloseHandle(instance_mutex);
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);
@@ -44,5 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   }
 
   ::CoUninitialize();
+  ::ReleaseMutex(instance_mutex);
+  ::CloseHandle(instance_mutex);
   return EXIT_SUCCESS;
 }
