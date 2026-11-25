@@ -201,7 +201,6 @@ void main() {
     });
 
     group('upscaler (spec-13)', () {
-      final ravu = upscalerById('ravu_lite_r4')!;
       final anime4k = upscalerById('anime4k_a_fast')!;
 
       test('persists the id under video_player_upscaler; off removes it; unknown ids resolve to off', () async {
@@ -210,10 +209,10 @@ void main() {
         expect(upscalerById(c.read(playerSettingsProvider).upscaler), isNull, reason: 'dropped preset reads as off');
 
         final settings = c.read(playerSettingsProvider.notifier);
-        await settings.setUpscaler('ravu_lite_r4');
-        expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), 'ravu_lite_r4');
+        await settings.setUpscaler('anime4k_a_fast');
+        expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), 'anime4k_a_fast');
         c.invalidate(playerSettingsProvider);
-        expect(c.read(playerSettingsProvider).upscaler, 'ravu_lite_r4');
+        expect(c.read(playerSettingsProvider).upscaler, 'anime4k_a_fast');
 
         await settings.setUpscaler(null);
         expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), isNull);
@@ -221,24 +220,28 @@ void main() {
       });
 
       test('the saved upscaler is applied when playback starts, only where it is supported', () async {
-        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'ravu_lite_r4'}, supportedUpscalers: [ravu]);
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'anime4k_a_fast'}, supportedUpscalers: [anime4k]);
         await controller.open('alpha', 'm1');
-        expect(backend.upscaler, ravu);
-        expect(controller.upscaler, ravu);
-        expect(controller.supportedUpscalers, [ravu]);
+        expect(backend.upscaler, anime4k);
+        expect(controller.upscaler, anime4k);
+        expect(controller.supportedUpscalers, [anime4k]);
       });
 
       test('unsupported here (Android, Windows for now): nothing applied, nothing offered', () async {
-        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'ravu_lite_r4'});
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'anime4k_a_fast'});
         await controller.open('alpha', 'm1');
         expect(backend.calls.where((call) => call.startsWith('upscaler')), isEmpty);
         expect(controller.supportedUpscalers, isEmpty);
         expect(controller.upscaler, isNull);
-        expect(c.read(playerSettingsProvider).upscaler, 'ravu_lite_r4', reason: 'kept for a device that supports it');
+        expect(
+          c.read(playerSettingsProvider).upscaler,
+          'anime4k_a_fast',
+          reason: 'kept for a device that supports it',
+        );
       });
 
       test('switching applies right away and persists; off turns it off', () async {
-        await setUpWith(supportedUpscalers: [ravu, anime4k]);
+        await setUpWith(supportedUpscalers: [anime4k]);
         await controller.open('alpha', 'm1');
 
         await controller.setUpscaler(anime4k);
@@ -252,7 +255,7 @@ void main() {
       });
 
       test('a failing upscaler is turned off and reported; playback is not failed', () async {
-        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'ravu_lite_r4'}, supportedUpscalers: [ravu]);
+        await setUpWith(prefs: {AppPreferences.videoPlayerUpscaler: 'anime4k_a_fast'}, supportedUpscalers: [anime4k]);
         await controller.open('alpha', 'm1');
         final failures = <Upscaler>[];
         controller.upscalerFailures.listen(failures.add);
@@ -260,7 +263,7 @@ void main() {
         backend.failUpscaler();
         await pumpEventQueue();
 
-        expect(failures, [ravu]);
+        expect(failures, [anime4k]);
         expect(c.read(playerSettingsProvider).upscaler, isNull);
         expect(c.read(appPreferencesProvider).getString(AppPreferences.videoPlayerUpscaler), isNull);
         expect(controller.upscaler, isNull);

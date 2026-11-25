@@ -1128,34 +1128,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get playerUpscalerFamilyFsrcnnx => 'FSRCNNX';
-
-  @override
-  String get playerUpscalerFamilyRavu => 'RAVU';
-
-  @override
-  String get playerUpscalerFamilyNnedi3 => 'NNEDI3';
-
-  @override
   String get playerUpscalerFamilyAnime4k => 'Anime4K';
 
   @override
-  String get playerUpscalerFsrcnnx8 => 'Fast';
+  String get playerUpscalerFamilyCustom => 'Custom';
 
   @override
-  String get playerUpscalerFsrcnnx16 => 'Quality';
-
-  @override
-  String get playerUpscalerRavuLite => 'Lite';
-
-  @override
-  String get playerUpscalerRavuZoom => 'Zoom';
-
-  @override
-  String get playerUpscalerNnedi3_64 => '64 neurons';
-
-  @override
-  String get playerUpscalerNnedi3_128 => '128 neurons';
+  String get playerUpscalerCustomDetailCasGrain => 'Detail + CAS + grain';
 
   @override
   String get playerUpscalerAnime4kAFast => 'Mode A (fast)';

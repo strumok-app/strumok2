@@ -1,23 +1,32 @@
 # Upscaling shaders (spec-13)
 
-These are mpv user shaders (`glsl-shaders`), shipped **unmodified** from upstream. Do not edit them. To update, change
-the pin below, re-download the files, and update the checksums. The `.hook` extension is upstream's; mpv loads these
-files the same way as `.glsl`.
+These are mpv user shaders (`glsl-shaders`). Most are shipped **unmodified** from upstream; exceptions are called out
+below (currently `custom/grain.glsl`, adapted for GLES/ESSL). To update, change the pin below, re-download the files,
+and update the checksums. The `.hook` extension is upstream's; mpv loads these files the same way as `.glsl`.
 
 ## Sources (pinned)
 
-| Folder | Upstream | Pin | License |
-|--------|----------|-----|---------|
-| `anime4k/` | [bloc97/Anime4K](https://github.com/bloc97/Anime4K) | release `v4.0.1` (commit `4029bf701ecaa15f163cdc49cffe5501c1acf410`), asset `Anime4K_v4.0.zip` | MIT — `anime4k/LICENSE` |
-| `fsrcnnx/` | [igv/FSRCNN-TensorFlow](https://github.com/igv/FSRCNN-TensorFlow) | release `1.1`, release assets | LGPL-3.0-or-later (file headers) — `fsrcnnx/LICENSE` + `GPL-3.0.txt` |
-| `ravu/` | [bjin/mpv-prescalers](https://github.com/bjin/mpv-prescalers) | commit `b3f0a59d68f33b7162051ea5970a5169558f0ea2` (repo root = fragment variants) | LGPL-3.0-or-later — `ravu/LICENSE` + `GPL-3.0.txt` |
-| `nnedi3/` | [bjin/mpv-prescalers](https://github.com/bjin/mpv-prescalers) | commit `b3f0a59d68f33b7162051ea5970a5169558f0ea2` | LGPL-3.0-or-later — `nnedi3/LICENSE` + `GPL-3.0.txt` |
+Two families ship: **Anime4K** and an experimental **custom** detail/sharpen/grain chain. FSRCNNX, RAVU and NNEDI3
+were evaluated in spec-13 U0 field testing and dropped because they made no noticeable difference; their folders were
+removed.
+
+| Folder | Upstream | Pin |
+|--------|----------|-----|
+| `anime4k/` | [bloc97/Anime4K](https://github.com/bloc97/Anime4K) | release `v4.0.1` (commit `4029bf701ecaa15f163cdc49cffe5501c1acf410`), asset `Anime4K_v4.0.zip` |
+| `custom/` SSimSuperRes | [igv gist](https://gist.github.com/igv/2364ffa6e81540f29cb7ab4c9bc05b6b) (SSimSuperRes by Shiandow) | gist `2364ffa6e81540f29cb7ab4c9bc05b6b`, fetched 2026-11-25 |
+| `custom/` CAS-scaled | [agyild gist](https://gist.github.com/agyild/bbb4e58298b2f86aa24da3032a0d2ee6) (AMD FidelityFX CAS, mpv port) | gist revision `10e4ca1b6ef173b64391ce2c81b9a95fcd095931` (v1.0.2, classic `gpu` build — the current v1.2 needs `gpu-next`/libplacebo, which media_kit's libmpv OpenGL render API does not provide) |
+| `custom/` grain | [butterw/bShaders](https://github.com/butterw/bShaders) (`FilmGrain_Noise/mpv/grain.glsl`) | branch `master`, v1.01, fetched 2026-11-25, **adapted for GLES/ESSL** (brace-init → `vec4(...)`, int→float literals/conversions, precomputed const factors) |
 
 Notes:
-- The FSRCNN-TensorFlow *repository* is GPL-3.0, but the released `.glsl` files say LGPL v3.0 or later in their
-  headers. LGPL-3.0 is a set of additional permissions on top of GPL-3.0, so the GPL text ships too (`GPL-3.0.txt`).
+- Anime4K ships **Mode A (fast)** and the HQ modes **A/B/C** (chains listed below).
+- The `custom/` folder is an **experimental test chain** (`custom_detail_cas_grain`): SSimSuperRes luma detail
+  recovery → AMD CAS sharpening → film grain, applied in that order. The three files keep their upstream names; the
+  user-facing chain references them in `data/mpv_shaders.dart`. All three are fragment shaders (no compute), as
+  required on GLES (spec-13 F4).
 - ArtCNN was evaluated and dropped in spec-13 U0. Its shaders are compute-only and failed to compile on the
   Linux/Mesa GLES 3.2 context, the failure crashed the app inside mpv, and it was too heavy anyway.
+- FSRCNNX, RAVU and NNEDI3 were evaluated in spec-13 U0 field testing and dropped because they made no noticeable
+  difference; their folders were removed.
 - Anime4K mode chains follow upstream's mpv templates (`md/Template/GLSL_Mac_Linux_{High,Low}-end/input.conf`
   at commit `7684e9586f8dcc738af08a1cdceb024cc184f426`):
   - Mode A (Fast): Clamp_Highlights, Restore_CNN_M, Upscale_CNN_x2_M, AutoDownscalePre_x2, AutoDownscalePre_x4, Upscale_CNN_x2_S
@@ -38,12 +47,9 @@ dadb7b713cfa1d810c55b5deff616072f3390e546fed1e6a54f80ea555f7b95d  anime4k/Anime4
 4c53ec2e287908f7ee7bcb266b0170421626d663576468b7d7dafc62962649a4  anime4k/Anime4K_Upscale_CNN_x2_S.glsl
 5638fe31c37c151a3443fea3451a3ef91af073f4dbb9615f6c0d1e29db11493d  anime4k/Anime4K_Upscale_CNN_x2_VL.glsl
 359c48fe5a317fbc6b706ce368401eef496e84ed98abac7a43efebca2b65d79b  anime4k/Anime4K_Upscale_Denoise_CNN_x2_VL.glsl
-d5a24a271e5d9a3f7f7a053b150c460a44c25b3cf7f770857d57cc3a2e1c9965  fsrcnnx/FSRCNNX_x2_16-0-4-1.glsl
-e800dbc5c1c95185cc82216c597724533ff5f2880179f256eef600f03e8dc2ae  fsrcnnx/FSRCNNX_x2_8-0-4-1.glsl
-8997ce2e9a6be381e6865233a81c97ef4fdb741818f8258283ee78ffa371eec6  nnedi3/nnedi3-nns128-win8x6.hook
-d015128cca7efaf408748bae282f024bb21a902542704a9eab4773a7dcc1b364  nnedi3/nnedi3-nns64-win8x6.hook
-2e7c9beb79be10c57c85eede7a4b6ba1f031a97a26170d88450fc4330a5e8408  ravu/ravu-lite-ar-r4.hook
-eb0c3744af3615c99281a6ff74d1276a5cc7527a30a0bd54984aeb43d0cb2eea  ravu/ravu-zoom-ar-r3.hook
+a8b27115840c60045250411b375e0188000217258ad776eeb51724c97815460f  custom/SSimSuperRes.glsl
+fe678abb821e72f839f3f3a6af0105c543a1a9d9ae6c927185cfd400cebab217  custom/CAS-scaled.glsl
+73d6c7e337befd520b6902ae121a03180946e9337f7e746907c109382b2e6f79  custom/grain.glsl
 ```
 
 Check with `cd assets/shaders && sha256sum -c` on the block above.

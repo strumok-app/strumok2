@@ -2111,62 +2111,20 @@ abstract class AppLocalizations {
   /// Upscaler family name (proper noun)
   ///
   /// In uk, this message translates to:
-  /// **'FSRCNNX'**
-  String get playerUpscalerFamilyFsrcnnx;
-
-  /// Upscaler family name (proper noun)
-  ///
-  /// In uk, this message translates to:
-  /// **'RAVU'**
-  String get playerUpscalerFamilyRavu;
-
-  /// Upscaler family name (proper noun)
-  ///
-  /// In uk, this message translates to:
-  /// **'NNEDI3'**
-  String get playerUpscalerFamilyNnedi3;
-
-  /// Upscaler family name (proper noun)
-  ///
-  /// In uk, this message translates to:
   /// **'Anime4K'**
   String get playerUpscalerFamilyAnime4k;
 
-  /// FSRCNNX variant with 8 filters
+  /// Upscaler family name for the custom experimental shader chain
   ///
   /// In uk, this message translates to:
-  /// **'Швидкий'**
-  String get playerUpscalerFsrcnnx8;
+  /// **'Власний'**
+  String get playerUpscalerFamilyCustom;
 
-  /// FSRCNNX variant with 16 filters
+  /// Custom chain variant: SSimSuperRes detail recovery + AMD CAS sharpening + film grain
   ///
   /// In uk, this message translates to:
-  /// **'Якісний'**
-  String get playerUpscalerFsrcnnx16;
-
-  /// RAVU lite variant (upstream name)
-  ///
-  /// In uk, this message translates to:
-  /// **'Lite'**
-  String get playerUpscalerRavuLite;
-
-  /// RAVU zoom variant (upstream name)
-  ///
-  /// In uk, this message translates to:
-  /// **'Zoom'**
-  String get playerUpscalerRavuZoom;
-
-  /// NNEDI3 variant with 64 neurons
-  ///
-  /// In uk, this message translates to:
-  /// **'64 нейрони'**
-  String get playerUpscalerNnedi3_64;
-
-  /// NNEDI3 variant with 128 neurons
-  ///
-  /// In uk, this message translates to:
-  /// **'128 нейронів'**
-  String get playerUpscalerNnedi3_128;
+  /// **'Деталізація + CAS + зерно'**
+  String get playerUpscalerCustomDetailCasGrain;
 
   /// Anime4K mode A, fast chain
   ///

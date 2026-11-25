@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
@@ -74,14 +73,3 @@ class ShaderStore {
 
 @Riverpod(keepAlive: true)
 ShaderStore shaderStore(Ref ref) => ShaderStore(rootBundle, ref.watch(appPathsProvider).support);
-
-/// Adds the shader licenses to the app's license registry; desktop only, where the shaders are bundled.
-void registerShaderLicenses([AssetBundle? bundle]) {
-  final assets = bundle ?? rootBundle;
-  LicenseRegistry.addLicense(() async* {
-    for (final license in shaderLicenses) {
-      final texts = [for (final asset in license.assets) await assets.loadString(asset)];
-      yield LicenseEntryWithLineBreaks([license.package], texts.join('\n\n'));
-    }
-  });
-}

@@ -33,6 +33,15 @@ Windows)**. Off by default. When it is off, playback MUST behave exactly as toda
 
 ## 13.3 Shader catalog (curated, pinned, bundled)
 
+> **Shipped catalog (post-U0 field testing):** Anime4K **`anime4k_a_fast`** and the HQ modes **`anime4k_a_hq`**,
+> **`anime4k_b_hq`**, **`anime4k_c_hq`**, plus an experimental **`custom_detail_cas_grain`** chain (SSimSuperRes luma
+> detail → AMD CAS sharpening → film grain). FSRCNNX, RAVU and NNEDI3 made no noticeable difference in real-world use
+> and were removed (catalog entries, shader assets, `UpscalerFamily` values and l10n all dropped). The table below is
+> the original evaluated catalog.
+>
+> **Shader license bundling was removed** (no `LICENSE`/`GPL-3.0.txt` assets, no `shaderLicenses`, no
+> `registerShaderLicenses`/`LicenseRegistry`), overriding the "register with LicenseRegistry" MUST in this section.
+
 Fragment-shader variants only (see F4). Files live in `assets/shaders/<family>/`, shipped **unmodified**. Each one
 is pinned to an
 upstream release or commit, with its license and sha256, in `assets/shaders/README.md`. The ids are stable,

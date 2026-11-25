@@ -118,23 +118,16 @@ String upscalerLabel(AppLocalizations l10n, Upscaler? upscaler) => upscaler == n
     : l10n.playerUpscalerValue(upscalerFamilyLabel(l10n, upscaler.family), upscalerVariantLabel(l10n, upscaler));
 
 String upscalerFamilyLabel(AppLocalizations l10n, UpscalerFamily family) => switch (family) {
-  UpscalerFamily.fsrcnnx => l10n.playerUpscalerFamilyFsrcnnx,
-  UpscalerFamily.ravu => l10n.playerUpscalerFamilyRavu,
-  UpscalerFamily.nnedi3 => l10n.playerUpscalerFamilyNnedi3,
   UpscalerFamily.anime4k => l10n.playerUpscalerFamilyAnime4k,
+  UpscalerFamily.custom => l10n.playerUpscalerFamilyCustom,
 };
 
 String upscalerVariantLabel(AppLocalizations l10n, Upscaler upscaler) => switch (upscaler.id) {
-  'fsrcnnx_8' => l10n.playerUpscalerFsrcnnx8,
-  'fsrcnnx_16' => l10n.playerUpscalerFsrcnnx16,
-  'ravu_lite_r4' => l10n.playerUpscalerRavuLite,
-  'ravu_zoom_r3' => l10n.playerUpscalerRavuZoom,
-  'nnedi3_64' => l10n.playerUpscalerNnedi3_64,
-  'nnedi3_128' => l10n.playerUpscalerNnedi3_128,
   'anime4k_a_fast' => l10n.playerUpscalerAnime4kAFast,
   'anime4k_a_hq' => l10n.playerUpscalerAnime4kAHq,
   'anime4k_b_hq' => l10n.playerUpscalerAnime4kBHq,
   'anime4k_c_hq' => l10n.playerUpscalerAnime4kCHq,
+  'custom_detail_cas_grain' => l10n.playerUpscalerCustomDetailCasGrain,
   _ => upscaler.id,
 };
 

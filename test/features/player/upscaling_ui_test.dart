@@ -15,7 +15,6 @@ import '../../helpers/test_overrides.dart';
 
 void main() {
   late FakeVideoBackend backend;
-  final ravu = upscalerById('ravu_lite_r4')!;
   final anime4k = upscalerById('anime4k_a_fast')!;
 
   Future<ProviderContainer> openSettings(WidgetTester tester, {List<Upscaler> supported = const []}) async {
@@ -62,15 +61,13 @@ void main() {
   testAppWidgets('off, then supported presets by family with cost; choosing applies, persists and returns', (
     tester,
   ) async {
-    final container = await openSettings(tester, supported: [ravu, anime4k]);
+    final container = await openSettings(tester, supported: [anime4k]);
     final l10n = tester.element(row).l10n;
     expect(subtitleOf(tester, row), l10n.playerUpscalingOff);
 
     await tester.tap(row);
     await tester.pumpAndSettle();
-    expect(find.text(l10n.playerUpscalerFamilyRavu), findsOneWidget);
     expect(find.text(l10n.playerUpscalerFamilyAnime4k), findsOneWidget);
-    expect(find.text(l10n.playerUpscalerFamilyNnedi3), findsNothing, reason: 'only supported presets are offered');
     expect(tileOf(tester, find.byKey(const ValueKey('upscaler-off'))).selected, isTrue);
     expect(
       subtitleOf(tester, find.byKey(const ValueKey('upscaler-anime4k_a_fast'))),
@@ -91,17 +88,17 @@ void main() {
   });
 
   testAppWidgets('a failing upscaler shows a message once and the setting reads off', (tester) async {
-    await openSettings(tester, supported: [ravu]);
+    await openSettings(tester, supported: [anime4k]);
     await tester.tap(row);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('upscaler-ravu_lite_r4')));
+    await tester.tap(find.byKey(const ValueKey('upscaler-anime4k_a_fast')));
     await tester.pumpAndSettle();
     final l10n = tester.element(row).l10n;
 
     backend.failUpscaler();
     await tester.pumpAndSettle();
 
-    final name = l10n.playerUpscalerValue(l10n.playerUpscalerFamilyRavu, l10n.playerUpscalerRavuLite);
+    final name = l10n.playerUpscalerValue(l10n.playerUpscalerFamilyAnime4k, l10n.playerUpscalerAnime4kAFast);
     expect(find.text(l10n.playerUpscalingFailed(name)), findsOneWidget);
     expect(subtitleOf(tester, row), l10n.playerUpscalingOff);
   });

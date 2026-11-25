@@ -37,6 +37,17 @@ class MediaKitVideoBackend implements VideoBackend {
     'network-timeout': '30',
     // Embedded subtitle tracks are never selected or decoded.
     'sid': 'no',
+    // SPEC: not in spec-06 §6.3. Render-quality tuning: sharp anti-ringing scaling plus debanding for compressed
+    // old TV rips. Adds GPU cost; revisit if weak Android TV GPUs drop frames.
+    'scale': 'ewa_lanczossharp',
+    'cscale': 'mitchell',
+    'dscale': 'mitchell',
+    'linear-downscaling': 'no',
+    'deband': 'yes',
+    'deband-iterations': '2',
+    'deband-threshold': '35',
+    'deband-range': '16',
+    'deband-grain': '12',
   };
   // No reconnect on 4xx: expired links must fail fast.
   static const _reconnect = [

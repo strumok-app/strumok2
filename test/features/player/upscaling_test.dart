@@ -50,11 +50,6 @@ void main() {
     }
     expect(upscalerById('artcnn_c4f16'), isNull, reason: 'dropped preset');
     expect(upscalerById(null), isNull);
-    for (final license in shaderLicenses) {
-      for (final asset in license.assets) {
-        expect(File(asset).existsSync(), isTrue, reason: asset);
-      }
-    }
   });
 
   test('mpvShaderCommands clears, then appends one file each, keeping Windows paths whole', () {
@@ -92,6 +87,9 @@ void main() {
 
     Upscaler of(String id) => upscalerById(id)!;
 
+    // Mode A (HQ) is kept in the shader manifest but commented out of the catalog, so it is built directly here.
+    const anime4kAHq = Upscaler('anime4k_a_hq', UpscalerFamily.anime4k, UpscalerCost.heavy, forAnime: true);
+
     test('extracts the files of an upscaler in hook order, once', () async {
       final store = ShaderStore(bundle, support, version: 3);
       final files = await store.files(of('anime4k_a_fast'));
@@ -109,7 +107,7 @@ void main() {
 
       bundle.loads.clear();
       expect(await ShaderStore(bundle, support, version: 3).files(of('anime4k_a_fast')), files);
-      final shared = await store.files(of('anime4k_a_hq'));
+      final shared = await store.files(anime4kAHq);
       expect(bundle.loads, [
         'assets/shaders/anime4k/Anime4K_Restore_CNN_VL.glsl',
         'assets/shaders/anime4k/Anime4K_Upscale_CNN_x2_VL.glsl',
@@ -119,14 +117,14 @@ void main() {
 
     test('a new catalog version removes other versions and leftover temp files', () async {
       final old = Directory(p.join(support.path, 'shaders', 'v1'))..createSync(recursive: true);
-      final leftover = File(p.join(support.path, 'shaders', 'v2', 'ravu', 'ravu-lite-ar-r4.hook.123.tmp'))
+      final leftover = File(p.join(support.path, 'shaders', 'v2', 'anime4k', 'Anime4K_Clamp_Highlights.glsl.123.tmp'))
         ..createSync(recursive: true);
 
-      final files = await ShaderStore(bundle, support, version: 2).files(of('ravu_lite_r4'));
+      final files = await ShaderStore(bundle, support, version: 2).files(of('anime4k_a_fast'));
 
       expect(old.existsSync(), isFalse);
       expect(leftover.existsSync(), isFalse);
-      expect(File(files.single).existsSync(), isTrue);
+      expect(File(files.first).existsSync(), isTrue);
     });
   });
 }

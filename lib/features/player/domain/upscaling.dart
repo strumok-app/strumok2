@@ -4,7 +4,10 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 
 /// Desktop upscaling with mpv user shaders (spec-13).
-enum UpscalerFamily { fsrcnnx, ravu, nnedi3, anime4k }
+///
+/// U0 field testing showed the FSRCNNX, RAVU and NNEDI3 families made no noticeable difference, so they were dropped;
+/// Anime4K (Mode A fast + HQ A/B/C) and a custom detail/sharpen/grain chain remain.
+enum UpscalerFamily { anime4k, custom }
 
 /// GPU cost on the reference iGPU (spec-13 §13.3): heavy presets exceed one 24 fps frame there.
 enum UpscalerCost { light, medium, heavy }
@@ -26,17 +29,16 @@ final class Upscaler {
 }
 
 /// The catalog (spec-13 §13.3), in display order within each family.
+///
+/// Anime4K Mode A (fast) and the HQ modes (A/B/C) ship; a custom experimental chain is offered for testing. The
+/// FSRCNNX, RAVU and NNEDI3 families were removed outright after U0 testing found they made no noticeable difference.
 const upscalers = <Upscaler>[
-  Upscaler('fsrcnnx_8', UpscalerFamily.fsrcnnx, UpscalerCost.light),
-  Upscaler('fsrcnnx_16', UpscalerFamily.fsrcnnx, UpscalerCost.heavy),
-  Upscaler('ravu_lite_r4', UpscalerFamily.ravu, UpscalerCost.light),
-  Upscaler('ravu_zoom_r3', UpscalerFamily.ravu, UpscalerCost.light),
-  Upscaler('nnedi3_64', UpscalerFamily.nnedi3, UpscalerCost.medium),
-  Upscaler('nnedi3_128', UpscalerFamily.nnedi3, UpscalerCost.heavy),
   Upscaler('anime4k_a_fast', UpscalerFamily.anime4k, UpscalerCost.light, forAnime: true),
   Upscaler('anime4k_a_hq', UpscalerFamily.anime4k, UpscalerCost.heavy, forAnime: true),
   Upscaler('anime4k_b_hq', UpscalerFamily.anime4k, UpscalerCost.heavy, forAnime: true),
   Upscaler('anime4k_c_hq', UpscalerFamily.anime4k, UpscalerCost.medium, forAnime: true),
+  // Experimental test chain (spec-13): SSimSuperRes luma detail recovery + AMD CAS sharpening + film grain.
+  Upscaler('custom_detail_cas_grain', UpscalerFamily.custom, UpscalerCost.medium),
 ];
 
 /// Unknown, removed or null ids mean "off".

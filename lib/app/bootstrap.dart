@@ -12,7 +12,6 @@ import '../core/platform/app_platform.dart';
 import '../core/platform/device_class.dart';
 import '../core/storage/app_preferences.dart';
 import '../features/player/data/pip/pip.dart';
-import '../features/player/data/shader_store.dart';
 import '../features/suppliers/data/supplier_bundle_installer.dart';
 import '../features/suppliers/data/supplier_registry.dart';
 import '../features/suppliers/domain/ffi_bundle_info.dart';
@@ -28,7 +27,6 @@ Future<List<Override>> bootstrap() async {
   if (platform == AppPlatform.android) FlutterForegroundTask.initCommunicationPort();
   if (platform != AppPlatform.android) {
     await windowManager.ensureInitialized();
-    registerShaderLicenses();
   }
   final (prefs, paths, deviceClass, packageInfo) = await (
     AppPreferences.create(),
