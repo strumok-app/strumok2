@@ -55,7 +55,7 @@ Agent guidance lives in `.github/`; canonical feature specifications live in `do
 [10 build & secrets](../docs/specs/spec-10-build-config-and-secrets.md) ·
 [11 updates](../docs/specs/spec-11-app-and-suppliers-updates.md) ·
 [12 HLS TS dejunking & proxy](../docs/specs/spec-12-hls-ts-dejunking.md).
-[13 video upscaling](instructions/spec-13-video-upscaling.instructions.md).
+[13 video upscaling](../docs/specs/spec-13-video-upscaling.md).
 Plan: [roadmap](instructions/roadmap.instructions.md) · [acceptance](instructions/acceptance.instructions.md).
 
 ## Working agreement

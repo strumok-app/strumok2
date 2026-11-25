@@ -1,8 +1,3 @@
----
-description: 'Use when working on video upscaling: mpv GLSL shaders (RAVU, Anime4K, FSRCNNX, NNEDI3), VideoBackend upscaler API, render output sizing, shader assets/extraction, upscaling settings page.'
-applyTo: 'lib/features/player/**, assets/shaders/**'
----
-
 # Spec 13 — Video upscaling (mpv GLSL shaders)
 
 Optional, user-selected upscaling of the video with mpv user shaders (`glsl-shaders`). **Desktop only (Linux,
