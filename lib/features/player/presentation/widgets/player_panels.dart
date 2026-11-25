@@ -11,7 +11,6 @@ import '../../data/video_backend.dart';
 import '../../domain/equalizer.dart';
 import '../../domain/player_preferences.dart';
 import '../../domain/player_session.dart';
-import '../../domain/upscaling.dart';
 import '../player_controller.dart';
 import '../player_settings.dart';
 import '../subtitle_size.dart';
@@ -83,13 +82,12 @@ class PlayerSettingsButton extends StatelessWidget {
 }
 
 /// Settings in a side sheet on every device: a root list of settings, each opening its own page.
-Future<void> showPlayerSettings(BuildContext context) =>
-    showSideSheet<void>(
-      context,
-      title: context.l10n.playerSettings,
-      builder: (_) => const PlayerSettingsPanel(),
-      barrierColor: Colors.transparent,
-    );
+Future<void> showPlayerSettings(BuildContext context) => showSideSheet<void>(
+  context,
+  title: context.l10n.playerSettings,
+  builder: (_) => const PlayerSettingsPanel(),
+  barrierColor: Colors.transparent,
+);
 
 /// Subtitle choices scroll; size and offset stay pinned below them.
 class _SubtitlesPage extends ConsumerWidget {
