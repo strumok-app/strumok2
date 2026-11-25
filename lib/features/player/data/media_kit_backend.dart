@@ -12,6 +12,7 @@ import '../domain/equalizer.dart';
 import '../domain/upscaling.dart';
 import 'mpv_audio_filter.dart';
 import 'mpv_shaders.dart';
+import 'playback_progress.dart';
 import 'shader_store.dart';
 import 'video_backend.dart';
 
@@ -19,7 +20,6 @@ final _log = Logger('MediaKitVideoBackend');
 
 /// media_kit (libmpv) backend with the mpv tuning of spec-06 §6.3.
 class MediaKitVideoBackend implements VideoBackend {
-  static const _endTolerance = Duration(seconds: 5);
   static const _resizeDelay = Duration(milliseconds: 150);
 
   // Proven on slow CDNs (spec-06 §6.3).
@@ -83,6 +83,7 @@ class MediaKitVideoBackend implements VideoBackend {
   final _ended = StreamController<void>.broadcast();
   final _errors = StreamController<String>.broadcast();
   final _subscriptions = <StreamSubscription<Object?>>[];
+  final _progress = PlaybackProgress();
   HlsProxy? _proxy;
 
   final ShaderStore? _shaders;
@@ -114,7 +115,10 @@ class MediaKitVideoBackend implements VideoBackend {
       ) {
     final stream = _player.stream;
     _subscriptions.addAll([
-      stream.position.listen((v) => _update(_status.value.copyWith(position: v))),
+      stream.position.listen((v) {
+        _progress.position(v);
+        _update(_status.value.copyWith(position: v));
+      }),
       stream.duration.listen((v) => _update(_status.value.copyWith(duration: v))),
       stream.buffer.listen((v) => _update(_status.value.copyWith(buffered: v))),
       stream.playing.listen((v) => _update(_status.value.copyWith(playing: v))),
@@ -125,7 +129,7 @@ class MediaKitVideoBackend implements VideoBackend {
       stream.tracks.listen((_) => _updateTracks()),
       stream.track.listen((_) => _updateTracks()),
       stream.completed.listen((completed) {
-        if (completed) _finish();
+        if (completed) _onStopped(eof: true);
       }),
       stream.error.listen((message) {
         _log.fine('mpv: $message');
@@ -200,19 +204,23 @@ class MediaKitVideoBackend implements VideoBackend {
     );
   }
 
-  void _onStopped() {
-    final status = _status.value;
-    final nearEnd = status.duration > Duration.zero && status.duration - status.position <= _endTolerance;
-    if (nearEnd) {
+  /// mpv went idle or reached EOF; a stream that broke before its end is a failure, not a finished file.
+  void _onStopped({bool eof = false}) {
+    final duration = _status.value.duration;
+    // EOF of a file with unknown duration cannot be verified: trust it.
+    if (_progress.reachedEnd(duration) || (eof && duration <= Duration.zero)) {
       _finish();
     } else if (!_finished) {
       _finished = true;
-      _errors.add(_lastError ?? 'Playback stopped');
+      _errors.add(_lastError ?? 'Playback stopped at ${_progress.reached} of $duration');
     }
   }
 
   void _finish() {
     if (_finished) return;
+    _log.info(
+      'Finishing playback duration: ${status.value.duration} position: ${status.value.position}, finished: $_finished',
+    );
     _finished = true;
     _ended.add(null);
   }
@@ -246,9 +254,11 @@ class MediaKitVideoBackend implements VideoBackend {
     _finished = false;
     _lastError = null;
     _activeVideoId = null;
+    _progress.reset(request.start);
     _update(PlaybackStatus(volume: _status.value.volume));
     // Downloaded files (spec-08 §8.4) open by path: mpv takes it verbatim, without URL decoding.
     final resource = url.scheme == 'file' ? url.toFilePath() : url.toString();
+    _log.fine('opening stream $request');
     await _player.open(Media(resource, httpHeaders: request.headers, start: request.start));
   }
 
@@ -262,7 +272,10 @@ class MediaKitVideoBackend implements VideoBackend {
   Future<void> playOrPause() => _player.playOrPause();
 
   @override
-  Future<void> seek(Duration position) => _player.seek(position);
+  Future<void> seek(Duration position) {
+    _progress.seekTo(position);
+    return _player.seek(position);
+  }
 
   @override
   Future<void> setVolume(double volume) => _player.setVolume(volume);

@@ -55,7 +55,9 @@ demuxer-lavf-o: append each reconnect option above + seg_max_retry=10   (use `ch
 alang / vlang = "<userLanguage>,en"
 ```
 Only exception: `framedrop=vo` while a desktop upscaler is active ([spec-13](spec-13-video-upscaling.instructions.md) F5).
-Treat "ended" with a ~5 s tolerance near EOF. Do not reconnect on 4xx (expired links).
+Treat "ended" with a ~5 s tolerance near EOF, measured against the position playback actually reached: an EOF or
+stop earlier than that (e.g. mpv's `keep-open` jumping to the last frame of a stream that failed before showing any
+frame) is a playback error, never "ended". Do not reconnect on 4xx (expired links).
 
 ## 6.4 Junked HLS sources (`hlsProxy == true`) — MUST
 

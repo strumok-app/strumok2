@@ -97,13 +97,7 @@ final class PlaybackTracks {
   /// null until known. Lets the UI show the real quality behind "Auto" (spec-06 §6.5).
   final String? activeVideoId;
 
-  const PlaybackTracks({
-    this.video = const [],
-    this.audio = const [],
-    this.videoId,
-    this.audioId,
-    this.activeVideoId,
-  });
+  const PlaybackTracks({this.video = const [], this.audio = const [], this.videoId, this.audioId, this.activeVideoId});
 
   @override
   bool operator ==(Object other) =>
@@ -136,6 +130,10 @@ final class VideoOpenRequest {
     this.hlsProxy = false,
     this.languages = const [],
   });
+
+  @override
+  String toString() =>
+      'VideoOpenRequest(link: $link, headers: $headers, start: $start, hlsProxy: $hlsProxy, languages: $languages)';
 }
 
 /// Playback engine behind the player controller (spec-06 §6.1); one instance per player session.
