@@ -320,6 +320,12 @@ abstract class AppLocalizations {
   /// **'Повторити'**
   String get commonRetry;
 
+  /// Button in source/translation lists (player, manga reader, download sheet) that loads the item's sources again, e.g. after links expired
+  ///
+  /// In uk, this message translates to:
+  /// **'Оновити джерела'**
+  String get commonRefreshSources;
+
   /// Generic loading error
   ///
   /// In uk, this message translates to:

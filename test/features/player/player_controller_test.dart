@@ -189,6 +189,49 @@ void main() {
     expect(backend.calls.sublist(backend.calls.length - 2), ['stop', 'open:https://b.example/0.mp4@420']);
   });
 
+  test('refreshing sources reopens the same source with fresh links at the current position', () async {
+    final item = RefreshingMediaItem(
+      0,
+      'Episode 1',
+      sourceList: [
+        FakeVideoSource('A', url: 'https://a.example/old.m3u8'),
+        FakeVideoSource('B'),
+      ],
+      refreshed: [
+        FakeVideoSource('A', url: 'https://a.example/new.m3u8'),
+        FakeVideoSource('B'),
+      ],
+    );
+    await setUpWith([item]);
+    await controller.open('alpha', 'm1');
+    await controller.selectSource(0);
+    backend.emit(position: const Duration(seconds: 420), duration: const Duration(seconds: 3000), playing: true);
+
+    await controller.refreshSources();
+    expect(item.refreshes, 1);
+    expect(backend.calls.sublist(backend.calls.length - 2), ['stop', 'open:https://a.example/new.m3u8@420']);
+    expect(c.read(playerControllerProvider)!.source!.description, 'A');
+    expect(stored()!.positions[0]!.position, 420);
+  });
+
+  test('retry after a playback error refreshes the sources', () async {
+    final item = RefreshingMediaItem(
+      0,
+      'Episode 1',
+      sourceList: [FakeVideoSource('A', url: 'https://a.example/expired.m3u8')],
+      refreshed: [FakeVideoSource('A', url: 'https://a.example/fresh.m3u8')],
+    );
+    await setUpWith([item]);
+    await controller.open('alpha', 'm1');
+    backend.emit(position: const Duration(seconds: 700));
+    backend.fail('403 Forbidden');
+
+    await controller.retry();
+    expect(item.refreshes, 1);
+    expect(backend.opened.last.link.toString(), 'https://a.example/fresh.m3u8');
+    expect(backend.opened.last.start, const Duration(seconds: 700));
+  });
+
   test('an item without video sources fails with noSources', () async {
     await setUpWith([episode(0, withSources: false)]);
     await controller.open('alpha', 'm1');

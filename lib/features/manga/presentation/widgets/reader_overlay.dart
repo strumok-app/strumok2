@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/widgets/refresh_sources_button.dart';
 import '../../../../app/widgets/side_sheet.dart';
 import '../../../../core/localization.dart';
 import '../../../collection/presentation/collection_providers.dart';
@@ -23,6 +24,7 @@ class ReaderTopBar extends StatelessWidget {
   final bool back;
   final ValueChanged<int> onSelectChapter;
   final ValueChanged<int> onSelectSource;
+  final VoidCallback onRefreshSources;
 
   const ReaderTopBar({
     super.key,
@@ -30,6 +32,7 @@ class ReaderTopBar extends StatelessWidget {
     required this.back,
     required this.onSelectChapter,
     required this.onSelectSource,
+    required this.onRefreshSources,
   });
 
   @override
@@ -55,11 +58,11 @@ class ReaderTopBar extends StatelessWidget {
                 ],
               ),
             ),
-            if (state.sources.length > 1)
+            if (state.sources.isNotEmpty)
               IconButton(
                 key: const Key('readerTranslationButton'),
                 tooltip: l10n.readerTranslation,
-                onPressed: () => showReaderSources(context, state, onSelectSource),
+                onPressed: () => showReaderSources(context, state, onSelectSource, onRefreshSources),
                 icon: const Icon(Icons.translate),
               ),
             IconButton(
@@ -238,11 +241,21 @@ Future<void> showReaderChapters(BuildContext context, MangaReaderState state, Va
       ),
     );
 
-/// Translations (manga sources) of the chapter, focused on the current one.
-Future<void> showReaderSources(BuildContext context, MangaReaderState state, ValueChanged<int> onSelected) async {
+const _refreshSources = -1;
+
+/// Translations (manga sources) of the chapter, focused on the current one; the header refreshes them.
+Future<void> showReaderSources(
+  BuildContext context,
+  MangaReaderState state,
+  ValueChanged<int> onSelected,
+  VoidCallback onRefresh,
+) async {
   final selected = await showSideSheet<int>(
     context,
     title: context.l10n.readerTranslation,
+    actions: [
+      Builder(builder: (context) => RefreshSourcesButton(onPressed: () => Navigator.of(context).pop(_refreshSources))),
+    ],
     builder: (context) => ListView(
       children: [
         for (final (index, source) in state.sources.indexed)
@@ -256,7 +269,11 @@ Future<void> showReaderSources(BuildContext context, MangaReaderState state, Val
       ],
     ),
   );
-  if (selected != null && selected != state.sourceIndex) onSelected(selected);
+  if (selected == _refreshSources) {
+    onRefresh();
+  } else if (selected != null && selected != state.sourceIndex) {
+    onSelected(selected);
+  }
 }
 
 Future<void> showReaderSettings(BuildContext context) =>

@@ -5,6 +5,7 @@ import 'package:content_suppliers_api/content_suppliers_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/widgets/refresh_sources_button.dart';
 import '../../../app/widgets/side_sheet.dart';
 import '../../../app/widgets/state_views.dart';
 import '../../../core/localization.dart';
@@ -199,13 +200,18 @@ class _SourceListState extends ConsumerState<_SourceList> {
   Map<String, ContentLanguage?> _subtitleLanguages = const {};
   var _subtitleInitialized = false;
 
-  Future<List<ContentMediaItemSource>> _load() async {
-    final sources = await widget.items.first.sources;
+  /// [refresh] loads the sources again instead of using the cached ones (retry, refresh button).
+  Future<List<ContentMediaItemSource>> _load({bool refresh = false}) async {
+    final item = widget.items.first;
+    final sources = await (refresh ? item.refreshSources() : item.sources);
     _subtitles = [
       for (final source in sources.whereType<SubtitleMediaItemSource>())
         if (!isLocalSource(source)) source,
     ];
     _subtitleLanguages = {for (final source in _subtitles) source.description: source.language};
+    // Picks the refreshed list no longer offers would not resolve to a source.
+    _picked.removeWhere((name) => !sources.any((source) => source.description == name && !isLocalSource(source)));
+    _pickedSubtitles.removeWhere((name) => !_subtitleLanguages.containsKey(name));
     if (!_subtitleInitialized) {
       final preferred = ref
           .read(collectionItemProvider(widget.details.supplier, widget.details.id))
@@ -220,6 +226,10 @@ class _SourceListState extends ConsumerState<_SourceList> {
         if ((source is VideoMediaItemSource || source is MangaMediaItemSource) && !isLocalSource(source)) source,
     ];
   }
+
+  void _refresh() => setState(() {
+    _sources = _load(refresh: true);
+  });
 
   void _toggle(List<String> picked, String name) => setState(() {
     if (!picked.remove(name)) picked.add(name);
@@ -271,20 +281,31 @@ class _SourceListState extends ConsumerState<_SourceList> {
     return FutureBuilder(
       future: _sources,
       builder: (context, snapshot) => switch (snapshot) {
-        AsyncSnapshot(hasError: true) => LoadErrorView(
-          autofocus: true,
-          onRetry: () => setState(() => _sources = _load()),
-        ),
+        // A new future keeps the previous result in the snapshot: show the (re)load instead of stale sources.
+        AsyncSnapshot(connectionState: ConnectionState.waiting) => const Center(child: CircularProgressIndicator()),
+        AsyncSnapshot(hasError: true) => LoadErrorView(autofocus: true, onRetry: _refresh),
         AsyncSnapshot(:final data?) when data.isEmpty => EmptyStateView(
           icon: Icons.download_outlined,
           message: l10n.downloadsNoSources,
+          action: FilledButton.tonalIcon(
+            autofocus: true,
+            onPressed: _refresh,
+            icon: const Icon(Icons.refresh),
+            label: Text(l10n.commonRefreshSources),
+          ),
         ),
         AsyncSnapshot(:final data?) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall),
+              // Same end inset as the side sheet header: the icon lines up under the close button.
+              padding: const EdgeInsets.fromLTRB(16, 0, 12, 0),
+              child: Row(
+                children: [
+                  Expanded(child: Text(l10n.downloadsSourcesHint, style: Theme.of(context).textTheme.bodySmall)),
+                  RefreshSourcesButton(onPressed: _busy ? null : _refresh),
+                ],
+              ),
             ),
             Expanded(
               child: ListView(

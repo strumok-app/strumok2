@@ -30,7 +30,7 @@ List<ShortcutEntry> desktopShortcuts(AppLocalizations l10n, PlayerSession sessio
   (keys: [DesktopKeys.fullscreen, 'Enter'], label: l10n.playerFullscreen),
   (keys: ['Esc'], label: l10n.playerExitFullscreen),
   if (session.items.length > 1) (keys: [DesktopKeys.playlist], label: l10n.detailsEpisodes),
-  if (session.sources.length > 1) (keys: [DesktopKeys.sources], label: l10n.playerSource),
+  if (session.sources.isNotEmpty) (keys: [DesktopKeys.sources], label: l10n.playerSource),
   if (session.subtitles.isNotEmpty) (keys: [DesktopKeys.subtitles], label: l10n.playerShortcutSubtitles),
   (keys: [DesktopKeys.settings], label: l10n.playerSettings),
   (keys: [DesktopKeys.help, 'H'], label: l10n.playerShortcutHelp),

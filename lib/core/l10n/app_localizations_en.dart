@@ -130,6 +130,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonRetry => 'Retry';
 
   @override
+  String get commonRefreshSources => 'Refresh sources';
+
+  @override
   String get errorLoading => 'Failed to load';
 
   @override

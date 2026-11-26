@@ -112,7 +112,27 @@ class FakeMediaItem implements ContentMediaItem {
   @override
   Future<List<ContentMediaItemSource>> get sources async => sourceList;
 
+  @override
+  Future<List<ContentMediaItemSource>> refreshSources() => sources;
+
   const FakeMediaItem(this.number, this.title, {this.section, this.image, this.sourceList = const []});
+}
+
+/// Serves [refreshed] (fresh links) once [refreshSources] was called; counts the refreshes.
+class RefreshingMediaItem extends FakeMediaItem {
+  final List<ContentMediaItemSource> refreshed;
+  var refreshes = 0;
+
+  RefreshingMediaItem(super.number, super.title, {required super.sourceList, required this.refreshed});
+
+  @override
+  Future<List<ContentMediaItemSource>> get sources async => refreshes > 0 ? refreshed : sourceList;
+
+  @override
+  Future<List<ContentMediaItemSource>> refreshSources() async {
+    refreshes++;
+    return refreshed;
+  }
 }
 
 class FakeDetails implements ContentDetails {

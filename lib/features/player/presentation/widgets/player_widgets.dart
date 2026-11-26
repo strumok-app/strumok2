@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/widgets/refresh_sources_button.dart';
 import '../../../../app/widgets/side_sheet.dart';
 import '../../../../core/localization.dart';
 import '../../../collection/presentation/collection_providers.dart';
@@ -524,7 +525,8 @@ class PlayerFailureView extends ConsumerWidget {
                   ),
                   if (session.sources.length > 1)
                     FilledButton.tonal(
-                      onPressed: () => showSourceSelector(context, session, controller.selectSource),
+                      onPressed: () =>
+                          showSourceSelector(context, session, controller.selectSource, controller.refreshSources),
                       child: Text(l10n.playerChangeSource),
                     ),
                 ],
@@ -540,23 +542,40 @@ class PlayerFailureView extends ConsumerWidget {
 class SourceButton extends StatelessWidget {
   final PlayerSession session;
   final ValueChanged<int> onSelected;
+  final VoidCallback onRefresh;
   final String? shortcut;
 
-  const SourceButton({super.key, required this.session, required this.onSelected, this.shortcut});
+  const SourceButton({
+    super.key,
+    required this.session,
+    required this.onSelected,
+    required this.onRefresh,
+    this.shortcut,
+  });
 
   @override
   Widget build(BuildContext context) => IconButton(
     tooltip: tooltipWithShortcut(context, context.l10n.playerSource, shortcut),
-    onPressed: () => showSourceSelector(context, session, onSelected),
+    onPressed: () => showSourceSelector(context, session, onSelected, onRefresh),
     icon: const Icon(Icons.dns_outlined),
   );
 }
 
-/// Sources in a side sheet, opened with focus on the current one.
-Future<void> showSourceSelector(BuildContext context, PlayerSession session, ValueChanged<int> onSelected) async {
+const _refreshSources = -1;
+
+/// Sources in a side sheet, opened with focus on the current one; the header refreshes them.
+Future<void> showSourceSelector(
+  BuildContext context,
+  PlayerSession session,
+  ValueChanged<int> onSelected,
+  VoidCallback onRefresh,
+) async {
   final selected = await showSideSheet<int>(
     context,
     title: context.l10n.playerSource,
+    actions: [
+      Builder(builder: (context) => RefreshSourcesButton(onPressed: () => Navigator.of(context).pop(_refreshSources))),
+    ],
     builder: (context) => ListView(
       children: [
         for (final (index, source) in session.sources.indexed)
@@ -572,7 +591,11 @@ Future<void> showSourceSelector(BuildContext context, PlayerSession session, Val
       ],
     ),
   );
-  if (selected != null && selected != session.sourceIndex) onSelected(selected);
+  if (selected == _refreshSources) {
+    onRefresh();
+  } else if (selected != null && selected != session.sourceIndex) {
+    onSelected(selected);
+  }
 }
 
 class PlaylistButton extends StatelessWidget {

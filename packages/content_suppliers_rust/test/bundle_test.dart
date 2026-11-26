@@ -67,6 +67,23 @@ void main() {
       final source = (await (await details.mediaItems).single.sources).single as MangaMediaItemSource;
       expect(await source.allPages, ['http://async_manga_async_manga']);
     });
+
+    test('refreshing loads sources and pages again instead of reusing the cache', () async {
+      final item = (await (await dummy.detailsById('id'))!.mediaItems).single;
+      final cached = await item.sources;
+      expect(await item.sources, same(cached));
+
+      final refreshed = await item.refreshSources();
+      expect(refreshed, isNot(same(cached)));
+      expect(refreshed.map((s) => s.description), cached.map((s) => s.description));
+      expect(await item.sources, same(refreshed), reason: 'later reads return the fresh list');
+
+      final manga =
+          (await (await (await dummy.detailsById('async_manga'))!.mediaItems).single.sources).single
+              as MangaMediaItemSource;
+      final pages = await manga.allPages;
+      expect(await manga.refreshPages(), allOf(equals(pages), isNot(same(pages))));
+    });
   });
 
   test('missing lib throws ContentSuppliersException', () {

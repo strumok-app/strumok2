@@ -135,6 +135,32 @@ void main() {
     expect(stored()!.currentSourceName, 'EN');
   });
 
+  test('refreshing reloads translations and pages, keeping the translation and page', () async {
+    final item = RefreshingMediaItem(
+      0,
+      'Chapter 1',
+      sourceList: [
+        FakeMangaSource('UA', pages: pageUrls('UA', 0, 5)),
+        FakeMangaSource('EN', pages: pageUrls('EN', 0, 4)),
+      ],
+      refreshed: [
+        FakeMangaSource('UA', pages: pageUrls('UA-new', 0, 5)),
+        FakeMangaSource('EN', pages: pageUrls('EN-new', 0, 3)),
+      ],
+    );
+    await setUpWith([item]);
+    await controller.open();
+    await controller.selectSource(1);
+    await controller.setPage(3);
+
+    await controller.refreshSources();
+    expect(item.refreshes, 1);
+    expect(state().source!.description, 'EN');
+    expect(state().pages, pageUrls('EN-new', 0, 3));
+    expect(state().page, 2, reason: 'clamped to the refreshed page count');
+    expect(stored()!.positions[0], const MediaItemPosition(position: 3, length: 4), reason: 'saved before reloading');
+  });
+
   test('chapter without pages fails; retry reloads', () async {
     var attempt = 0;
     final source = FakeMangaSource(

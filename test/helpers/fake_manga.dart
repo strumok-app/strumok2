@@ -25,6 +25,9 @@ class FakeMangaSource extends MangaMediaItemSource {
     loads++;
     return loadPages();
   }
+
+  @override
+  Future<List<String>> refreshPages() => allPages;
 }
 
 /// Remote page URLs `https://img.example/<source>/<chapter>/<page>.jpg`.

@@ -38,6 +38,7 @@
   "profilesAskOnStartupSubtitle": "When there are several profiles",
   "settingsProfilesSubtitle": "Separate collections for each family member",
   "commonRetry": "Retry",
+  "commonRefreshSources": "Refresh sources",
   "errorLoading": "Failed to load",
   "rowEmpty": "Nothing here yet",
   "rowLoadMore": "Load more",

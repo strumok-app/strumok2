@@ -33,7 +33,8 @@ Overlays: FloatingPlayer (in-app mini player), PiP (Android native / desktop com
    `fromFixedPosition` → configured seconds. If `length > 0` and `start > length − 60` → `start −= 60`. Clamp ≥ 0.
 4. Init backend with `link`, `headers`, `start`, preferred languages `{userLanguage, "en"}`, `hlsProxy`.
 5. Apply persisted volume, equalizer, current playback speed.
-6. On error: show error with **Retry** and **Change source**; retry resumes at last known position.
+6. On error: show error with **Retry** and **Change source**; retry reloads the item's sources (bypassing the cache,
+   links may have expired) and resumes on the same source at the last known position.
 7. Race safety: every async step re-checks that item/source did not change and the controller is not disposed.
 8. Switching item, title or source saves progress, then stops the current video right away (status reset, same
    backend and video surface kept); the stale frame is hidden until the next video is playing.
@@ -123,7 +124,7 @@ Buttons by frequency of use:
 |--------|----------|-----------|
 | Play/pause, prev/next, seek bar | — | per device (below) |
 | **Subtitles** (CC) | show/hide toggle: off when on, otherwise the last chosen subtitles of the session (the first when none) | own button when the item has supplier subtitles; CC icon on/off; tooltip "Show subtitles" / "Hide subtitles" |
-| **Source** (server) | sources, current checked | own button; also "Change source" in the error view |
+| **Source** (server) | sources, current checked; header **Refresh sources** reloads them (same source, same position) | own button whenever the item has sources (refresh is useful with one); also "Change source" in the error view (several sources) |
 | **Episodes** | playlist grouped by section | own button |
 | **Settings** (gear) | rows: Subtitles (with supplier subtitles: off + list, size and offset pinned below the scrolling list; choosing stays on the page), Audio (with several tracks), Quality (with several qualities), Upscaling (desktop, [spec-13](spec-13-video-upscaling.md)), Speed, Equalizer, Start from, When it ends → pages; Shuffle switch | own button, always shown |
 | PiP, fullscreen, volume, lock | — | device-specific |
@@ -131,7 +132,8 @@ Buttons by frequency of use:
 - Order is fixed everywhere: **subtitles → source → settings → episodes**, then window/mode buttons. Episodes is
   known as soon as the items load while settings appear with the media tracks: keeping episodes last (rightmost)
   means a late button never shifts it.
-- A button with nothing to choose (one source, one episode, no subtitles) is **hidden**, not disabled.
+- A button with nothing to choose (one episode, no subtitles) is **hidden**, not disabled. Source is the exception:
+  shown with a single source for its Refresh action.
 - The top bar is identity only (back, title, episode) plus rare mode switches; actions live in the bottom bar.
 - Panels open as side sheets from the trailing edge on every device, focused on the current choice. Settings: the
   root lists one row per setting with its current value; a row opens its page in place under a pinned back header;

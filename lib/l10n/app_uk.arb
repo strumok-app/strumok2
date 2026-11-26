@@ -167,6 +167,10 @@
   "@commonRetry": {
     "description": "Generic retry button after a loading error"
   },
+  "commonRefreshSources": "Оновити джерела",
+  "@commonRefreshSources": {
+    "description": "Button in source/translation lists (player, manga reader, download sheet) that loads the item's sources again, e.g. after links expired"
+  },
   "errorLoading": "Не вдалося завантажити",
   "@errorLoading": {
     "description": "Generic loading error"

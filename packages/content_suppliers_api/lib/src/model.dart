@@ -39,6 +39,10 @@ abstract interface class ContentMediaItem {
 
   /// Lazily loaded (spec-02 §2.3).
   Future<List<ContentMediaItemSource>> get sources;
+
+  /// Drops the cached [sources] and loads them again (e.g. after links expired); later [sources] calls return the
+  /// fresh list. Sources the supplier embedded in the details or items are returned unchanged.
+  Future<List<ContentMediaItemSource>> refreshSources();
 }
 
 sealed class ContentMediaItemSource {
@@ -74,4 +78,7 @@ abstract class MangaMediaItemSource extends ContentMediaItemSource {
 
   /// Lazily loaded (spec-02 §2.3).
   Future<List<String>> get allPages;
+
+  /// Drops the cached [allPages] and loads them again; pages embedded in the source are returned unchanged.
+  Future<List<String>> refreshPages();
 }

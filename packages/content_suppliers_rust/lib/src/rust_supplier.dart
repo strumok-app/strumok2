@@ -156,6 +156,9 @@ class _RustContentMediaItem implements ContentMediaItem {
   Future<List<ContentMediaItemSource>> get sources => _sources.get(_loadSources);
   final _sources = _SuccessCache<List<ContentMediaItemSource>>();
 
+  @override
+  Future<List<ContentMediaItemSource>> refreshSources() => _sources.reload(_loadSources);
+
   Future<List<ContentMediaItemSource>> _loadSources() async {
     final sources =
         _item.sources ??
@@ -247,6 +250,9 @@ class _RustMangaSource extends MangaMediaItemSource {
   Future<List<String>> get allPages => _pages.get(_loadPages);
   final _pages = _SuccessCache<List<String>>();
 
+  @override
+  Future<List<String>> refreshPages() => _pages.reload(_loadPages);
+
   Future<List<String>> _loadPages() async =>
       _source.pages ??
       await _supplier._async<List<String>>(
@@ -263,8 +269,20 @@ class _RustMangaSource extends MangaMediaItemSource {
 class _SuccessCache<T> {
   Future<T>? _future;
 
-  Future<T> get(Future<T> Function() load) => _future ??= load().catchError((Object e, StackTrace st) {
+  Future<T> get(Future<T> Function() load) {
+    if (_future case final cached?) return cached;
+    late final Future<T> future;
+    future = load().catchError((Object e, StackTrace st) {
+      // A failure of a load replaced by [reload] must not drop the newer one.
+      if (identical(_future, future)) _future = null;
+      Error.throwWithStackTrace(e, st);
+    });
+    return _future = future;
+  }
+
+  /// Drops the cached result (or a load in flight) and loads again.
+  Future<T> reload(Future<T> Function() load) {
     _future = null;
-    Error.throwWithStackTrace(e, st);
-  });
+    return get(load);
+  }
 }

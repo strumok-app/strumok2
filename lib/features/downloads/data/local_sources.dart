@@ -79,6 +79,9 @@ final class LocalMangaSource extends MangaMediaItemSource implements LocalMediaS
     ];
     return files..sort((a, b) => p.basename(a).compareTo(p.basename(b)));
   }
+
+  @override
+  Future<List<String>> refreshPages() => allPages;
 }
 
 /// Local sources of a downloaded item: videos and manga first, subtitles after.
@@ -109,9 +112,14 @@ final class OfflineAwareMediaItem implements ContentMediaItem {
   String? get image => remote.image;
 
   @override
-  Future<List<ContentMediaItemSource>> get sources async {
+  Future<List<ContentMediaItemSource>> get sources => _withLocal(remote.sources);
+
+  @override
+  Future<List<ContentMediaItemSource>> refreshSources() => _withLocal(remote.refreshSources());
+
+  Future<List<ContentMediaItemSource>> _withLocal(Future<List<ContentMediaItemSource>> remoteSources) async {
     try {
-      return [...local, ...await remote.sources];
+      return [...local, ...await remoteSources];
     } catch (_) {
       if (local.isEmpty) rethrow;
       return local;
@@ -137,6 +145,9 @@ final class OfflineMediaItem implements ContentMediaItem {
 
   @override
   Future<List<ContentMediaItemSource>> get sources async => local;
+
+  @override
+  Future<List<ContentMediaItemSource>> refreshSources() => sources;
 }
 
 /// Details of downloaded content from `details.json` (spec-08 §8.4); media items = downloaded item numbers.

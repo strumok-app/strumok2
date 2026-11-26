@@ -250,15 +250,29 @@ class PlayerController extends _$PlayerController {
     await _backend?.setUpscaler(upscaler);
   }
 
-  /// Reloads after a failure; playback resumes at the last known position.
+  /// Reloads after a failure with freshly loaded sources (links may have expired); playback resumes at the last
+  /// known position.
   Future<void> retry() async {
     final session = state;
     if (session == null) return;
     if (session.items.isEmpty) return open(session.supplier, session.id);
-    if (session.sources.isEmpty) return _openItem(++_token, session.itemIndex);
-    final token = ++_token;
-    state = session.copyWith(loading: true, clearFailure: true);
-    await _openSource(token, _resumeAt);
+    await refreshSources();
+  }
+
+  /// Loads the current item's sources again, bypassing the cache, and reopens it on the same source and position.
+  Future<void> refreshSources() async {
+    final session = state;
+    if (session == null || session.item == null) return;
+    await _saveProgress();
+    await _openItem(
+      ++_token,
+      session.itemIndex,
+      refresh: true,
+      // Without sources nothing played yet: the "start from" setting decides, as on a first open.
+      start: session.sources.isEmpty ? null : _resumeAt,
+      preferredSource: session.source?.description,
+      subtitleOffset: session.subtitleOffset,
+    );
   }
 
   Future<void> close() async {
@@ -307,7 +321,16 @@ class PlayerController extends _$PlayerController {
 
   bool _isCurrent(int token) => ref.mounted && token == _token;
 
-  Future<void> _openItem(int token, int index) async {
+  /// [refresh] reloads the sources instead of using the cached ones; [start] overrides the "start from" setting and
+  /// [preferredSource] the remembered source.
+  Future<void> _openItem(
+    int token,
+    int index, {
+    bool refresh = false,
+    Duration? start,
+    String? preferredSource,
+    Duration subtitleOffset = Duration.zero,
+  }) async {
     _playingNumber = null;
     state = state!.copyWith(
       itemIndex: index,
@@ -317,7 +340,7 @@ class PlayerController extends _$PlayerController {
       clearSubtitle: true,
       subtitleFailed: false,
       subtitleLoading: false,
-      subtitleOffset: Duration.zero,
+      subtitleOffset: subtitleOffset,
       loading: true,
       clearFailure: true,
     );
@@ -326,7 +349,8 @@ class PlayerController extends _$PlayerController {
     final number = state!.items[index].number;
     await _updateItem((item) => item.copyWith(currentItem: number));
     try {
-      final all = await state!.items[index].sources;
+      final item = state!.items[index];
+      final all = await (refresh ? item.refreshSources() : item.sources);
       if (!_isCurrent(token)) return;
       final sources = all.whereType<VideoMediaItemSource>().toList();
       if (sources.isEmpty) {
@@ -337,7 +361,7 @@ class PlayerController extends _$PlayerController {
       final subtitleIndex = chooseSubtitles(subtitles, _latest.currentSubtitleName);
       state = state!.copyWith(
         sources: sources,
-        sourceIndex: chooseSource(sources, _latest.currentSourceName),
+        sourceIndex: chooseSource(sources, preferredSource ?? _latest.currentSourceName),
         subtitles: subtitles,
         subtitleIndex: subtitleIndex,
       );
@@ -346,12 +370,16 @@ class PlayerController extends _$PlayerController {
         unawaited(_loadSubtitles());
       }
       final settings = ref.read(playerSettingsProvider);
-      final start = startPosition(
-        settings.startFrom,
-        remembered: _latest.positions[number],
-        fixedSeconds: settings.fixedPosition,
-      );
-      await _openSource(token, Duration(seconds: start));
+      final resumeAt =
+          start ??
+          Duration(
+            seconds: startPosition(
+              settings.startFrom,
+              remembered: _latest.positions[number],
+              fixedSeconds: settings.fixedPosition,
+            ),
+          );
+      await _openSource(token, resumeAt);
     } catch (e, st) {
       _fail(token, PlayerFailure.loadFailed, e, st);
     }

@@ -304,11 +304,16 @@ class _TvControlsState extends ConsumerState<TvControls> {
                                             : l10n.playerShowSubtitles,
                                         onPressed: () => unawaited(_controller.toggleSubtitles()),
                                       ),
-                                    if (session.sources.length > 1)
+                                    if (session.sources.isNotEmpty)
                                       _TvButton(
                                         icon: Icons.dns_outlined,
                                         label: l10n.playerSource,
-                                        onPressed: () => showSourceSelector(context, session, _controller.selectSource),
+                                        onPressed: () => showSourceSelector(
+                                          context,
+                                          session,
+                                          _controller.selectSource,
+                                          _controller.refreshSources,
+                                        ),
                                       ),
                                     _TvButton(
                                       key: const Key('settingsButton'),

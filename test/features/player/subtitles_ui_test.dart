@@ -477,6 +477,12 @@ void main() {
     expect(find.text('Сховати субтитри'), findsOneWidget, reason: 'the focused pill shows the new label');
 
     await press(tester, LogicalKeyboardKey.arrowRight);
+    expect(
+      FocusManager.instance.primaryFocus!.context!.findAncestorWidgetOfExactType<Tooltip>()?.message,
+      'Джерело',
+      reason: 'one source still shows the source pill: its panel refreshes the sources',
+    );
+    await press(tester, LogicalKeyboardKey.arrowRight);
     await press(tester, LogicalKeyboardKey.enter);
     expect(focusedKey(), const ValueKey('settings-subtitles'));
   });

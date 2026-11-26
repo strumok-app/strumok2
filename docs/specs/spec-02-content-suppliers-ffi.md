@@ -80,6 +80,8 @@ enum ContentMediaItemSource {
 - **Lazy loading via `params`**: if `ContentDetails.media_items` is `None`, call `load_media_items(id, details.params)`.
   If `ContentMediaItem.sources` is `None`, call `load_media_item_sources(id, item.params)`.
   If `Manga.pages` is `None`, call `load_manga_pages(id, source.params)`. Cache results per object.
+  `ContentMediaItem.refreshSources()` / `MangaMediaItemSource.refreshPages()` (Dart API only, no FFI change) drop
+  that cache and call the loader again; data embedded by the supplier is returned unchanged.
 - Media item **position = index** in the returned list (0-based). This index is what the collection stores as
   `currentItem` and as `positions` keys — never re-sort items.
 - Enum mapping Rust→Dart is by lowercase name (`Movie`→`movie`). Unknown values are ignored, not errors.

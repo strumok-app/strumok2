@@ -43,7 +43,9 @@ preference; if no match exists, download the video without subtitles. Source lis
 alongside the description when known; the description alone remains the identity and file name.
 
 Sources differ from item to item (another scanlation group from some chapter on, servers flickering between
-episodes), so in every download (a single item included) the user picks **one or more preferred sources in priority order**. When a task
+episodes), so in every download (a single item included) the user picks **one or more preferred sources in priority order**. The
+source list offers **Refresh sources** (also its Retry and its empty state), which reloads the first selected item's
+sources bypassing the cache and drops picks the refreshed list no longer has. When a task
 starts, its item's source is chosen as follows:
 
 1. the first preferred source the item has (exact `description`);

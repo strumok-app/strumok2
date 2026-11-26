@@ -88,18 +88,40 @@ class MangaReaderController extends _$MangaReaderController {
     await _saveProgress();
   }
 
+  /// Reloads after a failure with freshly loaded translations and pages (links may have expired).
   Future<void> retry() async {
     final current = state;
     if (current.items.isEmpty) return open(item: _requestedItem);
-    if (current.sources.isEmpty) return _openItem(++_token, current.itemIndex);
-    final token = ++_token;
-    state = current.copyWith(loading: true, clearFailure: true);
-    await _loadPages(token, (count) => current.page.clamp(0, count - 1));
+    await refreshSources();
+  }
+
+  /// Loads the chapter's translations and pages again, bypassing the cache; stays on the same translation and page.
+  Future<void> refreshSources() async {
+    final current = state;
+    if (current.item == null) return;
+    await _openItem(
+      ++_token,
+      current.itemIndex,
+      refresh: true,
+      preferredSource: current.source?.description,
+      // Without translations nothing was shown yet: the remembered page decides, as on a first open.
+      page: current.sources.isEmpty ? null : current.page,
+    );
   }
 
   bool _isCurrent(int token) => ref.mounted && token == _token;
 
-  Future<void> _openItem(int token, int index, {bool fromEnd = false, bool restartCompleted = false}) async {
+  /// [refresh] reloads translations and pages instead of using the cached ones; [page] overrides the start page and
+  /// [preferredSource] the remembered translation.
+  Future<void> _openItem(
+    int token,
+    int index, {
+    bool fromEnd = false,
+    bool restartCompleted = false,
+    bool refresh = false,
+    String? preferredSource,
+    int? page,
+  }) async {
     // Leaving a chapter records where it was left, e.g. the last page of a one-page chapter.
     if (state.ready) await _saveProgress();
     if (!_isCurrent(token)) return;
@@ -115,27 +137,35 @@ class MangaReaderController extends _$MangaReaderController {
     final number = state.items[index].number;
     await _updateItem((item) => item.copyWith(currentItem: number));
     try {
-      final all = await state.items[index].sources;
+      final item = state.items[index];
+      final all = await (refresh ? item.refreshSources() : item.sources);
       if (!_isCurrent(token)) return;
       final sources = all.whereType<MangaMediaItemSource>().toList();
       if (sources.isEmpty) {
         state = state.copyWith(loading: false, failure: MangaReaderFailure.noPages);
         return;
       }
-      state = state.copyWith(sources: sources, sourceIndex: chooseMangaSource(sources, _latest?.currentSourceName));
+      state = state.copyWith(
+        sources: sources,
+        sourceIndex: chooseMangaSource(sources, preferredSource ?? _latest?.currentSourceName),
+      );
       final remembered = _latest?.positions[number];
       await _loadPages(
         token,
-        (count) => mangaStartPage(count, remembered: remembered, fromEnd: fromEnd, restartCompleted: restartCompleted),
+        (count) =>
+            page?.clamp(0, count - 1) ??
+            mangaStartPage(count, remembered: remembered, fromEnd: fromEnd, restartCompleted: restartCompleted),
+        refresh: refresh,
       );
     } catch (e, st) {
       _fail(token, e, st);
     }
   }
 
-  Future<void> _loadPages(int token, int Function(int count) startPage) async {
+  Future<void> _loadPages(int token, int Function(int count) startPage, {bool refresh = false}) async {
     try {
-      final pages = await state.source!.allPages;
+      final source = state.source!;
+      final pages = await (refresh ? source.refreshPages() : source.allPages);
       if (!_isCurrent(token)) return;
       if (pages.isEmpty) {
         state = state.copyWith(loading: false, failure: MangaReaderFailure.noPages);

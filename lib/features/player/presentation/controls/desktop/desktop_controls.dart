@@ -126,8 +126,8 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
       LogicalKeyboardKey.keyP when !repeat && widget.session.items.length > 1 => _run(
         () => showPlaylistPanel(context, widget.session),
       ),
-      LogicalKeyboardKey.keyS when !repeat && widget.session.sources.length > 1 => _run(
-        () => showSourceSelector(context, widget.session, _controller.selectSource),
+      LogicalKeyboardKey.keyS when !repeat && widget.session.sources.isNotEmpty => _run(
+        () => showSourceSelector(context, widget.session, _controller.selectSource, _controller.refreshSources),
       ),
       LogicalKeyboardKey.keyC when !repeat && widget.session.subtitles.isNotEmpty => _run(_controller.toggleSubtitles),
       LogicalKeyboardKey.comma when !repeat => _run(() => showPlayerSettings(context)),
@@ -244,10 +244,11 @@ class _DesktopControlsState extends ConsumerState<DesktopControls> {
                                   PlayerTimeLabel(status: status),
                                   const Spacer(),
                                   SubtitlesToggleButton(session: session, shortcut: DesktopKeys.subtitles),
-                                  if (session.sources.length > 1)
+                                  if (session.sources.isNotEmpty)
                                     SourceButton(
                                       session: session,
                                       onSelected: _controller.selectSource,
+                                      onRefresh: _controller.refreshSources,
                                       shortcut: DesktopKeys.sources,
                                     ),
                                   const PlayerSettingsButton(shortcut: DesktopKeys.settings),

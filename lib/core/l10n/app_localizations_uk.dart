@@ -130,6 +130,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonRetry => 'Повторити';
 
   @override
+  String get commonRefreshSources => 'Оновити джерела';
+
+  @override
   String get errorLoading => 'Не вдалося завантажити';
 
   @override

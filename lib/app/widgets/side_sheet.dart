@@ -8,28 +8,31 @@ Future<T?> showSideSheet<T>(
   required String title,
   required WidgetBuilder builder,
   Color barrierColor = Colors.black54,
-}) =>
-    showGeneralDialog<T>(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-      barrierColor: barrierColor,
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (context, _, _) => SideSheet(title: title, child: builder(context)),
-      transitionBuilder: (_, animation, _, child) => SlideTransition(
-        position: Tween(
-          begin: const Offset(1, 0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-        child: child,
-      ),
-    );
+  List<Widget> actions = const [],
+}) => showGeneralDialog<T>(
+  context: context,
+  barrierDismissible: true,
+  barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+  barrierColor: barrierColor,
+  transitionDuration: const Duration(milliseconds: 220),
+  pageBuilder: (context, _, _) => SideSheet(title: title, actions: actions, child: builder(context)),
+  transitionBuilder: (_, animation, _, child) => SlideTransition(
+    position: Tween(
+      begin: const Offset(1, 0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+    child: child,
+  ),
+);
 
 class SideSheet extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const SideSheet({super.key, required this.title, required this.child});
+  /// Header buttons before the close button.
+  final List<Widget> actions;
+
+  const SideSheet({super.key, required this.title, required this.child, this.actions = const []});
 
   static const maxWidth = 420.0;
 
@@ -58,6 +61,7 @@ class SideSheet extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(child: Text(title, style: theme.textTheme.titleLarge)),
+                      ...actions,
                       // pop, not maybePop: Back may step back inside the sheet, the close button always closes it.
                       CloseButton(onPressed: () => Navigator.of(context).pop()),
                     ],

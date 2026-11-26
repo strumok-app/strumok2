@@ -257,6 +257,37 @@ void main() {
     expect(find.text('Субтитри для завантаження'), findsNothing);
   });
 
+  testAppWidgets('download sheet refreshes the sources, dropping picks that disappeared', (tester) async {
+    final item = RefreshingMediaItem(
+      0,
+      'Episode 1',
+      sourceList: [FakeVideoSource('A'), FakeVideoSource('B')],
+      refreshed: [FakeVideoSource('B'), FakeVideoSource('C')],
+    );
+    await start(tester, items: [item]);
+    await go(tester, AppRoutes.details('alpha', 'm1'));
+    await tester.tap(find.byKey(const Key('downloadButton')));
+    await settle(tester);
+    await tester.tap(find.byKey(const ValueKey('download-source-0')));
+    await settle(tester);
+    expect(
+      tester.getCenter(find.byKey(const Key('refreshSources'))).dx,
+      tester.getCenter(find.byType(CloseButton)).dx,
+      reason: 'lined up under the close button',
+    );
+
+    await tester.tap(find.byKey(const Key('refreshSources')));
+    await settle(tester);
+    expect(item.refreshes, 1);
+    expect(find.text('C'), findsOneWidget);
+    expect(find.text('A'), findsNothing);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const ValueKey('download-start'))).onPressed,
+      isNull,
+      reason: 'the picked source A is gone',
+    );
+  });
+
   testAppWidgets('download sheet queues subtitle alternatives in their chosen priority order', (tester) async {
     FakeMediaItem withSubtitles(int n) => FakeMediaItem(
       n,

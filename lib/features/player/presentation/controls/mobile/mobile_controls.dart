@@ -313,8 +313,12 @@ class _MobileControlsState extends ConsumerState<MobileControls> {
                         IgnorePointer(child: PlayerTimeLabel(status: status)),
                         const Spacer(),
                         SubtitlesToggleButton(session: session),
-                        if (session.sources.length > 1)
-                          SourceButton(session: session, onSelected: _controller.selectSource),
+                        if (session.sources.isNotEmpty)
+                          SourceButton(
+                            session: session,
+                            onSelected: _controller.selectSource,
+                            onRefresh: _controller.refreshSources,
+                          ),
                         const PlayerSettingsButton(),
                         if (session.items.length > 1) PlaylistButton(session: session),
                       ],

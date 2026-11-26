@@ -326,6 +326,17 @@ void main() {
     expect(backend.opened.last.link.toString(), 'https://cdn.example.com/B.m3u8');
   });
 
+  testAppWidgets('desktop: the source sheet header refreshes the sources and reopens the current one', (tester) async {
+    await openPlayer(tester);
+    backend.emit(position: const Duration(seconds: 90));
+    await press(tester, LogicalKeyboardKey.keyS);
+    await tester.tap(find.byKey(const Key('refreshSources')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SideSheet), findsNothing);
+    expect(backend.calls.sublist(backend.calls.length - 2), ['stop', 'open:https://a.example/0.m3u8@90']);
+  });
+
   testAppWidgets('desktop: S opens the source side sheet focused on the current source', (tester) async {
     await openPlayer(tester);
     await press(tester, LogicalKeyboardKey.keyS);

@@ -224,6 +224,7 @@ class _MangaReaderPageState extends ConsumerState<MangaReaderPage> {
                     back: ref.watch(deviceClassProvider) != DeviceClass.tv,
                     onSelectChapter: (index) => unawaited(_controller.selectItem(index)),
                     onSelectSource: (index) => unawaited(_controller.selectSource(index)),
+                    onRefreshSources: () => unawaited(_controller.refreshSources()),
                   ),
                 ),
               ),
@@ -333,8 +334,12 @@ class _ReaderFailureViewState extends ConsumerState<_ReaderFailureView> {
                   ),
                   if (state.sources.length > 1)
                     FilledButton.tonal(
-                      onPressed: () =>
-                          showReaderSources(context, state, (index) => unawaited(controller.selectSource(index))),
+                      onPressed: () => showReaderSources(
+                        context,
+                        state,
+                        (index) => unawaited(controller.selectSource(index)),
+                        () => unawaited(controller.refreshSources()),
+                      ),
                       child: Text(l10n.readerChangeTranslation),
                     ),
                 ],
