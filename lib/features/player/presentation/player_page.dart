@@ -109,7 +109,9 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
             builder: (context, inPip, _) => Stack(
               fit: StackFit.expand,
               children: [
-                ?video,
+                if (video != null)
+                  // Kept in the tree: the surface is reused by the next item, only the stale frame is hidden.
+                  Visibility(visible: session?.showsVideo ?? false, maintainState: true, child: video),
                 if (session == null)
                   const Center(child: CircularProgressIndicator())
                 else ...[

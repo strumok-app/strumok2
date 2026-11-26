@@ -36,11 +36,7 @@ final Map<String, List<String>> shaderAssets = {
   ]),
   'anime4k_c_hq': _anime4k(['Clamp_Highlights', 'Upscale_Denoise_CNN_x2_VL', ..._autoDownscale, 'Upscale_CNN_x2_M']),
   // SSimSuperRes (luma detail) → AMD CAS (sharpen) → film grain, in this order (upstream file names kept).
-  'luma_cas_grain': [
-    '$_root/custom/SSimSuperRes.glsl',
-    '$_root/custom/CAS-scaled.glsl',
-    '$_root/custom/grain.glsl',
-  ],
+  'luma_cas_grain': ['$_root/custom/SSimSuperRes.glsl', '$_root/custom/CAS-scaled.glsl', '$_root/custom/grain.glsl'],
 };
 
 List<String> shaderAssetsOf(Upscaler upscaler) => shaderAssets[upscaler.id] ?? const [];

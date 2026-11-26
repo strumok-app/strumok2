@@ -106,6 +106,13 @@ class FakeVideoBackend implements VideoBackend {
   }
 
   @override
+  Future<void> stop() async {
+    calls.add('stop');
+    _status.value = PlaybackStatus(volume: _status.value.volume);
+    _tracks.value = const PlaybackTracks();
+  }
+
+  @override
   Future<void> play() async {
     calls.add('play');
     emit(playing: true);

@@ -151,6 +151,44 @@ void main() {
     expect(stored()!.currentSourceName, 'A');
   });
 
+  test('switching items stops the previous video before opening the next one', () async {
+    await setUpWith([episode(0), episode(1)]);
+    await controller.open('alpha', 'm1', item: 0);
+    backend.emit(position: const Duration(seconds: 120), duration: const Duration(seconds: 3000), playing: true);
+
+    await controller.next();
+    expect(backend.calls.where((c) => c == 'stop' || c.startsWith('open:')), [
+      'open:https://a.example/0.m3u8@0',
+      'stop',
+      'open:https://a.example/1.m3u8@0',
+    ]);
+    expect(backends, hasLength(1), reason: 'the backend and its video surface are reused');
+    expect(stored()!.positions[0], const MediaItemPosition(position: 120, length: 3000));
+  });
+
+  test('switching to an item without sources leaves the player stopped and reset', () async {
+    await setUpWith([episode(0), episode(1, withSources: false)]);
+    await controller.open('alpha', 'm1', item: 0);
+    backend.emit(position: const Duration(seconds: 120), duration: const Duration(seconds: 3000), playing: true);
+
+    await controller.next();
+    expect(c.read(playerControllerProvider)!.failure, PlayerFailure.noSources);
+    expect(backend.calls, contains('stop'));
+    expect(controller.status.value.playing, isFalse);
+    expect(controller.status.value.position, Duration.zero);
+    await pumpEventQueue();
+    expect(stored()!.positions[0]!.position, 120, reason: 'the reset is not saved as progress');
+  });
+
+  test('changing source stops the previous one first', () async {
+    await setUpWith([episode(0)]);
+    await controller.open('alpha', 'm1');
+    backend.emit(position: const Duration(seconds: 420), playing: true);
+
+    await controller.selectSource(1);
+    expect(backend.calls.sublist(backend.calls.length - 2), ['stop', 'open:https://b.example/0.mp4@420']);
+  });
+
   test('an item without video sources fails with noSources', () async {
     await setUpWith([episode(0, withSources: false)]);
     await controller.open('alpha', 'm1');

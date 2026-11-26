@@ -233,11 +233,7 @@ void main() {
         expect(backend.calls.where((call) => call.startsWith('upscaler')), isEmpty);
         expect(controller.supportedUpscalers, isEmpty);
         expect(controller.upscaler, isNull);
-        expect(
-          c.read(playerSettingsProvider).upscaler,
-          'anime4k_a_fast',
-          reason: 'kept for a device that supports it',
-        );
+        expect(c.read(playerSettingsProvider).upscaler, 'anime4k_a_fast', reason: 'kept for a device that supports it');
       });
 
       test('switching applies right away and persists; off turns it off', () async {

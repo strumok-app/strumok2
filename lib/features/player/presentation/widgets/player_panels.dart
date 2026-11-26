@@ -8,7 +8,6 @@ import '../../../../app/widgets/stepper_tile.dart';
 import '../../../../core/localization.dart';
 import '../../../../core/platform/device_class.dart';
 import '../../data/video_backend.dart';
-import '../../domain/equalizer.dart';
 import '../../domain/player_preferences.dart';
 import '../../domain/player_session.dart';
 import '../player_controller.dart';

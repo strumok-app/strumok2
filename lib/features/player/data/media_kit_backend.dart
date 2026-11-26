@@ -263,6 +263,20 @@ class MediaKitVideoBackend implements VideoBackend {
   }
 
   @override
+  Future<void> stop() async {
+    if (_disposed) return;
+    // mpv going idle after a stop is neither the end of the file nor a failure.
+    _fileStarted = false;
+    _finished = true;
+    _lastError = null;
+    _activeVideoId = null;
+    _progress.reset(Duration.zero);
+    await _player.stop();
+    _update(PlaybackStatus(volume: _status.value.volume));
+    _updateTracks();
+  }
+
+  @override
   Future<void> play() => _player.play();
 
   @override

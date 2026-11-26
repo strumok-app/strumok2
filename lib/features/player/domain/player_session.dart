@@ -83,6 +83,9 @@ final class PlayerSession {
   bool get hasPrevious => itemIndex > 0;
   bool get hasNext => itemIndex + 1 < items.length;
 
+  /// The video surface shows the current item; while loading or failed it would only show a stale frame.
+  bool get showsVideo => !loading && failure == null;
+
   PlayerSession copyWith({
     String? title,
     List<ContentMediaItem>? items,

@@ -145,7 +145,7 @@ class _FloatingContent extends ConsumerWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ?video,
+          if (video != null) Visibility(visible: session.showsVideo, maintainState: true, child: video),
           const ScaledSubtitleOverlay(),
           if (session.failure != null)
             const Center(child: Icon(Icons.error_outline, color: Colors.white70))

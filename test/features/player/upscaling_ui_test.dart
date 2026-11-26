@@ -75,10 +75,7 @@ void main() {
     expect(tileOf(tester, find.byKey(const ValueKey('upscaler-off'))).selected, isTrue);
     expect(find.byKey(const ValueKey('upscaler-luma_cas_grain')), findsOneWidget);
     expect(find.text('LUMA/CAS/FILM GRAIN'), findsOneWidget);
-    expect(
-      subtitleOf(tester, find.byKey(const ValueKey('upscaler-anime4k_a_fast'))),
-      l10n.playerUpscalerCostLight,
-    );
+    expect(subtitleOf(tester, find.byKey(const ValueKey('upscaler-anime4k_a_fast'))), l10n.playerUpscalerCostLight);
     expect(find.text(l10n.playerUpscalingDescription), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('upscaler-anime4k_a_fast')));
@@ -91,11 +88,7 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('settings-back')));
     await tester.pumpAndSettle();
-    expect(
-      subtitleOf(tester, row),
-      l10n.playerUpscalerAnime4kAFast,
-      reason: 'back on the root, showing the new value',
-    );
+    expect(subtitleOf(tester, row), l10n.playerUpscalerAnime4kAFast, reason: 'back on the root, showing the new value');
   });
 
   testAppWidgets('a failing upscaler shows a message once and the setting reads off', (tester) async {

@@ -35,6 +35,8 @@ Overlays: FloatingPlayer (in-app mini player), PiP (Android native / desktop com
 5. Apply persisted volume, equalizer, current playback speed.
 6. On error: show error with **Retry** and **Change source**; retry resumes at last known position.
 7. Race safety: every async step re-checks that item/source did not change and the controller is not disposed.
+8. Switching item, title or source saves progress, then stops the current video right away (status reset, same
+   backend and video surface kept); the stale frame is hidden until the next video is playing.
 
 ## 6.3 media_kit / mpv configuration — MUST (proven on slow CDNs)
 

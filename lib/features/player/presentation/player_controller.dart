@@ -67,6 +67,9 @@ class PlayerController extends _$PlayerController {
   /// are never saved.
   int? _playingNumber;
 
+  /// The backend holds media (playing, paused or failed) that a switch to another video must stop first.
+  bool _mediaLoaded = false;
+
   /// The collection item this session edits; seeded by [open], kept current after every save. [_latest]
   /// re-merges it with live synced data. Only touched after [open] has seeded it (guarded by [_playingNumber]).
   late CollectionItem _base;
@@ -122,6 +125,8 @@ class PlayerController extends _$PlayerController {
     final token = ++_token;
     _playingNumber = null;
     state = PlayerSession(supplier: supplier, id: id, speed: _speed);
+    _clearSubtitles();
+    await _stopPlayback();
     try {
       final details = await ref.read(contentDetailsProvider(supplier, id).future);
       final items = await ref.read(mediaItemsProvider(supplier, id).future);
@@ -174,6 +179,7 @@ class PlayerController extends _$PlayerController {
     final token = ++_token;
     _playingNumber = null;
     state = session.copyWith(sourceIndex: index, loading: true, clearFailure: true);
+    await _stopPlayback();
     await _updateItem((item) => item.copyWith(currentSourceName: session.sources[index].description));
     await _openSource(token, position);
   }
@@ -316,6 +322,7 @@ class PlayerController extends _$PlayerController {
       clearFailure: true,
     );
     _clearSubtitles();
+    await _stopPlayback();
     final number = state!.items[index].number;
     await _updateItem((item) => item.copyWith(currentItem: number));
     try {
@@ -360,6 +367,7 @@ class PlayerController extends _$PlayerController {
       final link = await source.link;
       if (!_isCurrent(token)) return;
       final backend = _backend ??= _createBackend();
+      _mediaLoaded = true;
       await backend.open(
         VideoOpenRequest(
           link: link,
@@ -376,6 +384,16 @@ class PlayerController extends _$PlayerController {
     } catch (e, st) {
       _fail(token, PlayerFailure.loadFailed, e, st);
     }
+  }
+
+  /// Stops the previous video right away when switching to another one, instead of letting it play on while the
+  /// next one resolves. Progress must already be saved: [_playingNumber] is cleared so the reset is never saved.
+  Future<void> _stopPlayback() async {
+    _playingNumber = null;
+    final backend = _backend;
+    if (backend == null || !_mediaLoaded) return;
+    _mediaLoaded = false;
+    await backend.stop();
   }
 
   VideoBackend _createBackend() {
@@ -398,6 +416,7 @@ class PlayerController extends _$PlayerController {
   Future<void> _disposeBackend() async {
     final backend = _backend;
     _backend = null;
+    _mediaLoaded = false;
     if (backend == null) return;
     backend.status.removeListener(_onStatus);
     for (final s in _subscriptions) {

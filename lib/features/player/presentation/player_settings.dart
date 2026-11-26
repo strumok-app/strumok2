@@ -113,9 +113,8 @@ String equalizerPresetLabel(AppLocalizations l10n, EqualizerPreset? preset) => s
 };
 
 /// Null is off; otherwise the localized preset name.
-String upscalerLabel(AppLocalizations l10n, Upscaler? upscaler) => upscaler == null
-    ? l10n.playerUpscalingOff
-    : upscalerVariantLabel(l10n, upscaler);
+String upscalerLabel(AppLocalizations l10n, Upscaler? upscaler) =>
+    upscaler == null ? l10n.playerUpscalingOff : upscalerVariantLabel(l10n, upscaler);
 
 String upscalerVariantLabel(AppLocalizations l10n, Upscaler upscaler) => switch (upscaler.id) {
   'anime4k_a_fast' => l10n.playerUpscalerAnime4kAFast,

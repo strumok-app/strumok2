@@ -153,6 +153,10 @@ abstract interface class VideoBackend {
   /// renders supplier subtitles itself.
   Future<void> open(VideoOpenRequest request);
 
+  /// Stops and unloads the current media, resetting [status] and [tracks] (volume kept) without reporting it as
+  /// [ended] or as an error. The backend and its view stay usable for the next [open].
+  Future<void> stop();
+
   Future<void> play();
   Future<void> pause();
   Future<void> playOrPause();
